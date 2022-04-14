@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:12:06
  * Author: Clay Risser
  * -----
- * Last Modified: 14-04-2022 08:23:14
+ * Last Modified: 14-04-2022 13:19:04
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -15,7 +15,7 @@ variable "region" {
 }
 
 variable "cluster_name" {
-  default = "gitlab-terraform-eks"
+  default = "eks-main"
 }
 
 variable "cluster_version" {

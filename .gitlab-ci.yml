@@ -1,0 +1,47 @@
+include:
+  # https://gitlab.com/gitlab-org/gitlab/blob/master/lib/gitlab/ci/templates/Terraform/Base.latest.gitlab-ci.yml
+  - template: Terraform/Base.latest.gitlab-ci.yml
+
+image:
+  name: registry.gitlab.com/gitlab-org/terraform-images/stable:latest
+
+variables:
+  # TF_HTTP_USERNAME: ${GITLAB_USER_LOGIN}
+  TF_STATE_NAME: main
+  TF_ROOT: main
+  AWS_REGION: us-east-2
+  EKS_CLUSTER: eks-internal
+  TF_VAR_region: ${AWS_REGION}
+  TF_VAR_cluster_name: ${EKS_CLUSTER}
+
+cache:
+  key: default
+  paths:
+    - main/.terraform.lock.hcl
+    - main/.terraform/
+
+stages:
+  - init
+  - validate
+  - build
+  - deploy
+  - cleanup
+
+# AWS CLUSTER
+validate:
+  extends: .terraform:validate
+
+build:
+  extends: .terraform:build
+  needs:
+    - validate
+
+deploy:
+  extends: .terraform:deploy
+  needs:
+    - build
+
+destroy:
+  extends: .terraform:destroy
+  needs:
+    - build

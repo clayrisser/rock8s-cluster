@@ -1,14 +1,23 @@
 /**
- * File: /main.tf
+ * File: /eks.tf
  * Project: main
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 14-04-2022 08:20:40
+ * Last Modified: 14-04-2022 13:37:02
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
+
+resource "aws_kms_key" "eks" {
+  description             = "${var.cluster_name} secret encryption key"
+  deletion_window_in_days = 7
+  enable_key_rotation     = true
+  tags = {
+    Name = var.cluster_name
+  }
+}
 
 module "eks" {
   source                          = "terraform-aws-modules/eks/aws"
@@ -85,4 +94,23 @@ module "eks" {
   tags = {
     Name = var.cluster_name
   }
+}
+
+resource "null_resource" "wait_for_nodes" {
+  provisioner "local-exec" {
+    command     = <<EOF
+while [ "$(kubectl --kubeconfig <(echo $KUBECONFIG) get nodes | \
+  tail -n +2 | \
+  grep -vE '^[^ ]+\s+Ready')" != "" ]; do
+    sleep 10
+done
+EOF
+    interpreter = ["bash", "-c"]
+    environment = {
+      KUBECONFIG = local.kubeconfig
+    }
+  }
+  depends_on = [
+    module.eks
+  ]
 }

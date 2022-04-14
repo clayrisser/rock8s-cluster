@@ -1,10 +1,10 @@
 /**
- * File: /main.tf
+ * File: /alb_ingress.tf
  * Project: eks
  * File Created: 12-02-2022 12:16:54
  * Author: Clay Risser
  * -----
- * Last Modified: 14-04-2022 08:20:41
+ * Last Modified: 14-04-2022 13:39:14
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -29,7 +29,7 @@ data "aws_iam_policy_document" "eks_oidc_assume_role" {
     }
     principals {
       identifiers = [
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${replace(data.aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")}"
+        "arn:aws:iam::${data.aws_caller_identity.this.account_id}:oidc-provider/${replace(data.aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")}"
       ]
       type = "Federated"
     }
@@ -160,14 +160,14 @@ data "aws_iam_policy_document" "alb_management" {
 }
 
 resource "aws_iam_role" "this" {
-  name                  = "k8s-${local.cluster_name}-alb-ingress-controller"
+  name                  = "k8s-${var.cluster_name}-alb-ingress-controller"
   description           = "Permissions required by the Kubernetes AWS ALB Ingress controller to do it's job."
   force_detach_policies = true
   assume_role_policy    = data.aws_iam_policy_document.eks_oidc_assume_role.json
 }
 
 resource "aws_iam_policy" "this" {
-  name        = "k8s-${local.cluster_name}-alb-management"
+  name        = "k8s-${var.cluster_name}-alb-management"
   description = "Permissions that are required to manage AWS Application Load Balancers."
   policy      = data.aws_iam_policy_document.alb_management.json
 }
@@ -197,8 +197,8 @@ resource "aws_iam_role_policy_attachment" "this" {
 #   chart      = "aws-load-balancer-controller"
 #   namespace  = "kube-system"
 #   values = [<<EOF
-# clusterName: ${local.cluster_name}
-# region: ${local.region}
+# clusterName: ${var.cluster_name}
+# region: ${var.region}
 # vpcId: ${module.vpc.vpc_id}
 # ingressClass: alb
 # serviceAccount:
