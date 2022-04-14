@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "bbenoist.nix",
+    "editorconfig.editorconfig",
+    "hashicorp.terraform",
+    "psioniq.psi-header",
+    "rubymaniac.vscode-direnv",
+    "streetsidesoftware.code-spell-checker"
+  ]
+}

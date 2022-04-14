@@ -1,0 +1,17 @@
+# terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*_override.tf
+*_override.tf.json
+/main/tfplan
+crash.log
+override.tf
+override.tf.json
+
+# app
+.mkpm/
+/.env
+/mwc-rancher.cattle.io.yaml
+/vwc-rancher.cattle.io.yaml
+/id_*.pub
