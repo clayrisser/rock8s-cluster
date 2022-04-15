@@ -4,7 +4,6 @@
 *.tfstate.*
 *_override.tf
 *_override.tf.json
-/main/tfplan
 crash.log
 override.tf
 override.tf.json
@@ -15,3 +14,5 @@ override.tf.json
 /mwc-rancher.cattle.io.yaml
 /vwc-rancher.cattle.io.yaml
 /id_*.pub
+tfplan.cache
+tfplan.json

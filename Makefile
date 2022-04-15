@@ -3,7 +3,7 @@
 # File Created: 27-01-2022 11:41:37
 # Author: Clay Risser
 # -----
-# Last Modified: 14-04-2022 13:45:38
+# Last Modified: 15-04-2022 08:57:15
 # Modified By: Clay Risser
 # -----
 # Risser Labs LLC (c) Copyright 2022
@@ -24,10 +24,12 @@ export BASE64 ?= openssl base64
 export CURL ?= curl
 export SSH ?= ssh
 
-export TF_VAR_region ?= $(AWS_REGION)
-export TF_VAR_cluster_name ?= $(EKS_CLUSTER)
 export TF_STATE_NAME ?= main
 export TF_ROOT ?= main
+export TF_PLAN_JSON ?= $(PROJECT_ROOT)/$(TF_ROOT)/tfplan.json
+
+export TF_VAR_region ?= $(AWS_REGION)
+export TF_VAR_cluster_name ?= $(EKS_CLUSTER)
 
 ifneq (,$(CI))
 	TERRAFORM_INPUT_FLAG := -input=false
@@ -60,18 +62,20 @@ $(ACTION)/lint: $(call git_deps,\.((tf)|(hcl))$$)
 
 ACTIONS += plan~format ## creates terraform plan
 $(ACTION)/plan: $(call git_deps,\.((tf)|(hcl))$$)
-	@$(CD) $(TF_ROOT) && $(TERRAFORM) plan $(TERRAFORM_INPUT_FLAG) -out=tfplan $(ARGS)
+	@$(CD) $(TF_ROOT) && $(TERRAFORM) plan $(TERRAFORM_INPUT_FLAG) -out=tfplan.cache $(ARGS) && \
+		$(TERRAFORM) show -json tfplan.cache | jq -r '$(JQ_PLAN)' > $(TF_PLAN_JSON)
+	@$(CAT) $(TF_PLAN_JSON) | $(JQ)
 	@$(call done,plan)
 
 ACTIONS += apply~plan ## applies terraform infrastructure
 $(ACTION)/apply: $(call git_deps,\.((tf)|(hcl))$$)
 	@$(CD) $(TF_ROOT) && $(TERRAFORM) apply $(TERRAFORM_INPUT_FLAG) $(TERRAFORM_AUTO_APPROVE_FLAG) \
-		$$([ -f tfplan ] && $(ECHO) tfplan || $(TRUE)) $(ARGS)
+		$$([ -f tfplan.cache ] && $(ECHO) tfplan.cache || $(TRUE)) $(ARGS)
 	@$(call done,apply)
 
 ACTIONS += destroy~format ## destroys terraform infrastructure
 $(ACTION)/destroy: $(call git_deps,\.((tf)|(hcl))$$)
-	@$(CD) $(TF_ROOT) && $(TERRAFORM) destroy $(ARGS)
+	@$(CD) $(TF_ROOT) && $(TERRAFORM) destroy $(TERRAFORM_INPUT_FLAG) $(TERRAFORM_AUTO_APPROVE_FLAG) $(ARGS)
 	@$(call done,destroy)
 
 ACTIONS += refresh~format ## refreshes terraform state to match physical resources
@@ -112,6 +116,16 @@ endef
 define gitlab_token
 $(shell $(CAT) $(HOME)/.docker/config.json | \
 	$(JQ) -r '.auths["registry.gitlab.com"].auth' | $(BASE64) -d | $(CUT) -d: -f2)
+endef
+
+define JQ_PLAN
+( \
+    [.resource_changes[]?.change.actions?] | flatten \
+) | { \
+    "create":(map(select(.=="create")) | length), \
+    "update":(map(select(.=="update")) | length), \
+    "delete":(map(select(.=="delete")) | length) \
+}
 endef
 
 -include $(call actions,$(ACTIONS))
