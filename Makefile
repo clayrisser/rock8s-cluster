@@ -3,7 +3,7 @@
 # File Created: 27-01-2022 11:41:37
 # Author: Clay Risser
 # -----
-# Last Modified: 15-04-2022 08:57:15
+# Last Modified: 15-04-2022 09:32:37
 # Modified By: Clay Risser
 # -----
 # Risser Labs LLC (c) Copyright 2022
@@ -14,22 +14,21 @@ include $(MKPM)/gnu
 include $(MKPM)/mkchain
 include $(MKPM)/dotenv
 
+export TF_STATE_NAME ?= main
+export TF_ROOT ?= main
+export TF_PLAN_JSON ?= $(PROJECT_ROOT)/$(TF_ROOT)/tfplan.json
+
+include $(PROJECT_ROOT)/terraform.mk
+include $(PROJECT_ROOT)/gitlab.mk
+
 export AWS ?= aws
 export CLOC ?= cloc
 export TERRAFORM ?= terraform
 export SSH_KEYGEN ?= ssh-keygen
 export KUBECTX ?= $(call ternary,kubectx -h,kubectx,$(call ternary,kubectl ctx -h,kubectl ctx,true))
 export KUBECTL ?= $(call ternary,kubectl -h,kubectl,true)
-export BASE64 ?= openssl base64
 export CURL ?= curl
 export SSH ?= ssh
-
-export TF_STATE_NAME ?= main
-export TF_ROOT ?= main
-export TF_PLAN_JSON ?= $(PROJECT_ROOT)/$(TF_ROOT)/tfplan.json
-
-export TF_VAR_region ?= $(AWS_REGION)
-export TF_VAR_cluster_name ?= $(EKS_CLUSTER)
 
 ifneq (,$(CI))
 	TERRAFORM_INPUT_FLAG := -input=false
@@ -38,16 +37,7 @@ endif
 
 ACTIONS += init ## initializes terraform
 $(ACTION)/init: $(TF_ROOT)/versions.tf $(TF_ROOT)/backend.tf
-	@$(CD) $(TF_ROOT) && $(TERRAFORM) init $(TERRAFORM_INPUT_FLAG) -reconfigure \
-		-backend-config="address=https://$(GITLAB_HOSTNAME)/api/v4/projects/$(PROJECT_ID)/terraform/state/$(TF_STATE_NAME)" \
-		-backend-config="lock_address=https://$(GITLAB_HOSTNAME)/api/v4/projects/$(PROJECT_ID)/terraform/state/$(TF_STATE_NAME)/lock" \
-		-backend-config="unlock_address=https://$(GITLAB_HOSTNAME)/api/v4/projects/$(PROJECT_ID)/terraform/state/$(TF_STATE_NAME)/lock" \
-		-backend-config="username=$(call gitlab_username)" \
-		-backend-config="password=$(call gitlab_token)" \
-		-backend-config="lock_method=POST" \
-		-backend-config="unlock_method=DELETE" \
-		-backend-config="retry_wait_min=5" \
-		$(ARGS)
+	@$(CD) $(TF_ROOT) && $(TERRAFORM) init $(TERRAFORM_INPUT_FLAG) -reconfigure $(ARGS)
 	@$(call done,init)
 
 ACTIONS += format~init ## formats terraform files
@@ -107,16 +97,6 @@ purge: clean ##
 .PHONY: count
 count:
 	@$(CLOC) $(shell $(GIT) ls-files)
-
-define gitlab_username
-$(shell $(CAT) $(HOME)/.docker/config.json | \
-	$(JQ) -r '.auths["registry.gitlab.com"].auth' | $(BASE64) -d | $(CUT) -d: -f1)
-endef
-
-define gitlab_token
-$(shell $(CAT) $(HOME)/.docker/config.json | \
-	$(JQ) -r '.auths["registry.gitlab.com"].auth' | $(BASE64) -d | $(CUT) -d: -f2)
-endef
 
 define JQ_PLAN
 ( \
