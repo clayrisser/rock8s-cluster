@@ -21,9 +21,9 @@ plan:
     - make -s plan
   artifacts:
     paths:
-      - ${TF_ROOT}/plan.cache
+      - ${TF_ROOT}/tfplan.cache
     reports:
-      terraform: ${TF_ROOT}/plan.json
+      terraform: ${TF_ROOT}/tfplan.json
 
 deploy:
   stage: deploy
