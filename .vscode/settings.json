@@ -1,5 +1,12 @@
 {
-  "cSpell.words": ["awscli", "gmake", "hashicorp", "kubeconfig", "risserlabs"],
+  "cSpell.words": [
+    "awscli",
+    "gmake",
+    "hashicorp",
+    "kubeconfig",
+    "risserlabs",
+    "tfplan"
+  ],
   "psi-header.variables": [["projectCreationYear", "2022"]],
   "psi-header.config": {
     "blankLinesAfter": 1,
