@@ -1,14 +1,16 @@
 /**
- * File: /main.tf
+ * File: /providers.tf
  * Project: main
  * File Created: 14-04-2022 08:04:21
  * Author: Clay Risser
  * -----
- * Last Modified: 14-04-2022 08:20:40
+ * Last Modified: 15-04-2022 14:58:06
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
+
+provider "flux" {}
 
 provider "aws" {
   region = var.region
