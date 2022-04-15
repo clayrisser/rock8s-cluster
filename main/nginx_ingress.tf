@@ -4,7 +4,7 @@
  * File Created: 12-02-2022 12:16:54
  * Author: Clay Risser
  * -----
- * Last Modified: 15-04-2022 14:44:58
+ * Last Modified: 15-04-2022 14:52:46
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -44,7 +44,7 @@ controller:
 EOF
   ]
   depends_on = [
-    helm_release.cert_manager
+    null_resource.wait_for_nodes
   ]
 }
 
