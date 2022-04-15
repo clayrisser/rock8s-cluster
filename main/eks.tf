@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 14-04-2022 13:37:02
+ * Last Modified: 15-04-2022 14:04:42
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -105,7 +105,7 @@ while [ "$(kubectl --kubeconfig <(echo $KUBECONFIG) get nodes | \
     sleep 10
 done
 EOF
-    interpreter = ["bash", "-c"]
+    interpreter = ["sh", "-c"]
     environment = {
       KUBECONFIG = local.kubeconfig
     }
