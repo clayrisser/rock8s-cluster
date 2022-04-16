@@ -4,7 +4,7 @@
  * File Created: 23-02-2022 11:40:50
  * Author: Clay Risser
  * -----
- * Last Modified: 15-04-2022 14:58:00
+ * Last Modified: 15-04-2022 15:00:06
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -42,7 +42,6 @@ resource "kubernetes_namespace" "flux_system" {
 data "kubectl_file_documents" "install" {
   content = data.flux_install.this.content
 }
-
 
 locals {
   install = [for v in data.kubectl_file_documents.install.documents : {
