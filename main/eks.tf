@@ -4,24 +4,24 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 15-04-2022 14:04:42
+ * Last Modified: 17-04-2022 04:58:12
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
 
 resource "aws_kms_key" "eks" {
-  description             = "${var.cluster_name} secret encryption key"
+  description             = "${local.cluster_name} secret encryption key"
   deletion_window_in_days = 7
   enable_key_rotation     = true
   tags = {
-    Name = var.cluster_name
+    Name = local.cluster_name
   }
 }
 
 module "eks" {
   source                          = "terraform-aws-modules/eks/aws"
-  cluster_name                    = var.cluster_name
+  cluster_name                    = local.cluster_name
   cluster_version                 = var.cluster_version
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
@@ -86,13 +86,13 @@ module "eks" {
   }
   eks_managed_node_groups = {
     dedicated = {
-      min_size     = 1
-      max_size     = 1
-      desired_size = 1
+      min_size     = 2
+      max_size     = 2
+      desired_size = 2
     }
   }
   tags = {
-    Name = var.cluster_name
+    Name = local.cluster_name
   }
 }
 

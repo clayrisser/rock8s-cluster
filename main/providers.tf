@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:04:21
  * Author: Clay Risser
  * -----
- * Last Modified: 15-04-2022 14:58:06
+ * Last Modified: 17-04-2022 03:23:15
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -35,4 +35,9 @@ provider "kubectl" {
   host                   = module.eks.cluster_endpoint
   load_config_file       = false
   token                  = data.aws_eks_cluster_auth.this.token
+}
+
+provider "cloudflare" {
+  email   = var.cloudflare_email
+  api_key = var.cloudflare_api_key
 }

@@ -4,7 +4,7 @@
  * File Created: 16-04-2022 01:29:34
  * Author: Clay Risser
  * -----
- * Last Modified: 16-04-2022 01:41:41
+ * Last Modified: 17-04-2022 03:39:28
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -45,7 +45,7 @@ resource "aws_route53_record" "this" {
   zone_id = var.create_zone ? aws_route53_zone.this[0].id : data.aws_route53_zone.this[0].zone_id
   name    = "${var.name}.${local.zone_name}"
   type    = var.record_type
-  ttl     = var.ttl || "300"
+  ttl     = var.ttl != null ? tostring(var.ttl) : "300"
   records = [var.record]
   lifecycle {
     prevent_destroy = false
@@ -58,7 +58,7 @@ resource "aws_route53_record" "ptr" {
   zone_id = var.create_zone ? aws_route53_zone.this[0].id : data.aws_route53_zone.this[0].zone_id
   name    = "${element(split(".", var.record), 3)}.${local.zone_name}"
   type    = "PTR"
-  ttl     = var.ttl || "600"
+  ttl     = var.ttl != null ? tostring(var.ttl) : "600"
   records = ["${var.name}.${var.domain}"]
   lifecycle {
     prevent_destroy = false

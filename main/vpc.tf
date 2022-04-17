@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:10:56
  * Author: Clay Risser
  * -----
- * Last Modified: 14-04-2022 13:40:37
+ * Last Modified: 17-04-2022 02:20:03
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -13,7 +13,7 @@
 module "vpc" {
   source                               = "terraform-aws-modules/vpc/aws"
   version                              = "~> 3.0"
-  name                                 = var.cluster_name
+  name                                 = local.cluster_name
   cidr                                 = "10.0.0.0/16"
   azs                                  = data.aws_availability_zones.available.names
   private_subnets                      = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
@@ -26,14 +26,14 @@ module "vpc" {
   create_flow_log_cloudwatch_iam_role  = true
   create_flow_log_cloudwatch_log_group = false
   public_subnet_tags = {
-    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
-    "kubernetes.io/role/elb"                    = 1
+    "kubernetes.io/cluster/${local.cluster_name}" = "shared"
+    "kubernetes.io/role/elb"                      = 1
   }
   private_subnet_tags = {
-    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
-    "kubernetes.io/role/internal-elb"           = 1
+    "kubernetes.io/cluster/${local.cluster_name}" = "shared"
+    "kubernetes.io/role/internal-elb"             = 1
   }
   tags = {
-    Name = var.cluster_name
+    Name = local.cluster_name
   }
 }

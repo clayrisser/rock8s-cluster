@@ -4,64 +4,58 @@
  * File Created: 23-02-2022 11:40:50
  * Author: Clay Risser
  * -----
- * Last Modified: 15-04-2022 14:59:32
+ * Last Modified: 17-04-2022 05:18:25
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
 
-# provider "flux" {}
+data "flux_sync" "this" {
+  target_path = local.target_path
+  url         = "ssh://${var.flux_git_repository}"
+  branch      = var.flux_git_branch
+  depends_on = [
+    kubectl_manifest.flux_install
+  ]
+}
 
-# locals {
-#   branch         = "main"
-#   git_repository = var.git_repository
-#   known_hosts    = "gitlab.com ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBFSMqzJeV9rUzU4kWitGjeR4PWSa29SPqJ1fVkhtj3Hw9xjLVXVYrU9QlYWrOLXBpQ6KWjbjTDTdDkoohFzgbEY="
-# }
+resource "tls_private_key" "this" {
+  algorithm   = "ECDSA"
+  ecdsa_curve = "P256"
+}
 
-# data "flux_sync" "this" {
-#   target_path = local.target_path
-#   url         = "ssh://${local.git_repository}"
-#   branch      = local.branch
-#   depends_on = [
-#     kubernetes_namespace.flux_system
-#   ]
-# }
+data "kubectl_file_documents" "flux_sync" {
+  content = data.flux_sync.this.content
+}
 
-# resource "tls_private_key" "this" {
-#   algorithm   = "ECDSA"
-#   ecdsa_curve = "P256"
-# }
+locals {
+  flux_sync_documents = var.flux_git_repository == "" ? [] : data.kubectl_file_documents.flux_sync.documents
+  flux_sync = [for v in local.flux_sync_documents : {
+    data : yamldecode(v)
+    content : v
+    }
+  ]
+}
 
-# data "kubectl_file_documents" "sync" {
-#   content = data.flux_sync.this.content
-# }
+resource "kubectl_manifest" "flux_sync" {
+  for_each   = { for v in local.flux_sync : lower(join("/", compact([v.data.apiVersion, v.data.kind, lookup(v.data.metadata, "namespace", ""), v.data.metadata.name]))) => v.content }
+  depends_on = [kubernetes_namespace.flux_system]
+  yaml_body  = each.value
+}
 
-# locals {
-#   sync = [for v in data.kubectl_file_documents.sync.documents : {
-#     data : yamldecode(v)
-#     content : v
-#     }
-#   ]
-# }
-
-# resource "kubectl_manifest" "sync" {
-#   for_each   = { for v in local.sync : lower(join("/", compact([v.data.apiVersion, v.data.kind, lookup(v.data.metadata, "namespace", ""), v.data.metadata.name]))) => v.content }
-#   depends_on = [kubernetes_namespace.flux_system]
-#   yaml_body  = each.value
-# }
-
-# resource "kubernetes_secret" "this" {
-#   depends_on = [kubectl_manifest.install]
-#   metadata {
-#     name      = data.flux_sync.this.secret
-#     namespace = data.flux_sync.this.namespace
-#   }
-#   data = {
-#     identity       = tls_private_key.this.private_key_pem
-#     "identity.pub" = tls_private_key.this.public_key_pem
-#     known_hosts    = local.known_hosts
-#   }
-#   provisioner "local-exec" {
-#     command = "echo '${tls_private_key.this.public_key_openssh}' > ../id_ecdsa.pub"
-#   }
-# }
+resource "kubernetes_secret" "this" {
+  count      = var.flux_git_repository == "" ? 0 : 1
+  depends_on = [kubectl_manifest.flux_install]
+  metadata {
+    name      = data.flux_sync.this.secret
+    namespace = data.flux_sync.this.namespace
+  }
+  data = {
+    identity       = tls_private_key.this.private_key_pem
+    "identity.pub" = tls_private_key.this.public_key_pem
+    known_hosts    = var.flux_known_hosts == "" ? var.flux_known_hosts : null
+  }
+  provisioner "local-exec" {
+    command = "echo '${tls_private_key.this.public_key_openssh}' > ../id_ecdsa.pub"
+  }
+}

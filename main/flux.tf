@@ -4,7 +4,7 @@
  * File Created: 23-02-2022 11:40:50
  * Author: Clay Risser
  * -----
- * Last Modified: 15-04-2022 15:00:06
+ * Last Modified: 17-04-2022 05:07:49
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -39,20 +39,20 @@ resource "kubernetes_namespace" "flux_system" {
   }
 }
 
-data "kubectl_file_documents" "install" {
+data "kubectl_file_documents" "flux_install" {
   content = data.flux_install.this.content
 }
 
 locals {
-  install = [for v in data.kubectl_file_documents.install.documents : {
+  flux_install = [for v in data.kubectl_file_documents.flux_install.documents : {
     data : yamldecode(v)
     content : v
     }
   ]
 }
 
-resource "kubectl_manifest" "install" {
-  for_each   = { for v in local.install : lower(join("/", compact([v.data.apiVersion, v.data.kind, lookup(v.data.metadata, "namespace", ""), v.data.metadata.name]))) => v.content }
+resource "kubectl_manifest" "flux_install" {
+  for_each   = { for v in local.flux_install : lower(join("/", compact([v.data.apiVersion, v.data.kind, lookup(v.data.metadata, "namespace", ""), v.data.metadata.name]))) => v.content }
   depends_on = [kubernetes_namespace.flux_system]
   yaml_body  = each.value
 }
