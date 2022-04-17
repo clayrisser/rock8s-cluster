@@ -3,11 +3,13 @@
 # File Created: 15-04-2022 09:14:48
 # Author: Clay Risser
 # -----
-# Last Modified: 17-04-2022 05:05:38
+# Last Modified: 17-04-2022 06:56:02
 # Modified By: Clay Risser
 # -----
 # Risser Labs LLC (c) Copyright 2022
 
+export TF_VAR_aws_access_key_id ?= $(AWS_ACCESS_KEY_ID)
+export TF_VAR_aws_secret_access_key ?= $(AWS_SECRET_ACCESS_KEY)
 export TF_VAR_cloudflare_api_key ?= $(CLOUDFLARE_API_KEY)
 export TF_VAR_cloudflare_email ?= $(CLOUDFLARE_EMAIL)
 export TF_VAR_cluster_name ?= $(EKS_CLUSTER)

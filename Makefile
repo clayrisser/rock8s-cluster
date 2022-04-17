@@ -3,7 +3,7 @@
 # File Created: 27-01-2022 11:41:37
 # Author: Clay Risser
 # -----
-# Last Modified: 15-04-2022 09:32:37
+# Last Modified: 17-04-2022 06:16:51
 # Modified By: Clay Risser
 # -----
 # Risser Labs LLC (c) Copyright 2022
@@ -75,8 +75,8 @@ $(ACTION)/refresh: $(call git_deps,\.((tf)|(hcl))$$)
 
 .PHONY: kubeconfig
 kubeconfig: ## authenticate local environment with the eks cluster
-	@$(AWS) eks update-kubeconfig --region $(AWS_REGION) --name $(EKS_CLUSTER)
-	@export KUBE_CONTEXT=$$($(AWS) eks update-kubeconfig --region $(AWS_REGION) --name $(EKS_CLUSTER) | \
+	@$(AWS) eks update-kubeconfig --region $(AWS_REGION) --name $(EKS_CLUSTER)-$(ITERATION)
+	@export KUBE_CONTEXT=$$($(AWS) eks update-kubeconfig --region $(AWS_REGION) --name $(EKS_CLUSTER)-$(ITERATION) | \
 		$(GREP) -oE 'arn:aws:eks:[^ ]+') && \
 		($(CAT) default.env | $(GREP) -E '^KUBE_CONTEXT=' && \
 			($(CAT) default.env | $(SED) "s|\(KUBE_CONTEXT=\).*|\1$$KUBE_CONTEXT|g") || \

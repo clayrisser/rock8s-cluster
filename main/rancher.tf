@@ -4,7 +4,7 @@
  * File Created: 09-02-2022 11:24:10
  * Author: Clay Risser
  * -----
- * Last Modified: 17-04-2022 03:52:22
+ * Last Modified: 17-04-2022 06:46:26
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -15,7 +15,8 @@ locals {
   cert_manager_letsencrypt_environment = "production"
   rancher_namespace                    = "cattle-system"
   rancher_version                      = "v2.6.3"
-  rancher_hostname                     = "${local.cluster_name}.${var.domain}"
+  # rancher_hostname                     = "${local.cluster_name}.${var.domain}"
+  rancher_hostname = data.kubernetes_service.ingress_nginx_controller.status.0.load_balancer.0.ingress.0.hostname
 }
 
 provider "rancher2" {

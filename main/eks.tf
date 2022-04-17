@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 17-04-2022 04:58:12
+ * Last Modified: 17-04-2022 05:55:57
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -81,8 +81,12 @@ module "eks" {
   subnet_ids  = module.vpc.public_subnets
   enable_irsa = true
   eks_managed_node_group_defaults = {
-    disk_size      = 64
-    instance_types = ["t2.medium"]
+    disk_size            = 64
+    instance_types       = ["t2.medium"]
+    ami_type             = "BOTTLEROCKET_x86_64"
+    platform             = "bottlerocket"
+    bootstrap_extra_args = <<-EOT
+    EOT
   }
   eks_managed_node_groups = {
     dedicated = {

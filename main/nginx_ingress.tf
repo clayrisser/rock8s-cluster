@@ -4,7 +4,7 @@
  * File Created: 12-02-2022 12:16:54
  * Author: Clay Risser
  * -----
- * Last Modified: 15-04-2022 14:52:46
+ * Last Modified: 17-04-2022 05:56:40
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -36,11 +36,16 @@ controller:
   service:
     enabled: true
     type: LoadBalancer
+    ports:
+      http: 80
+      https: 443
+      ssh: 22
   hostPort:
     enabled: true
     ports:
       http: 80
       https: 443
+      ssh: 22
 EOF
   ]
   depends_on = [
