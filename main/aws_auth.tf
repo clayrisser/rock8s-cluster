@@ -4,7 +4,7 @@
  * File Created: 17-04-2022 06:01:20
  * Author: Clay Risser
  * -----
- * Last Modified: 17-04-2022 06:53:59
+ * Last Modified: 17-04-2022 06:56:32
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -43,32 +43,32 @@
 #   ]
 # }
 
+##############
 
+# resource "kubernetes_namespace" "flux_system" {
+#   metadata {
+#     name = "aws-auth-operator-system"
+#   }
+#   lifecycle {
+#     ignore_changes = [
+#       metadata[0].annotations,
+#       metadata[0].labels,
+#     ]
+#   }
+# }
 
-resource "kubernetes_namespace" "flux_system" {
-  metadata {
-    name = "aws-auth-operator-system"
-  }
-  lifecycle {
-    ignore_changes = [
-      metadata[0].annotations,
-      metadata[0].labels,
-    ]
-  }
-}
-
-resource "kubernetes_secret" "registry" {
-  metadata {
-    name      = "aws-auth-operator-secret"
-    namespace = "kube-system"
-  }
-  data = {
-    AWS_ACCESS_KEY_ID     = "<key>"
-    AWS_SECRET_ACCESS_KEY = "<secret>"
-    AWS_DEFAULT_REGION    = var.region
-  }
-  type = "generic"
-  depends_on = [
-    kubernetes_namespace.flux_system
-  ]
-}
+# resource "kubernetes_secret" "registry" {
+#   metadata {
+#     name      = "aws-auth-operator-secret"
+#     namespace = "kube-system"
+#   }
+#   data = {
+#     AWS_ACCESS_KEY_ID     = "<key>"
+#     AWS_SECRET_ACCESS_KEY = "<secret>"
+#     AWS_DEFAULT_REGION    = var.region
+#   }
+#   type = "generic"
+#   depends_on = [
+#     kubernetes_namespace.flux_system
+#   ]
+# }
