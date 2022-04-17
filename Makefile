@@ -3,7 +3,7 @@
 # File Created: 27-01-2022 11:41:37
 # Author: Clay Risser
 # -----
-# Last Modified: 17-04-2022 06:16:51
+# Last Modified: 17-04-2022 16:28:18
 # Modified By: Clay Risser
 # -----
 # Risser Labs LLC (c) Copyright 2022
@@ -97,6 +97,10 @@ purge: clean ##
 .PHONY: count
 count:
 	@$(CLOC) $(shell $(GIT) ls-files)
+
+.PHONY: terraform
+terraform:
+	@$(CD) $(TF_ROOT) && $(TERRAFORM) $(ARGS)
 
 define JQ_PLAN
 ( \
