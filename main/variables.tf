@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:12:06
  * Author: Clay Risser
  * -----
- * Last Modified: 17-04-2022 12:10:14
+ * Last Modified: 18-04-2022 11:31:35
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -41,7 +41,7 @@ variable "gitlab_hostname" {
 }
 
 variable "rancher_admin_password" {
-  default = "P@ssw0rd"
+  default = "rancherP@ssw0rd"
 }
 
 variable "flux_git_repository" {
