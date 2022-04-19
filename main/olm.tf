@@ -4,11 +4,26 @@
  * File Created: 17-04-2022 06:13:18
  * Author: Clay Risser
  * -----
- * Last Modified: 19-04-2022 10:09:39
+ * Last Modified: 19-04-2022 12:51:18
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
+
+resource "kubernetes_namespace" "sn_system" {
+  metadata {
+    name = "sn-system"
+  }
+  lifecycle {
+    ignore_changes = [
+      metadata[0].annotations,
+      metadata[0].labels,
+    ]
+  }
+  depends_on = [
+    null_resource.wait_for_nodes
+  ]
+}
 
 module "olm" {
   source                        = "streamnative/charts/helm"
@@ -24,6 +39,6 @@ module "olm" {
   enable_vector_agent           = false
   enable_vmagent                = false
   depends_on = [
-    null_resource.wait_for_nodes
+    kubernetes_namespace.sn_system
   ]
 }
