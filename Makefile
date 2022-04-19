@@ -3,7 +3,7 @@
 # File Created: 27-01-2022 11:41:37
 # Author: Clay Risser
 # -----
-# Last Modified: 19-04-2022 06:39:43
+# Last Modified: 19-04-2022 08:59:28
 # Modified By: Clay Risser
 # -----
 # Risser Labs LLC (c) Copyright 2022
@@ -18,8 +18,9 @@ export TF_STATE_NAME ?= main
 export TF_ROOT ?= main
 export TF_PLAN_JSON ?= $(PROJECT_ROOT)/$(TF_ROOT)/tfplan.json
 
-include $(PROJECT_ROOT)/terraform.mk
 include $(PROJECT_ROOT)/gitlab.mk
+include $(PROJECT_ROOT)/aws.mk
+include $(PROJECT_ROOT)/terraform.mk
 
 export AWS ?= aws
 export CLOC ?= cloc
