@@ -11,6 +11,7 @@ nixpkgs.stdenv.mkDerivation rec {
     nixpkgs.gnumake42
     nixpkgs.gnused
     nixpkgs.jq
+    nixpkgs.python39Packages.python-dotenv
     nixpkgs.terraform
   ];
 }

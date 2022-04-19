@@ -3,7 +3,7 @@
 # File Created: 15-04-2022 09:01:44
 # Author: Clay Risser
 # -----
-# Last Modified: 19-04-2022 08:03:49
+# Last Modified: 19-04-2022 09:38:26
 # Modified By: Clay Risser
 # -----
 # Risser Labs LLC (c) Copyright 2022
@@ -37,10 +37,13 @@ endif
 
 ifeq (,$(TF_ADDRESS))
 ifeq (,$(CI))
-	TF_ADDRESS := https://$(GITLAB_HOSTNAME)/api/v4/projects/$(PROJECT_ID)/terraform/state/$(TF_STATE_NAME)
+	TF_ADDRESS := https://$(GITLAB_HOSTNAME)/api/v4/projects/$(GITLAB_PROJECT_ID)/terraform/state/$(TF_STATE_NAME)
 else
+ifneq (,$(CI_PROJECT_ID))
+	GITLAB_PROJECT_ID := $(CI_PROJECT_ID)
+endif
 	TF_IN_AUTOMATION=true
-	TF_ADDRESS := $(CI_API_V4_URL)/projects/$(CI_PROJECT_ID)/terraform/state/$(TF_STATE_NAME)
+	TF_ADDRESS := $(CI_API_V4_URL)/projects/$(GITLAB_PROJECT_ID)/terraform/state/$(TF_STATE_NAME)
 endif
 endif
 

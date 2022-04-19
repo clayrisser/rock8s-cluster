@@ -4,7 +4,7 @@
  * File Created: 09-02-2022 11:24:10
  * Author: Clay Risser
  * -----
- * Last Modified: 19-04-2022 04:55:46
+ * Last Modified: 19-04-2022 10:12:18
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -14,7 +14,7 @@ locals {
   cert_manager_letsencrypt_email       = var.cloudflare_email
   cert_manager_letsencrypt_environment = "production"
   rancher_namespace                    = "cattle-system"
-  rancher_version                      = "v2.6.3"
+  rancher_version                      = "v2.6.4"
   rancher_hostname                     = "${local.cluster_name}.${var.domain}"
 }
 
@@ -54,11 +54,32 @@ EOF
   ]
 }
 
-resource "null_resource" "bootstrap_rancher" {
+resource "null_resource" "rancher_ready" {
   provisioner "local-exec" {
     command     = <<EOF
 while ! curl -k $RANCHER_BASE_URL/ping >/dev/null; do sleep 3; done
 sleep 120
+EOF
+    interpreter = ["sh", "-c"]
+    environment = {
+      RANCHER_BASE_URL = "https://${local.rancher_hostname}"
+    }
+  }
+  depends_on = [
+    helm_release.rancher
+  ]
+}
+
+resource "rancher2_token" "this" {
+  description = "terraform"
+  depends_on = [
+    null_resource.rancher_ready
+  ]
+}
+
+resource "null_resource" "bootstrap_rancher" {
+  provisioner "local-exec" {
+    command     = <<EOF
 BOOTSTRAP_PASSWORD=$(kubectl --kubeconfig <(echo $KUBECONFIG) get secret \
   --namespace cattle-system bootstrap-secret \
   -o go-template='{{.data.bootstrapPassword|base64decode}}{{"\n"}}')
@@ -86,6 +107,6 @@ EOF
     }
   }
   depends_on = [
-    helm_release.rancher
+    rancher2_token.this
   ]
 }

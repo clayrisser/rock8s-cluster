@@ -4,13 +4,13 @@
  * File Created: 16-04-2022 03:29:18
  * Author: Clay Risser
  * -----
- * Last Modified: 17-04-2022 03:48:25
+ * Last Modified: 19-04-2022 09:33:17
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
 
-module "cname" {
+module "cluster" {
   source = "../modules/dns/cloudflare"
   # source      = "../modules/dns/route53"
   name        = local.cluster_name

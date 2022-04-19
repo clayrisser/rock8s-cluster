@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:12:06
  * Author: Clay Risser
  * -----
- * Last Modified: 18-04-2022 11:31:35
+ * Last Modified: 19-04-2022 10:12:28
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -19,7 +19,7 @@ variable "cluster_name" {
 }
 
 variable "cluster_version" {
-  default = "1.21"
+  default = "1.22"
 }
 
 variable "cloudflare_email" {
@@ -69,6 +69,10 @@ variable "gitlab_registry_username" {
 }
 
 variable "gitlab_token" {
+  type = string
+}
+
+variable "gitlab_project_id" {
   type = string
 }
 

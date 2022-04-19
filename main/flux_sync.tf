@@ -4,7 +4,7 @@
  * File Created: 23-02-2022 11:40:50
  * Author: Clay Risser
  * -----
- * Last Modified: 17-04-2022 06:28:12
+ * Last Modified: 19-04-2022 09:39:49
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -57,5 +57,14 @@
 #   }
 #   provisioner "local-exec" {
 #     command = "echo '${tls_private_key.this.public_key_openssh}' > ../id_ecdsa.pub"
+#   }
+# }
+
+# module "deploy_key" {
+#   source         = "../modules/deploy_key/gitlab"
+#   name           = local.cluster_name
+#   gitlab_project = var.gitlab_project_id
+#   providers = {
+#     gitlab = gitlab
 #   }
 # }
