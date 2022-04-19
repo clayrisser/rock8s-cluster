@@ -4,7 +4,7 @@
  * File Created: 09-02-2022 11:24:10
  * Author: Clay Risser
  * -----
- * Last Modified: 19-04-2022 03:00:13
+ * Last Modified: 19-04-2022 04:55:46
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -58,6 +58,7 @@ resource "null_resource" "bootstrap_rancher" {
   provisioner "local-exec" {
     command     = <<EOF
 while ! curl -k $RANCHER_BASE_URL/ping >/dev/null; do sleep 3; done
+sleep 120
 BOOTSTRAP_PASSWORD=$(kubectl --kubeconfig <(echo $KUBECONFIG) get secret \
   --namespace cattle-system bootstrap-secret \
   -o go-template='{{.data.bootstrapPassword|base64decode}}{{"\n"}}')

@@ -3,13 +3,13 @@
 # File Created: 27-01-2022 11:45:11
 # Author: Clay Risser
 # -----
-# Last Modified: 19-04-2022 02:55:32
+# Last Modified: 19-04-2022 04:15:34
 # Modified By: Clay Risser
 # -----
 # Risser Labs LLC (c) Copyright 2022
 
 MKPM_PACKAGES := \
-	dotenv=0.0.6 \
+	dotenv=0.0.7 \
 	gnu=0.0.3 \
 	mkchain=0.0.15
 
