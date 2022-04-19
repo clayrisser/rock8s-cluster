@@ -3,7 +3,7 @@
 # File Created: 15-04-2022 09:01:44
 # Author: Clay Risser
 # -----
-# Last Modified: 19-04-2022 07:50:08
+# Last Modified: 19-04-2022 08:03:49
 # Modified By: Clay Risser
 # -----
 # Risser Labs LLC (c) Copyright 2022
@@ -11,17 +11,17 @@
 export BASE64 ?= openssl base64
 
 define gitlab_username
-$(shell $(CAT) $(HOME)/.docker/config.json $(NOFAIL) | \
-	$(JQ) -r '.auths["registry.gitlab.com"].auth' $(NOFAIL) | \
-	$(BASE64) -d $(NOFAIL) | \
-	$(CUT) -d: -f1 $(NOFAIL))
+$(shell $(CAT) $(HOME)/.docker/config.json 2>$(NULL) | \
+	$(JQ) -r '.auths["registry.gitlab.com"].auth' 2>$(NULL) | \
+	$(BASE64) -d 2>$(NULL) | \
+	$(CUT) -d: -f1 2>$(NULL))
 endef
 
 define gitlab_token
-$(shell $(CAT) $(HOME)/.docker/config.json $(NOFAIL) | \
-	$(JQ) -r '.auths["registry.gitlab.com"].auth' $(NOFAIL) | \
-	$(BASE64) -d $(NOFAIL) | \
-	$(CUT) -d: -f2 $(NOFAIL))
+$(shell $(CAT) $(HOME)/.docker/config.json 2>$(NULL) | \
+	$(JQ) -r '.auths["registry.gitlab.com"].auth' 2>$(NULL) | \
+	$(BASE64) -d 2>$(NULL) | \
+	$(CUT) -d: -f2 2>$(NULL))
 endef
 
 TF_USERNAME ?= $(call gitlab_username)
