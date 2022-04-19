@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 19-04-2022 08:17:02
+ * Last Modified: 19-04-2022 08:28:33
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -106,8 +106,8 @@ module "eks" {
   self_managed_node_groups = {
     bottlerocket = {
       min_size     = 2
-      max_size     = 2
-      desired_size = 2
+      max_size     = 3
+      desired_size = 3
     }
   }
   tags = {
