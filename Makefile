@@ -3,7 +3,7 @@
 # File Created: 27-01-2022 11:41:37
 # Author: Clay Risser
 # -----
-# Last Modified: 19-04-2022 08:59:28
+# Last Modified: 19-04-2022 14:53:49
 # Modified By: Clay Risser
 # -----
 # Risser Labs LLC (c) Copyright 2022
@@ -21,6 +21,10 @@ export TF_PLAN_JSON ?= $(PROJECT_ROOT)/$(TF_ROOT)/tfplan.json
 include $(PROJECT_ROOT)/gitlab.mk
 include $(PROJECT_ROOT)/aws.mk
 include $(PROJECT_ROOT)/terraform.mk
+
+$(info AWS_PROFILE $(AWS_PROFILE))
+$(info AWS_ACCESS_KEY_ID $(AWS_ACCESS_KEY_ID))
+$(info AWS_SECRET_ACCESS_KEY $(AWS_SECRET_ACCESS_KEY))
 
 export AWS ?= aws
 export CLOC ?= cloc
