@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:09:15
  * Author: Clay Risser
  * -----
- * Last Modified: 19-04-2022 08:11:08
+ * Last Modified: 19-04-2022 08:20:58
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -27,6 +27,6 @@ data "aws_ami" "eks_default_bottlerocket" {
   owners      = ["amazon"]
   filter {
     name   = "name"
-    values = ["bottlerocket-aws-k8s-${local.cluster_version}-x86_64-*"]
+    values = ["bottlerocket-aws-k8s-${var.cluster_version}-x86_64-*"]
   }
 }
