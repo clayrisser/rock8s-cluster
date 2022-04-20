@@ -4,7 +4,7 @@
  * File Created: 09-02-2022 11:24:10
  * Author: Clay Risser
  * -----
- * Last Modified: 20-04-2022 08:52:54
+ * Last Modified: 20-04-2022 10:02:06
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -110,38 +110,7 @@ resource "rancher2_token" "this" {
   ]
 }
 
-# resource "null_resource" "bootstrap_rancher" {
-#   provisioner "local-exec" {
-#     command     = <<EOF
-# RANCHER_BASE_URL="https://$RANCHER_HOSTNAME"
-# BOOTSTRAP_PASSWORD=$(kubectl --kubeconfig <(echo $KUBECONFIG) get secret \
-#   --namespace cattle-system bootstrap-secret \
-#   -o go-template='{{.data.bootstrapPassword|base64decode}}{{"\n"}}')
-# TOKEN=$(curl -s "$RANCHER_BASE_URL/v3-public/localProviders/local?action=login" \
-#   -H 'content-type: application/json' \
-#   --data-binary '{"username":"admin","password":"'"$BOOTSTRAP_PASSWORD"'","ttl":60000}' \
-#   --insecure | jq -r .token)
-# curl "$RANCHER_BASE_URL/v3/users?action=changepassword" \
-#   -H 'content-type: application/json' \
-#   -H "Authorization: Bearer $TOKEN" \
-#   --data-binary '{"currentPassword":"'"$BOOTSTRAP_PASSWORD"'","newPassword":"'"$RANCHER_ADMIN_PASSWORD"'"}' \
-#   --insecure >/dev/null
-# curl "$RANCHER_BASE_URL/v3/settings/server-url" \
-#   -H 'content-type: application/json' \
-#   -H "Authorization: Bearer $TOKEN" \
-#   -X PUT \
-#   --data-binary '{"name":"server-url","value":"'"$RANCHER_BASE_URL"'"}' \
-#   --insecure >/dev/null
-# EOF
-#     interpreter = ["sh", "-c"]
-#     environment = {
-#       KUBECONFIG             = local.kubeconfig
-#       RANCHER_ADMIN_PASSWORD = var.rancher_admin_password
-#       RANCHER_HOSTNAME       = local.rancher_hostname
-#     }
-#   }
-#   depends_on = [
-#     null_resource.wait_for_rancher,
-#     rancher2_token.this
-#   ]
-# }
+provider "rancher2" {
+  api_url   = rancher2_bootstrap.admin.url
+  token_key = rancher2_token.this.token
+}
