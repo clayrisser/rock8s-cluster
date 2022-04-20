@@ -4,7 +4,7 @@
  * File Created: 09-02-2022 11:24:10
  * Author: Clay Risser
  * -----
- * Last Modified: 20-04-2022 05:54:17
+ * Last Modified: 20-04-2022 08:52:54
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -13,14 +13,16 @@
 locals {
   cert_manager_letsencrypt_email       = var.cloudflare_email
   cert_manager_letsencrypt_environment = "production"
+  rancher_bootstrap_password           = "P@ssw0rd"
+  rancher_hostname                     = "${local.cluster_name}.${var.domain}"
   rancher_namespace                    = "cattle-system"
   rancher_version                      = "v2.6.4"
-  rancher_hostname                     = "${local.cluster_name}.${var.domain}"
 }
 
 provider "rancher2" {
   alias     = "bootstrap"
   bootstrap = true
+  insecure  = true
   api_url   = "https://${local.rancher_hostname}"
 }
 
@@ -32,6 +34,7 @@ resource "helm_release" "rancher" {
   namespace        = local.rancher_namespace
   create_namespace = true
   values = [<<EOF
+bootstrapPassword: ${local.rancher_bootstrap_password}
 hostname: ${local.rancher_hostname}
 ingress:
   enabled: true
@@ -84,9 +87,10 @@ EOF
 }
 
 resource "rancher2_bootstrap" "admin" {
-  provider  = rancher2.bootstrap
-  password  = var.rancher_admin_password
-  telemetry = true
+  provider         = rancher2.bootstrap
+  initial_password = local.rancher_bootstrap_password
+  password         = var.rancher_admin_password
+  telemetry        = true
   depends_on = [
     null_resource.wait_for_rancher
   ]
