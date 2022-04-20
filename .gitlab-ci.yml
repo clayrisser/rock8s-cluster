@@ -1,6 +1,9 @@
 image:
   name: registry.gitlab.com/risserlabs/community/images/terraform:0.0.1
 
+variables:
+  TF_ROOT: main
+
 cache:
   key: "${TF_ROOT}"
   paths:
