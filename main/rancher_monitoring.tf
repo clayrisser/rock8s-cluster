@@ -4,7 +4,7 @@
  * File Created: 20-04-2022 13:40:49
  * Author: Clay Risser
  * -----
- * Last Modified: 20-04-2022 13:43:51
+ * Last Modified: 20-04-2022 13:45:29
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -38,7 +38,7 @@ grafana:
       searchNamespace: cattle-dashboards
   persistence:
     size: 10Gi
-    storageClassName: ebs-sc
+    storageClassName: gp2
     type: pvc
     accessModes:
       - ReadWriteOnce
@@ -51,7 +51,7 @@ prometheus:
     storageSpec:
       volumeClaimTemplate:
         spec:
-          storageClassName: ebs-sc
+          storageClassName: gp2
           volumeMode: Filesystem
           accessModes:
             - ReadWriteOnce
