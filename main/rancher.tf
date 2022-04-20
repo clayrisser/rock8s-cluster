@@ -4,7 +4,7 @@
  * File Created: 09-02-2022 11:24:10
  * Author: Clay Risser
  * -----
- * Last Modified: 20-04-2022 13:49:49
+ * Last Modified: 20-04-2022 14:46:57
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -120,4 +120,7 @@ data "rancher2_project" "system" {
   provider   = rancher2.main
   cluster_id = "local"
   name       = "System"
+  depends_on = [
+    rancher2_token.this
+  ]
 }
