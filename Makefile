@@ -3,7 +3,7 @@
 # File Created: 27-01-2022 11:41:37
 # Author: Clay Risser
 # -----
-# Last Modified: 20-04-2022 05:06:10
+# Last Modified: 20-04-2022 05:10:10
 # Modified By: Clay Risser
 # -----
 # Risser Labs LLC (c) Copyright 2022
@@ -14,7 +14,7 @@ include $(MKPM)/gnu
 include $(MKPM)/mkchain
 include $(MKPM)/dotenv
 
-export TF_STATE_NAME ?= main
+export TF_STATE_NAME ?= $(EKS_CLUSTER)-$(ITERATION)
 export TF_ROOT ?= main
 export TF_PLAN_JSON ?= $(PROJECT_ROOT)/$(TF_ROOT)/tfplan.json
 
