@@ -4,13 +4,14 @@
  * File Created: 20-04-2022 13:40:49
  * Author: Clay Risser
  * -----
- * Last Modified: 20-04-2022 13:45:29
+ * Last Modified: 20-04-2022 14:33:43
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
 
 resource "rancher2_namespace" "cattle_monitoring_system" {
+  provider   = rancher2.main
   name       = "cattle-monitoring-system"
   project_id = data.rancher2_project.system.id
   lifecycle {
@@ -22,7 +23,7 @@ resource "rancher2_namespace" "cattle_monitoring_system" {
 resource "rancher2_app_v2" "rancher-monitoring" {
   provider      = rancher2.main
   chart_name    = "rancher-monitoring"
-  chart_version = "9.4.201"
+  chart_version = "100.1.2+up19.0.3"
   cluster_id    = "local"
   name          = "rancher-monitoring"
   namespace     = rancher2_namespace.cattle_monitoring_system.name
