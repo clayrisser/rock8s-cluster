@@ -1,10 +1,10 @@
 /**
- * File: /main.tf
- * Project: crds
- * File Created: 14-02-2022 15:23:55
+ * File: /variables.tf
+ * Project: kubernetes_resources
+ * File Created: 14-04-2022 07:57:02
  * Author: Clay Risser
  * -----
- * Last Modified: 14-04-2022 08:20:41
+ * Last Modified: 20-04-2022 05:27:06
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -18,7 +18,7 @@ variable "namespace" {
   type = string
 }
 
-variable "crds" {
+variable "resources" {
   type = set(string)
 }
 

@@ -1,17 +1,17 @@
 /**
  * File: /main.tf
- * Project: crds
+ * Project: kubernetes_resources
  * File Created: 14-04-2022 07:57:02
  * Author: Clay Risser
  * -----
- * Last Modified: 14-04-2022 08:20:40
+ * Last Modified: 20-04-2022 05:26:42
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
 
 locals {
-  crds      = var.crds
+  resources = var.resources
   name      = var.name
   sleep     = var.sleep
   namespace = var.namespace
@@ -83,7 +83,7 @@ resource "kubernetes_cluster_role_binding" "this" {
 }
 
 resource "kubernetes_job" "this" {
-  for_each   = { for crd in local.crds : crd => crd }
+  for_each   = { for resource in local.resources : resource => resource }
   depends_on = [kubernetes_cluster_role_binding.this]
   metadata {
     name      = "prepare-${local.name}"
