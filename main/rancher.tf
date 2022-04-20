@@ -4,7 +4,7 @@
  * File Created: 09-02-2022 11:24:10
  * Author: Clay Risser
  * -----
- * Last Modified: 20-04-2022 10:02:06
+ * Last Modified: 20-04-2022 13:41:28
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -111,6 +111,7 @@ resource "rancher2_token" "this" {
 }
 
 provider "rancher2" {
+  alias     = "main"
   api_url   = rancher2_bootstrap.admin.url
   token_key = rancher2_token.this.token
 }
