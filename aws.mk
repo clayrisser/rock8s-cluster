@@ -3,7 +3,7 @@
 # File Created: 19-04-2022 08:50:29
 # Author: Clay Risser
 # -----
-# Last Modified: 19-04-2022 13:17:28
+# Last Modified: 20-04-2022 04:20:42
 # Modified By: Clay Risser
 # -----
 # Risser Labs LLC (c) Copyright 2022
@@ -24,7 +24,7 @@ $(shell $(ECHO) $(shell $(CAT) $(HOME)/.aws/credentials 2>$(NULL)) 2>$(NULL) | \
 	$(SED) 's|aws_secret_access_key = ||g' 2>$(NULL))
 endef
 
-ifneq (,$(CI))
+ifneq (,$(AWS_ACCESS_KEY_ID))
 	undefine AWS_PROFILE
 endif
 
