@@ -4,7 +4,7 @@
  * File Created: 12-02-2022 12:16:54
  * Author: Clay Risser
  * -----
- * Last Modified: 20-04-2022 05:28:17
+ * Last Modified: 20-04-2022 13:33:39
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -179,8 +179,7 @@ resource "aws_iam_role_policy_attachment" "this" {
 
 # module "alb_ingress_crds" {
 #   source    = "../modules/kubernetes_resources"
-#   name      = "alb-ingress-${replace(local.alb_ingress_version, "/[^v0-9]/", "-")}"
-#   namespace = "kube-system"
+#   kubeconfig = local.kubeconfig
 #   resources = [
 #     "https://raw.githubusercontent.com/aws/eks-charts/v${local.alb_ingress_version}/stable/aws-load-balancer-controller/crds/crds.yaml",
 #   ]

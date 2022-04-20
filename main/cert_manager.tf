@@ -4,7 +4,7 @@
  * File Created: 09-02-2022 11:17:38
  * Author: Clay Risser
  * -----
- * Last Modified: 20-04-2022 05:27:29
+ * Last Modified: 20-04-2022 13:33:57
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -16,9 +16,8 @@ locals {
 }
 
 module "cert_manager_crds" {
-  source    = "../modules/kubernetes_resources"
-  name      = "cert-manager-${replace(local.cert_manager_version, "/[^v0-9]/", "-")}"
-  namespace = "kube-system"
+  source     = "../modules/kubernetes_resources"
+  kubeconfig = local.kubeconfig
   resources = [
     "https://github.com/jetstack/cert-manager/releases/download/${local.cert_manager_version}/cert-manager.crds.yaml",
   ]
