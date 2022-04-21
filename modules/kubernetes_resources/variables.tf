@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 07:57:02
  * Author: Clay Risser
  * -----
- * Last Modified: 20-04-2022 13:32:13
+ * Last Modified: 21-04-2022 03:55:26
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -16,9 +16,4 @@ variable "resources" {
 
 variable "kubeconfig" {
   type = string
-}
-
-variable "sleep" {
-  type    = string
-  default = "3600"
 }
