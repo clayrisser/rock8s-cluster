@@ -4,11 +4,15 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 21-04-2022 10:48:40
+ * Last Modified: 21-04-2022 14:31:16
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
+
+locals {
+  aws_vpc_cni_version = "1.1.16"
+}
 
 resource "aws_kms_key" "eks" {
   description             = "${local.cluster_name} secret encryption key"
@@ -69,9 +73,9 @@ module "eks" {
     coredns = {
       resolve_conflicts = "OVERWRITE"
     }
-    vpc-cni = {
-      resolve_conflicts = "OVERWRITE"
-    }
+    # vpc-cni = {
+    #   resolve_conflicts = "OVERWRITE"
+    # }
   }
   cluster_encryption_config = [{
     provider_key_arn = aws_kms_key.eks.arn
