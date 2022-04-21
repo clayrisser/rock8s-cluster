@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 13:36:29
  * Author: Clay Risser
  * -----
- * Last Modified: 18-04-2022 11:48:35
+ * Last Modified: 21-04-2022 08:49:02
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -12,6 +12,7 @@
 
 locals {
   cluster_name = "${var.cluster_name}-${tostring(var.iteration)}"
+  cluster_id   = "local"
   kubeconfig = jsonencode({
     apiVersion      = "v1"
     kind            = "Config"

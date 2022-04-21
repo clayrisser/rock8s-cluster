@@ -4,7 +4,7 @@
  * File Created: 09-02-2022 11:24:10
  * Author: Clay Risser
  * -----
- * Last Modified: 20-04-2022 14:46:57
+ * Last Modified: 21-04-2022 09:11:49
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -98,7 +98,7 @@ resource "rancher2_bootstrap" "admin" {
 
 provider "rancher2" {
   alias     = "admin"
-  api_url   = rancher2_bootstrap.admin.url
+  api_url   = "https://${local.rancher_hostname}"
   token_key = rancher2_bootstrap.admin.token
 }
 
@@ -112,13 +112,13 @@ resource "rancher2_token" "this" {
 
 provider "rancher2" {
   alias     = "main"
-  api_url   = rancher2_bootstrap.admin.url
+  api_url   = "https://${local.rancher_hostname}"
   token_key = rancher2_token.this.token
 }
 
 data "rancher2_project" "system" {
   provider   = rancher2.main
-  cluster_id = "local"
+  cluster_id = local.cluster_id
   name       = "System"
   depends_on = [
     rancher2_token.this

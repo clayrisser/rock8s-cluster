@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:12:06
  * Author: Clay Risser
  * -----
- * Last Modified: 19-04-2022 10:12:28
+ * Last Modified: 21-04-2022 09:31:25
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -53,6 +53,10 @@ variable "flux_git_branch" {
 }
 
 variable "flux_known_hosts" {
+  default = ""
+}
+
+variable "bucket" {
   default = ""
 }
 
