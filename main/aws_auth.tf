@@ -4,7 +4,7 @@
  * File Created: 17-04-2022 06:01:20
  * Author: Clay Risser
  * -----
- * Last Modified: 20-04-2022 13:33:52
+ * Last Modified: 21-04-2022 04:00:10
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -30,7 +30,7 @@ resource "kubernetes_namespace" "aws_auth_operator_system" {
 }
 
 module "aws_auth_crds" {
-  source     = "../modules/kubernetes_resources"
+  source     = "../modules/kubectl_apply"
   kubeconfig = local.kubeconfig
   resources = [
     "https://raw.githubusercontent.com/gp42/aws-auth-operator/${local.aws_auth_version}/deploy/manual/crds.yaml"
@@ -56,7 +56,7 @@ resource "kubernetes_secret" "aws_auth_registry" {
 }
 
 module "aws_auth_install_roles" {
-  source     = "../modules/kubernetes_resources"
+  source     = "../modules/kubectl_apply"
   kubeconfig = local.kubeconfig
   resources = [
     "https://raw.githubusercontent.com/gp42/aws-auth-operator/${local.aws_auth_version}/deploy/manual/role.yaml",
