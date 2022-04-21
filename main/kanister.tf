@@ -4,14 +4,13 @@
  * File Created: 21-04-2022 08:39:20
  * Author: Clay Risser
  * -----
- * Last Modified: 21-04-2022 08:57:13
+ * Last Modified: 21-04-2022 09:48:11
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
 
 resource "rancher2_app_v2" "kanister" {
-  provider      = rancher2.main
   chart_name    = "kanister"
   chart_version = "0.0.1"
   cluster_id    = local.cluster_id
@@ -38,7 +37,6 @@ EOF
 }
 
 resource "rancher2_namespace" "kanister" {
-  provider   = rancher2.main
   name       = "kanister"
   project_id = data.rancher2_project.system.id
   lifecycle {

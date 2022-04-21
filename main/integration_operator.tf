@@ -4,14 +4,13 @@
  * File Created: 21-04-2022 09:05:39
  * Author: Clay Risser
  * -----
- * Last Modified: 21-04-2022 09:06:57
+ * Last Modified: 21-04-2022 09:48:12
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
 
 resource "rancher2_app_v2" "integration_operator" {
-  provider      = rancher2.main
   chart_name    = "integration-operator"
   chart_version = "0.1.1"
   cluster_id    = local.cluster_id

@@ -4,7 +4,7 @@
  * File Created: 09-02-2022 11:24:10
  * Author: Clay Risser
  * -----
- * Last Modified: 21-04-2022 09:11:49
+ * Last Modified: 21-04-2022 09:48:08
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -111,13 +111,11 @@ resource "rancher2_token" "this" {
 }
 
 provider "rancher2" {
-  alias     = "main"
   api_url   = "https://${local.rancher_hostname}"
   token_key = rancher2_token.this.token
 }
 
 data "rancher2_project" "system" {
-  provider   = rancher2.main
   cluster_id = local.cluster_id
   name       = "System"
   depends_on = [

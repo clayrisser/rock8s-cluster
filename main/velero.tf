@@ -4,14 +4,13 @@
  * File Created: 21-04-2022 08:53:47
  * Author: Clay Risser
  * -----
- * Last Modified: 21-04-2022 08:57:33
+ * Last Modified: 21-04-2022 09:48:05
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
 
 resource "rancher2_app_v2" "velero" {
-  provider      = rancher2.main
   chart_name    = "velero"
   chart_version = "2.14.1"
   cluster_id    = local.cluster_id
