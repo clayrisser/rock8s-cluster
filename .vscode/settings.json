@@ -3,6 +3,7 @@
     "awscli",
     "gmake",
     "hashicorp",
+    "kube",
     "kubeconfig",
     "risserlabs",
     "tfplan"
