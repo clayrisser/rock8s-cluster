@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 21-04-2022 10:18:01
+ * Last Modified: 21-04-2022 10:48:40
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -86,6 +86,8 @@ module "eks" {
     ami_type             = "BOTTLEROCKET_x86_64"
     platform             = "bottlerocket"
     bootstrap_extra_args = <<-EOT
+    [settings.kubernetes]
+    max-pods = 110
     EOT
   }
   self_managed_node_group_defaults = {
@@ -94,13 +96,15 @@ module "eks" {
     ami_id               = data.aws_ami.eks_default_bottlerocket.id
     platform             = "bottlerocket"
     bootstrap_extra_args = <<-EOT
+    [settings.kubernetes]
+    max-pods = 110
     EOT
   }
   eks_managed_node_groups = {
     dedicated0 = {
-      min_size     = 5
-      max_size     = 5
-      desired_size = 5
+      min_size     = 3
+      max_size     = 3
+      desired_size = 3
     }
   }
   self_managed_node_groups = {}
