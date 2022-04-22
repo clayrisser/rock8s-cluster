@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 22-04-2022 14:42:16
+ * Last Modified: 22-04-2022 15:19:04
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -93,6 +93,8 @@ resource "null_resource" "remove_vpc_cni" {
       aws eks delete-addon --cluster-name $CLUSTER_NAME \
         --addon-name vpc-cni \
         --no-preserve || true
+      curl https://raw.githubusercontent.com/aws/amazon-vpc-cni-k8s/release-1.7/config/v1.7/aws-k8s-cni.yaml | \
+        kubectl --kubeconfig <(echo $KUBECONFIG) delete -f - || true
     EOT
     interpreter = ["sh", "-c"]
     environment = {
@@ -104,20 +106,20 @@ resource "null_resource" "remove_vpc_cni" {
   ]
 }
 
-# resource "aws_eks_addon" "corends" {
-#   cluster_name      = local.cluster_name
-#   addon_name        = "coredns"
-#   resolve_conflicts = "OVERWRITE"
-#   tags              = local.tags
-#   lifecycle {
-#     ignore_changes = [
-#       modified_at
-#     ]
-#   }
-#   depends_on = [
-#     module.eks
-#   ]
-# }
+resource "aws_eks_addon" "corends" {
+  cluster_name      = local.cluster_name
+  addon_name        = "coredns"
+  resolve_conflicts = "OVERWRITE"
+  tags              = local.tags
+  lifecycle {
+    ignore_changes = [
+      modified_at
+    ]
+  }
+  depends_on = [
+    module.eks
+  ]
+}
 
 resource "aws_eks_addon" "kube_proxy" {
   cluster_name = local.cluster_name
@@ -201,7 +203,7 @@ EOF
     }
   }
   depends_on = [
-    # aws_eks_addon.corends,
+    aws_eks_addon.corends,
     aws_eks_addon.kube_proxy,
     helm_release.calico,
     module.eks,
