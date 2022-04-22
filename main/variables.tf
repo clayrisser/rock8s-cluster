@@ -4,11 +4,26 @@
  * File Created: 14-04-2022 08:12:06
  * Author: Clay Risser
  * -----
- * Last Modified: 21-04-2022 09:31:25
+ * Last Modified: 22-04-2022 06:10:09
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
+
+
+variable "eks_managed_node_groups" {
+  default = {
+    dedicated0 = {
+      min_size     = 3
+      max_size     = 3
+      desired_size = 3
+    }
+  }
+}
+
+variable "self_managed_node_groups" {
+  default = {}
+}
 
 variable "region" {
   default = "us-east-2"
@@ -86,4 +101,8 @@ variable "aws_access_key_id" {
 
 variable "aws_secret_access_key" {
   type = string
+}
+
+variable "cni" {
+  default = "calico"
 }

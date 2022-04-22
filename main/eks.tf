@@ -4,14 +4,14 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 21-04-2022 14:31:16
+ * Last Modified: 22-04-2022 07:50:33
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
 
 locals {
-  aws_vpc_cni_version = "1.1.16"
+  calico_version = "v3.21.4"
 }
 
 resource "aws_kms_key" "eks" {
@@ -31,6 +31,9 @@ module "eks" {
   cluster_endpoint_public_access  = true
   create                          = true
   create_iam_role                 = true
+  enable_irsa                     = true
+  subnet_ids                      = module.vpc.public_subnets
+  vpc_id                          = module.vpc.vpc_id
   cluster_security_group_additional_rules = {
     egress_nodes_ephemeral_ports_tcp = {
       description                = "To node 1025-65535"
@@ -73,22 +76,71 @@ module "eks" {
     coredns = {
       resolve_conflicts = "OVERWRITE"
     }
-    # vpc-cni = {
-    #   resolve_conflicts = "OVERWRITE"
-    # }
+    vpc-cni = {
+      resolve_conflicts = "OVERWRITE"
+    }
   }
   cluster_encryption_config = [{
     provider_key_arn = aws_kms_key.eks.arn
     resources        = ["secrets"]
   }]
-  vpc_id      = module.vpc.vpc_id
-  subnet_ids  = module.vpc.public_subnets
-  enable_irsa = true
+  eks_managed_node_groups  = var.cni == "calico" ? {} : var.eks_managed_node_groups
+  self_managed_node_groups = var.cni == "calico" ? {} : var.self_managed_node_groups
+  tags = {
+    Name = local.cluster_name
+  }
+}
+
+resource "null_resource" "remove_vpc_cni" {
+  count = var.cni == "calico" ? 1 : 0
+  provisioner "local-exec" {
+    command     = <<-EOT
+      curl -L https://raw.githubusercontent.com/aws/amazon-vpc-cni-k8s/release-1.7/config/v1.7/aws-k8s-cni.yaml |
+        kubectl --kubeconfig <(echo $KUBECONFIG) delete -f - || true
+    EOT
+    interpreter = ["sh", "-c"]
+    environment = {
+      KUBECONFIG = local.kubeconfig
+    }
+  }
+  depends_on = [
+    module.eks
+  ]
+}
+
+resource "helm_release" "calico" {
+  version    = local.calico_version
+  name       = "calico"
+  repository = "https://docs.projectcalico.org/charts"
+  chart      = "tigera-operator"
+  values = [<<EOF
+{}
+EOF
+  ]
+  depends_on = [
+    null_resource.remove_vpc_cni
+  ]
+}
+
+module "node_groups" {
+  count                              = var.cni == "calico" ? 1 : 0
+  source                             = "../modules/eks_node_groups"
+  cluster_certificate_authority_data = module.eks.cluster_certificate_authority_data
+  cluster_endpoint                   = module.eks.cluster_endpoint
+  cluster_name                       = local.cluster_name
+  cluster_primary_security_group_id  = module.eks.cluster_primary_security_group_id
+  cluster_security_group_id          = module.eks.cluster_security_group_id
+  node_security_group_id             = module.eks.node_security_group_id
+  cluster_version                    = module.eks.cluster_version
+  create                             = true
+  subnet_ids                         = module.vpc.public_subnets
+  vpc_id                             = module.vpc.vpc_id
   eks_managed_node_group_defaults = {
     disk_size            = 64
     instance_types       = ["t2.medium"]
     ami_type             = "BOTTLEROCKET_x86_64"
     platform             = "bottlerocket"
+    create_iam_role      = true
     bootstrap_extra_args = <<-EOT
     [settings.kubernetes]
     max-pods = 110
@@ -99,21 +151,16 @@ module "eks" {
     instance_type        = "t2.medium"
     ami_id               = data.aws_ami.eks_default_bottlerocket.id
     platform             = "bottlerocket"
+    create_iam_role      = true
     bootstrap_extra_args = <<-EOT
     [settings.kubernetes]
     max-pods = 110
     EOT
   }
-  eks_managed_node_groups = {
-    dedicated0 = {
-      min_size     = 3
-      max_size     = 3
-      desired_size = 3
-    }
-  }
-  self_managed_node_groups = {}
+  eks_managed_node_groups  = var.eks_managed_node_groups
+  self_managed_node_groups = var.self_managed_node_groups
   tags = {
-    Name = local.cluster_name
+    cni = helm_release.calico.name
   }
 }
 
@@ -132,6 +179,7 @@ EOF
     }
   }
   depends_on = [
-    module.eks
+    module.eks,
+    module.node_groups
   ]
 }
