@@ -1,5 +1,5 @@
 image:
-  name: registry.gitlab.com/risserlabs/community/images/kube-commands-terraform:0.0.1
+  name: registry.gitlab.com/risserlabs/community/images/kube-commands-terraform-aws:0.0.1
 
 variables:
   TF_ROOT: main

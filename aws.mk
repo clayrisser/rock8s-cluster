@@ -3,7 +3,7 @@
 # File Created: 19-04-2022 08:50:29
 # Author: Clay Risser
 # -----
-# Last Modified: 20-04-2022 04:20:42
+# Last Modified: 22-04-2022 13:07:22
 # Modified By: Clay Risser
 # -----
 # Risser Labs LLC (c) Copyright 2022
@@ -37,3 +37,5 @@ ifeq (,$(AWS_SECRET_ACCESS_KEY))
 	AWS_SECRET_ACCESS_KEY := $(call aws_secret_access_key)
 endif
 export AWS_SECRET_ACCESS_KEY
+
+export AWS_DEFAULT_REGION=$(AWS_REGION)

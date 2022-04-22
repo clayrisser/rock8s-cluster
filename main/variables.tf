@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:12:06
  * Author: Clay Risser
  * -----
- * Last Modified: 22-04-2022 06:10:09
+ * Last Modified: 22-04-2022 13:19:30
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -13,7 +13,7 @@
 
 variable "eks_managed_node_groups" {
   default = {
-    dedicated0 = {
+    dedicated1 = {
       min_size     = 3
       max_size     = 3
       desired_size = 3

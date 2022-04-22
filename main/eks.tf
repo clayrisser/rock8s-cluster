@@ -4,14 +4,16 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 22-04-2022 07:50:33
+ * Last Modified: 22-04-2022 14:42:16
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
 
 locals {
-  calico_version = "v3.21.4"
+  tags = {
+    Name = local.cluster_name
+  }
 }
 
 resource "aws_kms_key" "eks" {
@@ -71,36 +73,30 @@ module "eks" {
       ipv6_cidr_blocks = ["::/0"]
     }
   }
-  cluster_addons = {
-    kube-proxy = {}
-    coredns = {
-      resolve_conflicts = "OVERWRITE"
-    }
-    vpc-cni = {
-      resolve_conflicts = "OVERWRITE"
-    }
-  }
+  cluster_addons = {}
   cluster_encryption_config = [{
     provider_key_arn = aws_kms_key.eks.arn
     resources        = ["secrets"]
   }]
   eks_managed_node_groups  = var.cni == "calico" ? {} : var.eks_managed_node_groups
   self_managed_node_groups = var.cni == "calico" ? {} : var.self_managed_node_groups
-  tags = {
-    Name = local.cluster_name
-  }
+  tags                     = local.tags
 }
 
 resource "null_resource" "remove_vpc_cni" {
   count = var.cni == "calico" ? 1 : 0
+  triggers = {
+    always_run = uuid()
+  }
   provisioner "local-exec" {
     command     = <<-EOT
-      curl -L https://raw.githubusercontent.com/aws/amazon-vpc-cni-k8s/release-1.7/config/v1.7/aws-k8s-cni.yaml |
-        kubectl --kubeconfig <(echo $KUBECONFIG) delete -f - || true
+      aws eks delete-addon --cluster-name $CLUSTER_NAME \
+        --addon-name vpc-cni \
+        --no-preserve || true
     EOT
     interpreter = ["sh", "-c"]
     environment = {
-      KUBECONFIG = local.kubeconfig
+      CLUSTER_NAME = local.cluster_name
     }
   }
   depends_on = [
@@ -108,8 +104,37 @@ resource "null_resource" "remove_vpc_cni" {
   ]
 }
 
+# resource "aws_eks_addon" "corends" {
+#   cluster_name      = local.cluster_name
+#   addon_name        = "coredns"
+#   resolve_conflicts = "OVERWRITE"
+#   tags              = local.tags
+#   lifecycle {
+#     ignore_changes = [
+#       modified_at
+#     ]
+#   }
+#   depends_on = [
+#     module.eks
+#   ]
+# }
+
+resource "aws_eks_addon" "kube_proxy" {
+  cluster_name = local.cluster_name
+  addon_name   = "kube-proxy"
+  tags         = local.tags
+  lifecycle {
+    ignore_changes = [
+      modified_at
+    ]
+  }
+  depends_on = [
+    module.eks
+  ]
+}
+
 resource "helm_release" "calico" {
-  version    = local.calico_version
+  version    = "v3.21.4"
   name       = "calico"
   repository = "https://docs.projectcalico.org/charts"
   chart      = "tigera-operator"
@@ -118,7 +143,7 @@ resource "helm_release" "calico" {
 EOF
   ]
   depends_on = [
-    null_resource.remove_vpc_cni
+    module.eks
   ]
 }
 
@@ -159,9 +184,6 @@ module "node_groups" {
   }
   eks_managed_node_groups  = var.eks_managed_node_groups
   self_managed_node_groups = var.self_managed_node_groups
-  tags = {
-    cni = helm_release.calico.name
-  }
 }
 
 resource "null_resource" "wait_for_nodes" {
@@ -179,7 +201,11 @@ EOF
     }
   }
   depends_on = [
+    # aws_eks_addon.corends,
+    aws_eks_addon.kube_proxy,
+    helm_release.calico,
     module.eks,
-    module.node_groups
+    module.node_groups,
+    null_resource.remove_vpc_cni
   ]
 }
