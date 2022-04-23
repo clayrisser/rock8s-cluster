@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 23-04-2022 10:51:16
+ * Last Modified: 23-04-2022 13:39:10
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -133,7 +133,10 @@ resource "helm_release" "calico" {
   repository = "https://docs.projectcalico.org/charts"
   chart      = "tigera-operator"
   values = [<<EOF
-{}
+podCIDR: '192.168.0.0/16'
+node:
+  env:
+    FELIX_AWSSRCDSTCHECK: 'Disable'
 EOF
   ]
   depends_on = [
