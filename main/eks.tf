@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 23-04-2022 09:42:06
+ * Last Modified: 23-04-2022 09:44:53
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -116,11 +116,10 @@ resource "null_resource" "remove_vpc_cni" {
     command     = <<-EOT
       aws eks delete-addon --cluster-name $CLUSTER_NAME \
         --addon-name vpc-cni \
-        --no-preserve || true
+        --no-preserve
       curl https://raw.githubusercontent.com/aws/amazon-vpc-cni-k8s/release-1.7/config/v1.7/aws-k8s-cni.yaml | \
         sed 's|apiextensions.k8s.io/v1beta1|apiextensions.k8s.io/v1|g' | \
-        kubectl --kubeconfig <(echo $KUBECONFIG) delete -f - || true
-      kubectl delete daemonset aws-node -n kube-system || true
+        kubectl --kubeconfig <(echo $KUBECONFIG) delete -f -
     EOT
     interpreter = ["sh", "-c"]
     environment = {
