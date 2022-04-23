@@ -215,6 +215,7 @@ resource "null_resource" "remove_vpc_cni" {
     interpreter = ["sh", "-c"]
     environment = {
       CLUSTER_NAME = local.cluster_name
+      KUBECONFIG = local.kubeconfig
     }
   }
   depends_on = [
@@ -251,7 +252,7 @@ aws ec2 terminate-instances --instance-ids $( \
 EOF
     interpreter = ["sh", "-c"]
     environment = {
-      KUBECONFIG = local.kubeconfig
+      CLUSTER_NAME = local.cluster_name
     }
   }
   depends_on = [
