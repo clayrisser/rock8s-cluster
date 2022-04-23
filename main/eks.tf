@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 23-04-2022 09:44:53
+ * Last Modified: 23-04-2022 10:03:48
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -73,12 +73,7 @@ module "eks" {
       ipv6_cidr_blocks = ["::/0"]
     }
   }
-  cluster_addons = {
-    kube-proxy = {}
-    coredns = {
-      resolve_conflicts = "OVERWRITE"
-    }
-  }
+  cluster_addons = {}
   cluster_encryption_config = [{
     provider_key_arn = aws_kms_key.eks.arn
     resources        = ["secrets"]
