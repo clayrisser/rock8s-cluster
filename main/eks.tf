@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 23-04-2022 10:03:48
+ * Last Modified: 23-04-2022 10:51:16
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -141,7 +141,7 @@ EOF
   ]
 }
 
-resource "aws_eks_addon" "corends" {
+resource "aws_eks_addon" "coredns" {
   cluster_name      = local.cluster_name
   addon_name        = "coredns"
   resolve_conflicts = "OVERWRITE"
@@ -267,7 +267,7 @@ EOF
     }
   }
   depends_on = [
-    aws_eks_addon.corends,
+    aws_eks_addon.coredns,
     aws_eks_addon.kube_proxy,
     helm_release.calico,
     module.node_groups,
