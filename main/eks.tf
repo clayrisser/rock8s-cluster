@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 23-04-2022 13:39:10
+ * Last Modified: 24-04-2022 07:20:15
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -73,7 +73,15 @@ module "eks" {
       ipv6_cidr_blocks = ["::/0"]
     }
   }
-  cluster_addons = {}
+  cluster_addons = {
+    kube-proxy = {}
+    vpc-cni = {
+      resolve_conflicts = "OVERWRITE"
+    }
+    coredns = {
+      resolve_conflicts = "OVERWRITE"
+    }
+  }
   cluster_encryption_config = [{
     provider_key_arn = aws_kms_key.eks.arn
     resources        = ["secrets"]
@@ -91,115 +99,7 @@ module "eks" {
   }
   self_managed_node_group_defaults = {
     disk_size            = 64
-    instance_type        = "t2.medium"
-    ami_id               = data.aws_ami.eks_default_bottlerocket.id
-    platform             = "bottlerocket"
-    create_iam_role      = true
-    bootstrap_extra_args = <<-EOT
-    [settings.kubernetes]
-    max-pods = 110
-    EOT
-  }
-  eks_managed_node_groups  = var.cni == "calico" ? {} : var.eks_managed_node_groups
-  self_managed_node_groups = var.cni == "calico" ? {} : var.self_managed_node_groups
-  tags                     = local.tags
-}
-
-resource "null_resource" "remove_vpc_cni" {
-  count = var.cni == "calico" ? 1 : 0
-  provisioner "local-exec" {
-    command     = <<-EOT
-      aws eks delete-addon --cluster-name $CLUSTER_NAME \
-        --addon-name vpc-cni \
-        --no-preserve
-      curl https://raw.githubusercontent.com/aws/amazon-vpc-cni-k8s/release-1.7/config/v1.7/aws-k8s-cni.yaml | \
-        sed 's|apiextensions.k8s.io/v1beta1|apiextensions.k8s.io/v1|g' | \
-        kubectl --kubeconfig <(echo $KUBECONFIG) delete -f -
-    EOT
-    interpreter = ["sh", "-c"]
-    environment = {
-      CLUSTER_NAME = local.cluster_name
-      KUBECONFIG   = local.kubeconfig
-    }
-  }
-  depends_on = [
-    module.eks
-  ]
-}
-
-resource "helm_release" "calico" {
-  version    = "v3.21.4"
-  name       = "calico"
-  repository = "https://docs.projectcalico.org/charts"
-  chart      = "tigera-operator"
-  values = [<<EOF
-podCIDR: '192.168.0.0/16'
-node:
-  env:
-    FELIX_AWSSRCDSTCHECK: 'Disable'
-EOF
-  ]
-  depends_on = [
-    module.eks
-  ]
-}
-
-resource "aws_eks_addon" "coredns" {
-  cluster_name      = local.cluster_name
-  addon_name        = "coredns"
-  resolve_conflicts = "OVERWRITE"
-  tags              = local.tags
-  lifecycle {
-    ignore_changes = [
-      modified_at
-    ]
-  }
-  depends_on = [
-    module.eks
-  ]
-}
-
-resource "aws_eks_addon" "kube_proxy" {
-  cluster_name = local.cluster_name
-  addon_name   = "kube-proxy"
-  tags         = local.tags
-  lifecycle {
-    ignore_changes = [
-      modified_at
-    ]
-  }
-  depends_on = [
-    module.eks
-  ]
-}
-
-module "node_groups" {
-  count                              = var.cni == "calico" ? 1 : 0
-  source                             = "../modules/eks_node_groups"
-  cluster_certificate_authority_data = module.eks.cluster_certificate_authority_data
-  cluster_endpoint                   = module.eks.cluster_endpoint
-  cluster_name                       = local.cluster_name
-  cluster_primary_security_group_id  = module.eks.cluster_primary_security_group_id
-  cluster_security_group_id          = module.eks.cluster_security_group_id
-  node_security_group_id             = module.eks.node_security_group_id
-  cluster_version                    = module.eks.cluster_version
-  create                             = true
-  subnet_ids                         = module.vpc.public_subnets
-  vpc_id                             = module.vpc.vpc_id
-  eks_managed_node_group_defaults = {
-    disk_size            = 64
-    instance_types       = ["t2.medium"]
-    ami_type             = "BOTTLEROCKET_x86_64"
-    platform             = "bottlerocket"
-    create_iam_role      = true
-    bootstrap_extra_args = <<-EOT
-    [settings.kubernetes]
-    max-pods = 110
-    EOT
-  }
-  self_managed_node_group_defaults = {
-    disk_size            = 64
-    instance_type        = "t2.medium"
+    instance_type        = "t2.large"
     ami_id               = data.aws_ami.eks_default_bottlerocket.id
     platform             = "bottlerocket"
     create_iam_role      = true
@@ -210,50 +110,8 @@ module "node_groups" {
   }
   eks_managed_node_groups  = var.eks_managed_node_groups
   self_managed_node_groups = var.self_managed_node_groups
+  tags                     = local.tags
 }
-
-# resource "null_resource" "wait_for_vpc_cni" {
-#   provisioner "local-exec" {
-#     command     = <<EOF
-# while [ "$(kubectl --kubeconfig <(echo $KUBECONFIG) get nodes | \
-#   tail -n +2 | \
-#   grep -vE '^[^ ]+\s+Ready')" != "" ]; do
-#     sleep 10
-# done
-# EOF
-#     interpreter = ["sh", "-c"]
-#     environment = {
-#       KUBECONFIG = local.kubeconfig
-#     }
-#   }
-#   depends_on = [
-#     module.eks,
-#   ]
-# }
-
-# resource "null_resource" "rotate_nodes" {
-#   provisioner "local-exec" {
-#     command     = <<EOF
-# aws ec2 terminate-instances --instance-ids $( \
-#     echo $(
-#         aws ec2 describe-instances \
-#             --filter Name=tag:eks:nodegroup-name,Values=$( \
-#                 echo $(aws eks list-nodegroups --cluster-name $CLUSTER_NAME | jq -r '.nodegroups[]') | sed 's| |,|g' \
-#             ) | \
-#             jq -r '.Reservations[].Instances[].InstanceId'
-#     )
-# )
-# EOF
-#     interpreter = ["sh", "-c"]
-#     environment = {
-#       CLUSTER_NAME = local.cluster_name
-#     }
-#   }
-#   depends_on = [
-#     helm_release.calico,
-#     null_resource.remove_vpc_cni
-#   ]
-# }
 
 resource "null_resource" "wait_for_nodes" {
   provisioner "local-exec" {
@@ -270,10 +128,6 @@ EOF
     }
   }
   depends_on = [
-    aws_eks_addon.coredns,
-    aws_eks_addon.kube_proxy,
-    helm_release.calico,
-    module.node_groups,
-    null_resource.remove_vpc_cni
+    module.eks
   ]
 }
