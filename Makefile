@@ -3,7 +3,7 @@
 # File Created: 27-01-2022 11:41:37
 # Author: Clay Risser
 # -----
-# Last Modified: 21-04-2022 14:49:03
+# Last Modified: 24-04-2022 15:35:40
 # Modified By: Clay Risser
 # -----
 # Risser Labs LLC (c) Copyright 2022
@@ -14,7 +14,7 @@ include $(MKPM)/gnu
 include $(MKPM)/mkchain
 include $(MKPM)/dotenv
 
-export TF_STATE_NAME ?= $(EKS_CLUSTER)-$(ITERATION)
+export TF_STATE_NAME ?= $(CLUSTER_PREFIX)-$(ITERATION)
 export TF_ROOT ?= main
 export TF_PLAN_JSON ?= $(PROJECT_ROOT)/$(TF_ROOT)/tfplan.json
 
@@ -80,8 +80,8 @@ $(ACTION)/refresh: $(call git_deps,\.((tf)|(hcl))$$)
 
 .PHONY: kubeconfig
 kubeconfig: ## authenticate local environment with the eks cluster
-	@$(AWS) eks update-kubeconfig --region $(AWS_REGION) --name $(EKS_CLUSTER)-$(ITERATION)
-	@export KUBE_CONTEXT=$$($(AWS) eks update-kubeconfig --region $(AWS_REGION) --name $(EKS_CLUSTER)-$(ITERATION) | \
+	@$(AWS) eks update-kubeconfig --region $(AWS_REGION) --name $(CLUSTER_PREFIX)-$(ITERATION)
+	@export KUBE_CONTEXT=$$($(AWS) eks update-kubeconfig --region $(AWS_REGION) --name $(CLUSTER_PREFIX)-$(ITERATION) | \
 		$(GREP) -oE 'arn:aws:eks:[^ ]+') && \
 		($(CAT) default.env | $(GREP) -E '^KUBE_CONTEXT=' && \
 			($(CAT) default.env | $(SED) "s|\(KUBE_CONTEXT=\).*|\1$$KUBE_CONTEXT|g") || \

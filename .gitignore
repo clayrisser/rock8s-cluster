@@ -16,3 +16,8 @@ override.tf.json
 /id_*.pub
 tfplan.cache
 tfplan.json
+
+/hi
+/tls.*
+/ca.*
+/*.pub

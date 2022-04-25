@@ -4,7 +4,7 @@
  * File Created: 21-04-2022 08:53:47
  * Author: Clay Risser
  * -----
- * Last Modified: 21-04-2022 11:34:09
+ * Last Modified: 24-04-2022 11:09:52
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -13,7 +13,7 @@
 # resource "rancher2_app_v2" "velero" {
 #   chart_name    = "velero"
 #   chart_version = "2.14.1"
-#   cluster_id    = local.cluster_id
+#   cluster_id    = local.rancher_cluster_id
 #   name          = "velero"
 #   namespace     = rancher2_namespace.velero.name
 #   repo_name     = rancher2_catalog_v2.bitspur.name

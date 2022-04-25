@@ -1,10 +1,10 @@
 /**
- * File: /main.tf
+ * File: /versions.tf
  * Project: main
  * File Created: 14-04-2022 08:04:44
  * Author: Clay Risser
  * -----
- * Last Modified: 14-04-2022 08:20:41
+ * Last Modified: 25-04-2022 12:36:23
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -55,6 +55,14 @@ terraform {
     gitlab = {
       source  = "gitlabhq/gitlab"
       version = "3.7.0"
+    }
+    kops = {
+      source  = "eddycharly/kops"
+      version = "1.23.0-alpha.2"
+    }
+    tls = {
+      source  = "hashicorp/tls"
+      version = "3.3.0"
     }
   }
 }

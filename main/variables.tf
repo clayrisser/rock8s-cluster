@@ -4,37 +4,22 @@
  * File Created: 14-04-2022 08:12:06
  * Author: Clay Risser
  * -----
- * Last Modified: 24-04-2022 07:19:34
+ * Last Modified: 25-04-2022 10:07:15
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
 
-
-variable "eks_managed_node_groups" {
-  default = {
-    dedicated1 = {
-      min_size     = 3
-      max_size     = 3
-      desired_size = 3
-    }
-  }
-}
-
-variable "self_managed_node_groups" {
-  default = {}
-}
-
 variable "region" {
   default = "us-east-2"
 }
 
-variable "cluster_name" {
-  default = "eks-main"
+variable "cluster_prefix" {
+  default = "kops"
 }
 
 variable "cluster_version" {
-  default = "1.22"
+  default = "stable"
 }
 
 variable "cloudflare_email" {
@@ -75,7 +60,7 @@ variable "bucket" {
   default = ""
 }
 
-variable "domain" {
+variable "dns_zone" {
   type = string
 }
 

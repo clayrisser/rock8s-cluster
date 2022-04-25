@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:04:21
  * Author: Clay Risser
  * -----
- * Last Modified: 19-04-2022 09:31:49
+ * Last Modified: 25-04-2022 14:14:31
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -18,23 +18,35 @@ provider "aws" {
 
 provider "helm" {
   kubernetes {
-    cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-    host                   = module.eks.cluster_endpoint
-    token                  = data.aws_eks_cluster_auth.this.token
+    # client_certificate     = data.kops_kube_config.this.client_cert
+    # client_key             = data.kops_kube_config.this.client_key
+    # config_path = local.kops_kubeconfig_file
+    cluster_ca_certificate = local.k8s.cluster_ca_certificate
+    host                   = local.k8s.server
+    password               = local.k8s.password
+    username               = local.k8s.username
   }
 }
 
 provider "kubernetes" {
-  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-  host                   = module.eks.cluster_endpoint
-  token                  = data.aws_eks_cluster_auth.this.token
+  # client_certificate     = data.kops_kube_config.this.client_cert
+  # client_key             = data.kops_kube_config.this.client_key
+  # config_path = local.kops_kubeconfig_file
+  cluster_ca_certificate = local.k8s.cluster_ca_certificate
+  host                   = local.k8s.server
+  password               = local.k8s.password
+  username               = local.k8s.username
 }
 
 provider "kubectl" {
-  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-  host                   = module.eks.cluster_endpoint
+  # client_certificate     = data.kops_kube_config.this.client_cert
+  # client_key             = data.kops_kube_config.this.client_key
+  # config_path = local.kops_kubeconfig_file
   load_config_file       = false
-  token                  = data.aws_eks_cluster_auth.this.token
+  cluster_ca_certificate = local.k8s.cluster_ca_certificate
+  host                   = local.k8s.server
+  password               = local.k8s.password
+  username               = local.k8s.username
 }
 
 provider "cloudflare" {
@@ -45,3 +57,12 @@ provider "cloudflare" {
 provider "gitlab" {
   token = var.gitlab_token
 }
+
+provider "kops" {
+  state_store = local.kops_state_store
+  aws {
+    region = var.region
+  }
+}
+
+provider "tls" {}
