@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 25-04-2022 16:53:31
+ * Last Modified: 25-04-2022 17:51:24
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -59,7 +59,11 @@ resource "kops_cluster" "this" {
     }
   }
   api {
-    dns {}
+    # dns {}
+    load_balancer {
+      type  = "Public"
+      class = "Classic"
+    }
   }
   etcd_cluster {
     name = "main"
