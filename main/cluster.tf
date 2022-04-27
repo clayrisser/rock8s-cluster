@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 27-04-2022 15:06:20
+ * Last Modified: 27-04-2022 15:30:29
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -48,6 +48,19 @@ resource "kops_cluster" "this" {
   # kubernetes_version = var.cluster_version
   dns_zone   = var.dns_zone
   network_id = module.vpc.vpc_id
+  authentication {
+    aws {
+      backend_mode = "CRD" # MountedFile
+      cluster_id   = local.cluster_name
+      identity_mappings = [
+        {
+          arn      = "arn:aws:iam::000000000000:role/KubernetesAdmin"
+          username = "admin:{{ SessionName }}"
+          groups   = ["system:masters"]
+        }
+      ]
+    }
+  }
   iam {
     allow_container_registry                 = true
     use_service_account_external_permissions = false
