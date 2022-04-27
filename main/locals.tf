@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 13:36:29
  * Author: Clay Risser
  * -----
- * Last Modified: 25-04-2022 14:16:19
+ * Last Modified: 27-04-2022 14:30:02
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -16,6 +16,8 @@ locals {
   kops_kubeconfig_file = "../kubeconfig"
   rancher_cluster_id   = "local"
   kops_state_store     = "s3://${local.bucket}/kops"
+  public_api_ports     = [for port in split(",", var.public_api_ports) : parseint(port, 10)]
+  public_nodes_ports   = [for port in split(",", var.public_nodes_ports) : parseint(port, 10)]
   k8s = {
     cluster_ca_certificate = tls_self_signed_cert.ca.cert_pem
     password               = "P@ssw0rd" // TODO: make more secure

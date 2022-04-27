@@ -17,7 +17,9 @@ override.tf.json
 tfplan.cache
 tfplan.json
 
-/hi
-/tls.*
+# secrets
+/*_rsa
+/*_rsa.pub
 /ca.*
-/*.pub
+/kubeconfig
+/tls.*

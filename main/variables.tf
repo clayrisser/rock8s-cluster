@@ -4,11 +4,19 @@
  * File Created: 14-04-2022 08:12:06
  * Author: Clay Risser
  * -----
- * Last Modified: 25-04-2022 10:07:15
+ * Last Modified: 27-04-2022 14:28:48
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
+
+variable "public_api_ports" {
+  default = "22,443"
+}
+
+variable "public_nodes_ports" {
+  default = "22,80,443"
+}
 
 variable "region" {
   default = "us-east-2"
