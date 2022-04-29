@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 13:36:29
  * Author: Clay Risser
  * -----
- * Last Modified: 29-04-2022 17:10:29
+ * Last Modified: 29-04-2022 17:54:09
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -20,8 +20,8 @@ locals {
   public_nodes_ports   = [for port in split(",", var.public_nodes_ports) : parseint(port, 10)]
   cluster_endpoint     = "https://api.${var.cluster_prefix}-${tostring(var.iteration)}.${var.dns_zone}"
   user_exec = {
-    apiVersion = "client.authentication.k8s.io/v1alpha1"
-    command    = "aws-iam-authenticator"
+    api_version = "client.authentication.k8s.io/v1alpha1"
+    command     = "aws-iam-authenticator"
     args = [
       "token",
       "-i",
@@ -44,7 +44,11 @@ locals {
     users = [{
       name = "terraform"
       user = {
-        exec = local.user_exec
+        exec = {
+          apiVersion = local.user_exec.api_version
+          command    = local.user_exec.command
+          args       = local.user_exec.args
+        }
       }
     }]
     contexts = [{
