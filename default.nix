@@ -6,6 +6,7 @@ nixpkgs.stdenv.mkDerivation rec {
   LOCALE_ARCHIVE_2_11 = "${nixpkgs.glibcLocales}/lib/locale/locale-archive";
   LANG = "en_US.UTF-8";
   buildInputs = [
+    nixpkgs.aws-iam-authenticator
     nixpkgs.cloc
     nixpkgs.coreutils
     nixpkgs.gnumake42

@@ -11,15 +11,9 @@ override.tf.json
 # app
 .mkpm/
 /.env
+/auth
+/id_*.pub
 /mwc-rancher.cattle.io.yaml
 /vwc-rancher.cattle.io.yaml
-/id_*.pub
 tfplan.cache
 tfplan.json
-
-# secrets
-/*_rsa
-/*_rsa.pub
-/ca.*
-/kubeconfig
-/tls.*

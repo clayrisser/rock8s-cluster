@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 27-04-2022 15:30:29
+ * Last Modified: 29-04-2022 16:42:07
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -41,25 +41,26 @@ resource "aws_security_group" "nodes" {
 }
 
 resource "kops_cluster" "this" {
-  name           = local.cluster_name
-  admin_ssh_key  = tls_private_key.admin.public_key_openssh
-  ssh_key_name   = aws_key_pair.node.key_name
-  cloud_provider = "aws"
-  # kubernetes_version = var.cluster_version
-  dns_zone   = var.dns_zone
-  network_id = module.vpc.vpc_id
+  name               = local.cluster_name
+  admin_ssh_key      = tls_private_key.admin.public_key_openssh
+  ssh_key_name       = aws_key_pair.node.key_name
+  cloud_provider     = "aws"
+  kubernetes_version = "v1.23.6"
+  dns_zone           = var.dns_zone
+  network_id         = module.vpc.vpc_id
   authentication {
     aws {
-      backend_mode = "CRD" # MountedFile
+      backend_mode = "CRD"
       cluster_id   = local.cluster_name
-      identity_mappings = [
-        {
-          arn      = "arn:aws:iam::000000000000:role/KubernetesAdmin"
-          username = "admin:{{ SessionName }}"
-          groups   = ["system:masters"]
-        }
-      ]
+      identity_mappings {
+        arn      = aws_iam_role.admin.arn
+        username = split("/", data.aws_caller_identity.this.arn)[1]
+        groups   = ["system:masters"]
+      }
     }
+  }
+  authorization {
+    always_allow {}
   }
   iam {
     allow_container_registry                 = true
@@ -135,8 +136,9 @@ resource "kops_cluster" "this" {
   }
   provisioner "local-exec" {
     command     = <<EOF
-echo '${tls_private_key.node.public_key_openssh}' > ../node_rsa.pub
-echo '${tls_private_key.node.private_key_openssh}' > ../node_rsa
+mkdir -p ../auth
+echo '${tls_private_key.node.public_key_openssh}' > ../auth/node_rsa.pub
+echo '${tls_private_key.node.private_key_openssh}' > ../auth/node_rsa
 EOF
     interpreter = ["sh", "-c"]
     environment = {}
@@ -145,15 +147,15 @@ EOF
     enabled = true
   }
   cluster_autoscaler {
+    aws_use_static_instance_list     = false
+    balance_similar_node_groups      = false
     enabled                          = true
     expander                         = "least-waste"
-    balance_similar_node_groups      = false
-    aws_use_static_instance_list     = false
+    new_pod_scale_up_delay           = "0s"
+    scale_down_delay_after_add       = "10m0s"
     scale_down_utilization_threshold = 0.5
     skip_nodes_with_local_storage    = true
     skip_nodes_with_system_pods      = true
-    new_pod_scale_up_delay           = "0s"
-    scale_down_delay_after_add       = "10m0s"
   }
   cert_manager {
     enabled = true
@@ -186,8 +188,27 @@ EOF
     aws_ebs_csi_driver {
       enabled = true
     }
-    # node_tags = ""
   }
+  secrets {
+    cluster_ca_cert = tls_self_signed_cert.ca.cert_pem
+    cluster_ca_key  = tls_private_key.ca.private_key_pem
+  }
+}
+
+resource "null_resource" "kubeconfig2" {
+  provisioner "local-exec" {
+    command     = <<EOF
+mkdir -p ../auth
+echo '${local.kubeconfig}' | yq -P > ../auth/kubeconfig2
+EOF
+    interpreter = ["sh", "-c"]
+    environment = {
+      KUBECONFIG = local.kubeconfig
+    }
+  }
+  depends_on = [
+    kops_cluster.this
+  ]
 }
 
 resource "kops_instance_group" "master-0" {
@@ -256,42 +277,22 @@ resource "kops_instance_group" "node-2" {
   additional_security_groups = [aws_security_group.nodes.id]
 }
 
-resource "null_resource" "ca" {
-  provisioner "local-exec" {
-    command     = <<EOF
-echo "${tls_self_signed_cert.ca.cert_pem}" > ../ca.crt
-echo "${tls_private_key.ca.private_key_pem}" > ../ca.key
-kops create keypair kubernetes-ca \
-  --primary \
-  --cert ../ca.crt \
-  --key ../ca.key \
-  --state '${local.kops_state_store}' \
-  --name '${local.cluster_name}'
-EOF
-    interpreter = ["sh", "-c"]
-    environment = {}
-  }
-  depends_on = [
-    kops_cluster.this,
-  ]
-}
-
-resource "null_resource" "admin_password" {
-  provisioner "local-exec" {
-    command     = <<EOF
-alias b64="$(openssl version >/dev/null 2>/dev/null && echo openssl base64 || echo base64)"
-echo "{\"Data\":\"$(echo $PASSWORD | b64)\"}" | \
- aws s3 cp - '${local.kops_state_store}/${local.cluster_name}/secrets/admin'
-EOF
-    interpreter = ["sh", "-c"]
-    environment = {
-      PASSWORD = "P@ssw0rd"
-    }
-  }
-  depends_on = [
-    kops_cluster.this,
-  ]
-}
+# resource "null_resource" "admin_password" {
+#   provisioner "local-exec" {
+#     command     = <<EOF
+# alias b64="$(openssl version >/dev/null 2>/dev/null && echo openssl base64 || echo base64)"
+# echo "{\"Data\":\"$(echo $PASSWORD | b64)\"}" | \
+#   aws s3 cp - '${local.kops_state_store}/${local.cluster_name}/secrets/admin'
+# EOF
+#     interpreter = ["sh", "-c"]
+#     environment = {
+#       PASSWORD = "P@ssw0rd"
+#     }
+#   }
+#   depends_on = [
+#     kops_cluster.this,
+#   ]
+# }
 
 resource "kops_cluster_updater" "updater" {
   cluster_name = kops_cluster.this.id
@@ -313,15 +314,12 @@ resource "kops_cluster_updater" "updater" {
   validate {
     skip = false
   }
-  depends_on = [
-    null_resource.ca,
-    null_resource.admin_password
-  ]
 }
 
 resource "null_resource" "kubeconfig" {
   provisioner "local-exec" {
     command     = <<EOF
+mkdir -p ../auth
 kops export kubeconfig '${local.cluster_name}' \
   --state '${local.kops_state_store}' \
   --admin \
@@ -331,26 +329,25 @@ EOF
     environment = {}
   }
   depends_on = [
-    kops_cluster.this,
     kops_cluster_updater.updater
   ]
 }
 
-# resource "null_resource" "wait_for_nodes" {
-#   provisioner "local-exec" {
-#     command     = <<EOF
-# while [ "$(kubectl --kubeconfig <(echo $KUBECONFIG) get nodes | \
-#   tail -n +2 | \
-#   grep -vE '^[^ ]+\s+Ready')" != "" ]; do
-#     sleep 10
-# done
-# EOF
-#     interpreter = ["sh", "-c"]
-#     environment = {
-#       KUBECONFIG = local.kubeconfig
-#     }
-#   }
-#   depends_on = [
-#     kops_cluster.this
-#   ]
-# }
+resource "null_resource" "wait_for_nodes" {
+  provisioner "local-exec" {
+    command     = <<EOF
+while [ "$(kubectl --kubeconfig <(echo $KUBECONFIG) get nodes | \
+  tail -n +2 | \
+  grep -vE '^[^ ]+\s+Ready')" != "" ]; do
+    sleep 10
+done
+EOF
+    interpreter = ["sh", "-c"]
+    environment = {
+      KUBECONFIG = local.kubeconfig
+    }
+  }
+  depends_on = [
+    kops_cluster_updater.updater
+  ]
+}

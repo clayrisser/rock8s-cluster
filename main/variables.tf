@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:12:06
  * Author: Clay Risser
  * -----
- * Last Modified: 27-04-2022 14:28:48
+ * Last Modified: 29-04-2022 10:26:31
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -24,10 +24,6 @@ variable "region" {
 
 variable "cluster_prefix" {
   default = "kops"
-}
-
-variable "cluster_version" {
-  default = "stable"
 }
 
 variable "cloudflare_email" {

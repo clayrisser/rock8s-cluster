@@ -4,13 +4,13 @@
  * File Created: 14-04-2022 08:09:15
  * Author: Clay Risser
  * -----
- * Last Modified: 25-04-2022 12:48:38
+ * Last Modified: 29-04-2022 15:16:11
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
 
-# data "aws_caller_identity" "this" {}
+data "aws_caller_identity" "this" {}
 
 # data "aws_ami" "eks_default_bottlerocket" {
 #   most_recent = true
