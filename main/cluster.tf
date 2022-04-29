@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 29-04-2022 16:42:07
+ * Last Modified: 29-04-2022 17:09:03
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -36,6 +36,21 @@ resource "aws_security_group" "nodes" {
       protocol         = "tcp"
       cidr_blocks      = ["0.0.0.0/0"]
       ipv6_cidr_blocks = ["::/0"]
+    }
+  }
+}
+
+resource "null_resource" "auth" {
+  provisioner "local-exec" {
+    command     = <<EOF
+mkdir -p ../auth
+echo '${tls_private_key.node.public_key_openssh}' > ../auth/node_rsa.pub
+echo '${tls_private_key.node.private_key_openssh}' > ../auth/node_rsa
+echo '${local.kubeconfig}' | yq -P > ../auth/iam_kubeconfig
+EOF
+    interpreter = ["sh", "-c"]
+    environment = {
+      KUBECONFIG = local.kubeconfig
     }
   }
 }
@@ -134,15 +149,6 @@ resource "kops_cluster" "this" {
       zone        = subnet.value.availability_zone
     }
   }
-  provisioner "local-exec" {
-    command     = <<EOF
-mkdir -p ../auth
-echo '${tls_private_key.node.public_key_openssh}' > ../auth/node_rsa.pub
-echo '${tls_private_key.node.private_key_openssh}' > ../auth/node_rsa
-EOF
-    interpreter = ["sh", "-c"]
-    environment = {}
-  }
   aws_load_balancer_controller {
     enabled = true
   }
@@ -193,21 +199,8 @@ EOF
     cluster_ca_cert = tls_self_signed_cert.ca.cert_pem
     cluster_ca_key  = tls_private_key.ca.private_key_pem
   }
-}
-
-resource "null_resource" "kubeconfig2" {
-  provisioner "local-exec" {
-    command     = <<EOF
-mkdir -p ../auth
-echo '${local.kubeconfig}' | yq -P > ../auth/kubeconfig2
-EOF
-    interpreter = ["sh", "-c"]
-    environment = {
-      KUBECONFIG = local.kubeconfig
-    }
-  }
   depends_on = [
-    kops_cluster.this
+    null_resource.auth
   ]
 }
 
@@ -277,23 +270,6 @@ resource "kops_instance_group" "node-2" {
   additional_security_groups = [aws_security_group.nodes.id]
 }
 
-# resource "null_resource" "admin_password" {
-#   provisioner "local-exec" {
-#     command     = <<EOF
-# alias b64="$(openssl version >/dev/null 2>/dev/null && echo openssl base64 || echo base64)"
-# echo "{\"Data\":\"$(echo $PASSWORD | b64)\"}" | \
-#   aws s3 cp - '${local.kops_state_store}/${local.cluster_name}/secrets/admin'
-# EOF
-#     interpreter = ["sh", "-c"]
-#     environment = {
-#       PASSWORD = "P@ssw0rd"
-#     }
-#   }
-#   depends_on = [
-#     kops_cluster.this,
-#   ]
-# }
-
 resource "kops_cluster_updater" "updater" {
   cluster_name = kops_cluster.this.id
   keepers = {
@@ -323,7 +299,7 @@ mkdir -p ../auth
 kops export kubeconfig '${local.cluster_name}' \
   --state '${local.kops_state_store}' \
   --admin \
-  --kubeconfig ${local.kops_kubeconfig_file}
+  --kubeconfig ../auth/kubeconfig
 EOF
     interpreter = ["sh", "-c"]
     environment = {}

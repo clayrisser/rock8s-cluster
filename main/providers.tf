@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:04:21
  * Author: Clay Risser
  * -----
- * Last Modified: 29-04-2022 15:45:17
+ * Last Modified: 29-04-2022 17:12:53
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -18,38 +18,22 @@ provider "aws" {
 
 provider "helm" {
   kubernetes {
-    # client_certificate     = data.kops_kube_config.this.client_cert
-    # client_key             = data.kops_kube_config.this.client_key
-    config_path    = local.kops_kubeconfig_file
-    config_context = local.cluster_name
-    # cluster_ca_certificate = local.k8s.cluster_ca_certificate
-    # host                   = local.k8s.server
-    # password               = local.k8s.password
-    # username               = local.k8s.username
+    host     = local.cluster_endpoint
+    insecure = true
+    exec     = local.user_exec
   }
 }
 
 provider "kubernetes" {
-  # client_certificate     = data.kops_kube_config.this.client_cert
-  # client_key             = data.kops_kube_config.this.client_key
-  config_path    = local.kops_kubeconfig_file
-  config_context = local.cluster_name
-  # cluster_ca_certificate = local.k8s.cluster_ca_certificate
-  # host                   = local.k8s.server
-  # password               = local.k8s.password
-  # username               = local.k8s.username
+  host     = local.cluster_endpoint
+  insecure = true
+  exec     = local.user_exec
 }
 
 provider "kubectl" {
-  # client_certificate     = data.kops_kube_config.this.client_cert
-  # client_key             = data.kops_kube_config.this.client_key
-  config_path    = local.kops_kubeconfig_file
-  config_context = local.cluster_name
-  # load_config_file       = false
-  # cluster_ca_certificate = local.k8s.cluster_ca_certificate
-  # host                   = local.k8s.server
-  # password               = local.k8s.password
-  # username               = local.k8s.username
+  host     = local.cluster_endpoint
+  insecure = true
+  exec     = local.user_exec
 }
 
 provider "cloudflare" {
