@@ -4,7 +4,7 @@
  * File Created: 16-04-2022 01:29:38
  * Author: Clay Risser
  * -----
- * Last Modified: 16-04-2022 01:32:07
+ * Last Modified: 30-04-2022 12:29:25
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -25,18 +25,10 @@ terraform {
 resource "tls_private_key" "ssh" {
   algorithm = "RSA"
   rsa_bits  = 4096
-  lifecycle {
-    prevent_destroy = false
-    ignore_changes  = []
-  }
 }
 
 resource "gitlab_deploy_key" "ssh" {
   project = var.gitlab_project
   title   = var.name
   key     = tls_private_key.ssh.public_key_openssh
-  lifecycle {
-    prevent_destroy = false
-    ignore_changes  = []
-  }
 }

@@ -4,7 +4,7 @@
  * File Created: 17-04-2022 06:13:18
  * Author: Clay Risser
  * -----
- * Last Modified: 29-04-2022 17:44:52
+ * Last Modified: 30-04-2022 12:28:11
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -14,15 +14,13 @@ resource "kubernetes_namespace" "sn_system" {
   metadata {
     name = "sn-system"
   }
-  lifecycle {
-    ignore_changes = [
-      metadata[0].annotations,
-      metadata[0].labels,
-    ]
-  }
   depends_on = [
     null_resource.wait_for_nodes
   ]
+  lifecycle {
+    prevent_destroy = false
+    ignore_changes  = []
+  }
 }
 
 module "olm" {

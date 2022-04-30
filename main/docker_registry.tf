@@ -4,7 +4,7 @@
  * File Created: 24-02-2022 16:17:10
  * Author: Clay Risser
  * -----
- * Last Modified: 29-04-2022 17:41:03
+ * Last Modified: 30-04-2022 12:23:11
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -40,4 +40,8 @@ resource "kubernetes_secret" "registry" {
   depends_on = [
     helm_release.kubed
   ]
+  lifecycle {
+    prevent_destroy = false
+    ignore_changes  = []
+  }
 }

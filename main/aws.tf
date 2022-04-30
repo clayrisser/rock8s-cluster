@@ -4,7 +4,7 @@
  * File Created: 29-04-2022 14:41:49
  * Author: Clay Risser
  * -----
- * Last Modified: 29-04-2022 17:17:29
+ * Last Modified: 30-04-2022 12:21:19
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -25,9 +25,17 @@ resource "aws_iam_role" "admin" {
       },
     ]
   })
+  lifecycle {
+    prevent_destroy = false
+    ignore_changes  = []
+  }
 }
 
 resource "aws_key_pair" "node" {
   key_name   = "nodes.${local.cluster_name}"
   public_key = tls_private_key.node.public_key_openssh
+  lifecycle {
+    prevent_destroy = false
+    ignore_changes  = []
+  }
 }

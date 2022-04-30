@@ -4,7 +4,7 @@
  * File Created: 23-02-2022 11:40:50
  * Author: Clay Risser
  * -----
- * Last Modified: 29-04-2022 17:42:29
+ * Last Modified: 30-04-2022 12:23:31
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -23,15 +23,13 @@ resource "kubernetes_namespace" "flux_system" {
   metadata {
     name = "flux-system"
   }
-  lifecycle {
-    ignore_changes = [
-      metadata[0].annotations,
-      metadata[0].labels,
-    ]
-  }
   depends_on = [
     null_resource.wait_for_nodes
   ]
+  lifecycle {
+    prevent_destroy = false
+    ignore_changes  = []
+  }
 }
 
 data "kubectl_file_documents" "flux_install" {
@@ -52,4 +50,8 @@ resource "kubectl_manifest" "flux_install" {
   depends_on = [
     kubernetes_namespace.flux_system
   ]
+  lifecycle {
+    prevent_destroy = false
+    ignore_changes  = []
+  }
 }

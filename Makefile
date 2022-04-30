@@ -3,7 +3,7 @@
 # File Created: 27-01-2022 11:41:37
 # Author: Clay Risser
 # -----
-# Last Modified: 24-04-2022 15:35:40
+# Last Modified: 30-04-2022 14:47:33
 # Modified By: Clay Risser
 # -----
 # Risser Labs LLC (c) Copyright 2022
@@ -17,6 +17,7 @@ include $(MKPM)/dotenv
 export TF_STATE_NAME ?= $(CLUSTER_PREFIX)-$(ITERATION)
 export TF_ROOT ?= main
 export TF_PLAN_JSON ?= $(PROJECT_ROOT)/$(TF_ROOT)/tfplan.json
+export CLUSTER_NAME ?= $(CLUSTER_PREFIX)-$(ITERATION).$(DNS_ZONE)
 
 include $(PROJECT_ROOT)/gitlab.mk
 include $(PROJECT_ROOT)/aws.mk
@@ -24,12 +25,13 @@ include $(PROJECT_ROOT)/terraform.mk
 
 export AWS ?= aws
 export CLOC ?= cloc
-export TERRAFORM ?= terraform
-export SSH_KEYGEN ?= ssh-keygen
-export KUBECTX ?= $(call ternary,kubectx -h,kubectx,$(call ternary,kubectl ctx -h,kubectl ctx,true))
-export KUBECTL ?= $(call ternary,kubectl -h,kubectl,true)
 export CURL ?= curl
+export KOPS ?= kops
+export KUBECTL ?= $(call ternary,kubectl -h,kubectl,true)
+export KUBECTX ?= $(call ternary,kubectx -h,kubectx,$(call ternary,kubectl ctx -h,kubectl ctx,true))
 export SSH ?= ssh
+export SSH_KEYGEN ?= ssh-keygen
+export TERRAFORM ?= terraform
 
 ifneq (,$(CI))
 	TERRAFORM_INPUT_FLAG := -input=false
@@ -78,13 +80,25 @@ $(ACTION)/refresh: $(call git_deps,\.((tf)|(hcl))$$)
 	@$(CD) $(TF_ROOT) && $(TERRAFORM) refresh $(ARGS)
 	@$(call done,refresh)
 
+.PHONY: allow-destroy
+allow-destroy:
+	@$(call prevent_destroy,false)
+
+.PHONY: prevent-destroy
+prevent-destroy:
+	@$(call prevent_destroy,true)
+
 .PHONY: kubeconfig
-kubeconfig: ## authenticate local environment with the eks cluster
-	@$(AWS) eks update-kubeconfig --region $(AWS_REGION) --name $(CLUSTER_PREFIX)-$(ITERATION)
-	@export KUBE_CONTEXT=$$($(AWS) eks update-kubeconfig --region $(AWS_REGION) --name $(CLUSTER_PREFIX)-$(ITERATION) | \
-		$(GREP) -oE 'arn:aws:eks:[^ ]+') && \
-		($(CAT) default.env | $(GREP) -E '^KUBE_CONTEXT=' && \
-			($(CAT) default.env | $(SED) "s|\(KUBE_CONTEXT=\).*|\1$$KUBE_CONTEXT|g") || \
+kubeconfig: ## authenticate local environment with the kube cluster
+	@$(KOPS) export kubeconfig '$(CLUSTER_NAME)' \
+		--state s3://$$([ "$(BUCKET)" = "" ] && $(ECHO) $(DNS_ZONE) || echo $(BUCKET))/kops \
+		--admin \
+		--kubeconfig $(HOME)/.kube/config
+	@export KUBE_CONTEXT=$(CLUSTER_NAME) && \
+		[ "$$($(CAT) default.env | $(GREP) -E '^KUBE_CONTEXT=[^ ]+')" = "KUBE_CONTEXT=$$KUBE_CONTEXT" ] && \
+			$(ECHO) $(TRUE) || \
+		($(CAT) default.env | $(GREP) -E '^KUBE_CONTEXT=' $(NOOUT) && \
+			($(SED) -i "s|\(KUBE_CONTEXT=\).*|\1$$KUBE_CONTEXT|g" default.env) || \
 			$(ECHO) KUBE_CONTEXT=$$KUBE_CONTEXT >> default.env) && \
 		$(KUBECTX) $(KUBE_CONTEXT)
 

@@ -4,7 +4,7 @@
  * File Created: 12-02-2022 12:16:54
  * Author: Clay Risser
  * -----
- * Last Modified: 29-04-2022 17:44:39
+ * Last Modified: 30-04-2022 12:28:24
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -46,6 +46,10 @@ EOF
   depends_on = [
     null_resource.wait_for_nodes
   ]
+  lifecycle {
+    prevent_destroy = false
+    ignore_changes  = []
+  }
 }
 
 resource "time_sleep" "wait_for_ingress_nginx" { // TODO: imporove healthcheck

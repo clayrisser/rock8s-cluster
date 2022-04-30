@@ -4,7 +4,7 @@
  * File Created: 15-04-2022 14:48:11
  * Author: Clay Risser
  * -----
- * Last Modified: 29-04-2022 17:41:20
+ * Last Modified: 30-04-2022 12:23:41
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -23,4 +23,8 @@ EOF
   depends_on = [
     null_resource.wait_for_nodes
   ]
+  lifecycle {
+    prevent_destroy = false
+    ignore_changes  = []
+  }
 }

@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 29-04-2022 17:09:03
+ * Last Modified: 30-04-2022 12:46:30
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -23,6 +23,10 @@ resource "aws_security_group" "api" {
       ipv6_cidr_blocks = ["::/0"]
     }
   }
+  lifecycle {
+    prevent_destroy = false
+    ignore_changes  = []
+  }
 }
 
 resource "aws_security_group" "nodes" {
@@ -37,6 +41,10 @@ resource "aws_security_group" "nodes" {
       cidr_blocks      = ["0.0.0.0/0"]
       ipv6_cidr_blocks = ["::/0"]
     }
+  }
+  lifecycle {
+    prevent_destroy = false
+    ignore_changes  = []
   }
 }
 
@@ -92,11 +100,17 @@ resource "kops_cluster" "this" {
     }
   }
   api {
-    # dns {}
-    load_balancer {
-      additional_security_groups = [aws_security_group.api.id]
-      class                      = "Classic"
-      type                       = "Public"
+    dynamic "dns" {
+      for_each = contains(["DNS"], var.entrypoint_strategy) ? [1] : []
+      content {}
+    }
+    dynamic "load_balancer" {
+      for_each = contains(["DNS"], var.entrypoint_strategy) ? [] : [1]
+      content {
+        additional_security_groups = [aws_security_group.api.id]
+        class                      = "Classic"
+        type                       = "Public"
+      }
     }
   }
   etcd_cluster {
@@ -202,6 +216,10 @@ resource "kops_cluster" "this" {
   depends_on = [
     null_resource.auth
   ]
+  lifecycle {
+    prevent_destroy = false
+    ignore_changes  = []
+  }
 }
 
 resource "kops_instance_group" "master-0" {
@@ -213,6 +231,10 @@ resource "kops_instance_group" "master-0" {
   machine_type               = "t3.medium"
   subnets                    = [data.aws_subnet.public[0].id]
   additional_security_groups = [aws_security_group.api.id]
+  lifecycle {
+    prevent_destroy = false
+    ignore_changes  = []
+  }
 }
 
 resource "kops_instance_group" "master-1" {
@@ -224,6 +246,10 @@ resource "kops_instance_group" "master-1" {
   machine_type               = "t3.medium"
   subnets                    = [data.aws_subnet.public[1].id]
   additional_security_groups = [aws_security_group.api.id]
+  lifecycle {
+    prevent_destroy = false
+    ignore_changes  = []
+  }
 }
 
 resource "kops_instance_group" "master-2" {
@@ -235,6 +261,10 @@ resource "kops_instance_group" "master-2" {
   machine_type               = "t3.medium"
   subnets                    = [data.aws_subnet.public[2].id]
   additional_security_groups = [aws_security_group.api.id]
+  lifecycle {
+    prevent_destroy = false
+    ignore_changes  = []
+  }
 }
 
 resource "kops_instance_group" "node-0" {
@@ -246,6 +276,10 @@ resource "kops_instance_group" "node-0" {
   machine_type               = "t3.medium"
   subnets                    = [data.aws_subnet.public[0].id]
   additional_security_groups = [aws_security_group.nodes.id]
+  lifecycle {
+    prevent_destroy = false
+    ignore_changes  = []
+  }
 }
 
 resource "kops_instance_group" "node-1" {
@@ -257,6 +291,10 @@ resource "kops_instance_group" "node-1" {
   machine_type               = "t3.medium"
   subnets                    = [data.aws_subnet.public[1].id]
   additional_security_groups = [aws_security_group.nodes.id]
+  lifecycle {
+    prevent_destroy = false
+    ignore_changes  = []
+  }
 }
 
 resource "kops_instance_group" "node-2" {
@@ -268,6 +306,10 @@ resource "kops_instance_group" "node-2" {
   machine_type               = "t3.medium"
   subnets                    = [data.aws_subnet.public[2].id]
   additional_security_groups = [aws_security_group.nodes.id]
+  lifecycle {
+    prevent_destroy = false
+    ignore_changes  = []
+  }
 }
 
 resource "kops_cluster_updater" "updater" {
@@ -289,6 +331,10 @@ resource "kops_cluster_updater" "updater" {
   }
   validate {
     skip = false
+  }
+  lifecycle {
+    prevent_destroy = false
+    ignore_changes  = []
   }
 }
 

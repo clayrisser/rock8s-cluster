@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:12:06
  * Author: Clay Risser
  * -----
- * Last Modified: 29-04-2022 10:26:31
+ * Last Modified: 30-04-2022 12:47:25
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -62,6 +62,14 @@ variable "flux_known_hosts" {
 
 variable "bucket" {
   default = ""
+}
+
+variable "entrypoint_strategy" {
+  default = "LB"
+  validation {
+    condition     = contains(["DNS", "LB"], var.entrypoint_strategy)
+    error_message = "Allowed values for entrypoint_strategy are \"DNS\" or \"LB\"."
+  }
 }
 
 variable "dns_zone" {
