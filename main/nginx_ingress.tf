@@ -4,7 +4,7 @@
  * File Created: 12-02-2022 12:16:54
  * Author: Clay Risser
  * -----
- * Last Modified: 30-04-2022 12:28:24
+ * Last Modified: 30-04-2022 16:46:48
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -57,14 +57,4 @@ resource "time_sleep" "wait_for_ingress_nginx" { // TODO: imporove healthcheck
     helm_release.ingress_nginx
   ]
   create_duration = "60s"
-}
-
-data "kubernetes_service" "ingress_nginx_controller" {
-  metadata {
-    name      = "ingress-nginx-controller"
-    namespace = "ingress-nginx"
-  }
-  depends_on = [
-    time_sleep.wait_for_ingress_nginx
-  ]
 }

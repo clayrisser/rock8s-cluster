@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 30-04-2022 12:46:30
+ * Last Modified: 30-04-2022 16:39:58
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -181,13 +181,13 @@ resource "kops_cluster" "this" {
     enabled = true
     managed = true
   }
-  # kube_dns {
-  #   provider = "CoreDNS"
-  #   node_local_dns {
-  #     enabled             = true
-  #     forward_to_kube_dns = true
-  #   }
-  # }
+  kube_dns {
+    provider = "CoreDNS"
+    node_local_dns {
+      enabled             = true
+      forward_to_kube_dns = true
+    }
+  }
   node_termination_handler {
     enabled                           = true
     enable_spot_interruption_draining = true

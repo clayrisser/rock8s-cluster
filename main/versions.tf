@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:04:44
  * Author: Clay Risser
  * -----
- * Last Modified: 25-04-2022 12:36:23
+ * Last Modified: 30-04-2022 16:54:28
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -47,10 +47,6 @@ terraform {
     flux = {
       source  = "fluxcd/flux"
       version = "0.11.0"
-    }
-    cloudflare = {
-      source  = "cloudflare/cloudflare"
-      version = "2.25.0"
     }
     gitlab = {
       source  = "gitlabhq/gitlab"

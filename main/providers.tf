@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:04:21
  * Author: Clay Risser
  * -----
- * Last Modified: 29-04-2022 17:54:25
+ * Last Modified: 30-04-2022 16:54:44
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -46,11 +46,6 @@ provider "kubectl" {
     command     = local.user_exec.command
     args        = local.user_exec.args
   }
-}
-
-provider "cloudflare" {
-  email   = var.cloudflare_email
-  api_key = var.cloudflare_api_key
 }
 
 provider "gitlab" {

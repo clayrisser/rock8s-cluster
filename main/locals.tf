@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 13:36:29
  * Author: Clay Risser
  * -----
- * Last Modified: 29-04-2022 17:54:09
+ * Last Modified: 30-04-2022 16:53:11
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -12,6 +12,7 @@
 
 locals {
   cluster_name         = "${var.cluster_prefix}-${tostring(var.iteration)}.${var.dns_zone}"
+  cluster_entrypoint   = local.cluster_name
   bucket               = var.bucket == "" ? var.dns_zone : var.bucket
   kops_kubeconfig_file = "../auth/iam_kubeconfig"
   rancher_cluster_id   = "local"
