@@ -4,7 +4,7 @@
  * File Created: 12-02-2022 12:16:54
  * Author: Clay Risser
  * -----
- * Last Modified: 30-04-2022 16:46:48
+ * Last Modified: 02-05-2022 15:02:25
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -52,9 +52,26 @@ EOF
   }
 }
 
-resource "time_sleep" "wait_for_ingress_nginx" { // TODO: imporove healthcheck
+resource "null_resource" "wait_for_ingress_nginx" {
+  provisioner "local-exec" {
+    command     = <<EOF
+s=5
+while [ "$s" -ge "5" ]; do
+  _s=$(echo $(curl -v $CLUSTER_ENTRYPOINT 2>&1 | grep -E '^< HTTP') | awk '{print $3}' | head -c 1)
+  if [ "$_s" != "" ]; then
+    s=$_s
+  fi
+  if [ "$s" -ge "5" ]; then
+    sleep 10
+  fi
+done
+EOF
+    interpreter = ["sh", "-c"]
+    environment = {
+      CLUSTER_ENTRYPOINT = local.cluster_entrypoint
+    }
+  }
   depends_on = [
-    helm_release.ingress_nginx
+    helm_release.rancher
   ]
-  create_duration = "60s"
 }

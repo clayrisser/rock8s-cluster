@@ -4,7 +4,7 @@
  * File Created: 09-02-2022 11:24:10
  * Author: Clay Risser
  * -----
- * Last Modified: 30-04-2022 17:01:21
+ * Last Modified: 02-05-2022 15:02:44
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -53,7 +53,7 @@ EOF
     value = "v3"
   }
   depends_on = [
-    time_sleep.wait_for_ingress_nginx
+    null_resource.wait_for_ingress_nginx
   ]
 }
 

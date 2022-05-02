@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:09:15
  * Author: Clay Risser
  * -----
- * Last Modified: 30-04-2022 16:58:33
+ * Last Modified: 02-05-2022 15:02:37
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -32,7 +32,7 @@ data "kubernetes_service" "ingress_nginx_controller" {
     namespace = "ingress-nginx"
   }
   depends_on = [
-    time_sleep.wait_for_ingress_nginx
+    null_resource.wait_for_ingress_nginx
   ]
 }
 
