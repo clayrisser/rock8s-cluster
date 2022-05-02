@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 30-04-2022 16:39:58
+ * Last Modified: 02-05-2022 16:34:30
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -119,14 +119,14 @@ resource "kops_cluster" "this" {
       name           = "master-0"
       instance_group = "master-0"
     }
-    member {
-      name           = "master-1"
-      instance_group = "master-1"
-    }
-    member {
-      name           = "master-2"
-      instance_group = "master-2"
-    }
+    # member {
+    #   name           = "master-1"
+    #   instance_group = "master-1"
+    # }
+    # member {
+    #   name           = "master-2"
+    #   instance_group = "master-2"
+    # }
   }
   etcd_cluster {
     name = "events"
@@ -134,14 +134,14 @@ resource "kops_cluster" "this" {
       name           = "master-0"
       instance_group = "master-0"
     }
-    member {
-      name           = "master-1"
-      instance_group = "master-1"
-    }
-    member {
-      name           = "master-2"
-      instance_group = "master-2"
-    }
+    # member {
+    #   name           = "master-1"
+    #   instance_group = "master-1"
+    # }
+    # member {
+    #   name           = "master-2"
+    #   instance_group = "master-2"
+    # }
   }
   dynamic "subnet" {
     for_each = data.aws_subnet.private
@@ -228,7 +228,7 @@ resource "kops_instance_group" "master-0" {
   role                       = "Master"
   min_size                   = 1
   max_size                   = 1
-  machine_type               = "t3.medium"
+  machine_type               = "t3.xlarge"
   subnets                    = [data.aws_subnet.public[0].id]
   additional_security_groups = [aws_security_group.api.id]
   lifecycle {
@@ -237,35 +237,35 @@ resource "kops_instance_group" "master-0" {
   }
 }
 
-resource "kops_instance_group" "master-1" {
-  cluster_name               = kops_cluster.this.id
-  name                       = "master-1"
-  role                       = "Master"
-  min_size                   = 1
-  max_size                   = 1
-  machine_type               = "t3.medium"
-  subnets                    = [data.aws_subnet.public[1].id]
-  additional_security_groups = [aws_security_group.api.id]
-  lifecycle {
-    prevent_destroy = false
-    ignore_changes  = []
-  }
-}
+# resource "kops_instance_group" "master-1" {
+#   cluster_name               = kops_cluster.this.id
+#   name                       = "master-1"
+#   role                       = "Master"
+#   min_size                   = 1
+#   max_size                   = 1
+#   machine_type               = "t3.medium"
+#   subnets                    = [data.aws_subnet.public[1].id]
+#   additional_security_groups = [aws_security_group.api.id]
+#   lifecycle {
+#     prevent_destroy = false
+#     ignore_changes  = []
+#   }
+# }
 
-resource "kops_instance_group" "master-2" {
-  cluster_name               = kops_cluster.this.id
-  name                       = "master-2"
-  role                       = "Master"
-  min_size                   = 1
-  max_size                   = 1
-  machine_type               = "t3.medium"
-  subnets                    = [data.aws_subnet.public[2].id]
-  additional_security_groups = [aws_security_group.api.id]
-  lifecycle {
-    prevent_destroy = false
-    ignore_changes  = []
-  }
-}
+# resource "kops_instance_group" "master-2" {
+#   cluster_name               = kops_cluster.this.id
+#   name                       = "master-2"
+#   role                       = "Master"
+#   min_size                   = 1
+#   max_size                   = 1
+#   machine_type               = "t3.medium"
+#   subnets                    = [data.aws_subnet.public[2].id]
+#   additional_security_groups = [aws_security_group.api.id]
+#   lifecycle {
+#     prevent_destroy = false
+#     ignore_changes  = []
+#   }
+# }
 
 resource "kops_instance_group" "node-0" {
   cluster_name               = kops_cluster.this.id
