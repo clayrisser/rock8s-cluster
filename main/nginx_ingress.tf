@@ -4,7 +4,7 @@
  * File Created: 12-02-2022 12:16:54
  * Author: Clay Risser
  * -----
- * Last Modified: 02-05-2022 15:02:25
+ * Last Modified: 02-05-2022 15:59:11
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -72,6 +72,6 @@ EOF
     }
   }
   depends_on = [
-    helm_release.rancher
+    helm_release.ingress_nginx
   ]
 }

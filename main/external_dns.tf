@@ -4,7 +4,7 @@
  * File Created: 21-04-2022 09:03:40
  * Author: Clay Risser
  * -----
- * Last Modified: 24-04-2022 11:09:11
+ * Last Modified: 02-05-2022 16:21:55
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -20,7 +20,7 @@
 #   wait          = true
 #   values        = <<EOF
 # config:
-#   target: '${local.cluster_name}.${var.domain}'
+#   target: '${local.cluster_entrypoint}'
 #   cloudflare:
 #     apiKey: ${var.cloudflare_api_key}
 #     email: ${var.cloudflare_email}
