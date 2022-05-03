@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:12:06
  * Author: Clay Risser
  * -----
- * Last Modified: 03-05-2022 12:27:48
+ * Last Modified: 03-05-2022 12:37:40
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -67,7 +67,8 @@ variable "bucket" {
 variable "api_strategy" {
   default = "LB"
   validation {
-    condition = contains(["DNS", "LB"], var.api_strategy)
+    condition     = contains(["DNS", "LB"], var.api_strategy)
+    error_message = "Allowed values for entrypoint_strategy are \"DNS\" or \"LB\"."
   }
 }
 
