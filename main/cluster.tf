@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 02-05-2022 16:59:31
+ * Last Modified: 03-05-2022 12:28:08
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -101,11 +101,11 @@ resource "kops_cluster" "this" {
   }
   api {
     dynamic "dns" {
-      for_each = contains(["DNS"], var.entrypoint_strategy) ? [1] : []
+      for_each = contains(["DNS"], var.api_strategy) ? [1] : []
       content {}
     }
     dynamic "load_balancer" {
-      for_each = contains(["DNS"], var.entrypoint_strategy) ? [] : [1]
+      for_each = contains(["DNS"], var.api_strategy) ? [] : [1]
       content {
         additional_security_groups = [aws_security_group.api.id]
         class                      = "Classic"
