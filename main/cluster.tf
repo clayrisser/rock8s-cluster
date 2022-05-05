@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 03-05-2022 12:28:08
+ * Last Modified: 05-05-2022 07:44:53
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -218,7 +218,9 @@ resource "kops_cluster" "this" {
   ]
   lifecycle {
     prevent_destroy = false
-    ignore_changes  = []
+    ignore_changes = [
+      secrets,
+    ]
   }
 }
 
