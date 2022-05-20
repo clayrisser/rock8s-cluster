@@ -4,27 +4,18 @@
  * File Created: 20-04-2022 13:40:49
  * Author: Clay Risser
  * -----
- * Last Modified: 01-05-2022 09:36:10
+ * Last Modified: 07-05-2022 03:35:22
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
-
-resource "rancher2_namespace" "cattle_monitoring_system" {
-  name       = "cattle-monitoring-system"
-  project_id = data.rancher2_project.system.id
-  lifecycle {
-    prevent_destroy = false
-    ignore_changes  = []
-  }
-}
 
 resource "rancher2_app_v2" "rancher_monitoring" {
   chart_name    = "rancher-monitoring"
   chart_version = "100.1.2+up19.0.3"
   cluster_id    = local.rancher_cluster_id
   name          = "rancher-monitoring"
-  namespace     = rancher2_namespace.cattle_monitoring_system.name
+  namespace     = "cattle-monitoring-system"
   repo_name     = "rancher-charts"
   wait          = true
   values        = <<EOF
@@ -97,10 +88,12 @@ kube-state-metrics:
                 values:
                   - amd64
 EOF
+  depends_on = [
+    rancher2_app_v2.integration_operator,
+    rancher2_app_v2.helm_operator
+  ]
   lifecycle {
     prevent_destroy = false
-    ignore_changes = [
-      annotations
-    ]
+    ignore_changes  = []
   }
 }

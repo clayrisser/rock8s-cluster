@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 05-05-2022 07:44:53
+ * Last Modified: 07-05-2022 03:14:42
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -68,7 +68,7 @@ resource "kops_cluster" "this" {
   admin_ssh_key      = tls_private_key.admin.public_key_openssh
   ssh_key_name       = aws_key_pair.node.key_name
   cloud_provider     = "aws"
-  kubernetes_version = "v1.23.6"
+  kubernetes_version = "v1.21.12"
   dns_zone           = var.dns_zone
   network_id         = module.vpc.vpc_id
   authentication {

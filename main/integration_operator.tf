@@ -4,7 +4,7 @@
  * File Created: 21-04-2022 09:05:39
  * Author: Clay Risser
  * -----
- * Last Modified: 02-05-2022 16:22:17
+ * Last Modified: 20-05-2022 10:58:51
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -16,7 +16,7 @@ resource "rancher2_app_v2" "integration_operator" {
   cluster_id    = local.rancher_cluster_id
   name          = "integration-operator"
   namespace     = "kube-system"
-  repo_name     = rancher2_catalog_v2.bitspur.name
+  repo_name     = rancher2_catalog_v2.risserlabs.name
   wait          = true
   values        = <<EOF
 {}

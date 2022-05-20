@@ -4,7 +4,7 @@
  * File Created: 09-02-2022 11:24:10
  * Author: Clay Risser
  * -----
- * Last Modified: 02-05-2022 15:02:44
+ * Last Modified: 07-05-2022 03:16:49
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -15,8 +15,6 @@ locals {
   cert_manager_letsencrypt_environment = "production"
   rancher_bootstrap_password           = "P@ssw0rd"
   rancher_hostname                     = aws_route53_record.cluster.name
-  rancher_namespace                    = "cattle-system"
-  rancher_version                      = "v2.6.4"
 }
 
 provider "rancher2" {
@@ -30,8 +28,8 @@ resource "helm_release" "rancher" {
   name             = "rancher"
   repository       = "https://releases.rancher.com/server-charts/latest"
   chart            = "rancher"
-  version          = local.rancher_version
-  namespace        = local.rancher_namespace
+  version          = "v2.6.4"
+  namespace        = "cattle-system"
   create_namespace = true
   values = [<<EOF
 bootstrapPassword: ${local.rancher_bootstrap_password}
