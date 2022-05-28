@@ -3,7 +3,7 @@
 # File Created: 27-01-2022 11:41:37
 # Author: Clay Risser
 # -----
-# Last Modified: 30-04-2022 14:47:33
+# Last Modified: 28-05-2022 06:26:38
 # Modified By: Clay Risser
 # -----
 # Risser Labs LLC (c) Copyright 2022
@@ -107,6 +107,7 @@ clean: ##
 	-@$(GIT) clean -fXd \
 		$(MKPM_GIT_CLEAN_FLAGS) \
 		$(call git_clean_flags,.terraform) \
+		$(call git_clean_flags,.env) \
 		$(NOFAIL)
 
 .PHONY: purge
