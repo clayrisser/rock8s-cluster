@@ -3,15 +3,15 @@
 # File Created: 27-01-2022 11:45:11
 # Author: Clay Risser
 # -----
-# Last Modified: 19-04-2022 04:15:34
+# Last Modified: 10-06-2022 11:40:25
 # Modified By: Clay Risser
 # -----
 # Risser Labs LLC (c) Copyright 2022
 
 MKPM_PACKAGES := \
-	dotenv=0.0.7 \
+	dotenv=0.0.9 \
 	gnu=0.0.3 \
-	mkchain=0.0.15
+	mkchain=0.0.16
 
 MKPM_REPOS := \
 	https://gitlab.com/risserlabs/community/mkpm-stable.git

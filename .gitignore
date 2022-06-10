@@ -9,7 +9,6 @@ override.tf
 override.tf.json
 
 # app
-.mkpm/
 /.env
 /auth
 /id_*.pub
@@ -17,3 +16,9 @@ override.tf.json
 /vwc-rancher.cattle.io.yaml
 tfplan.cache
 tfplan.json
+
+# mkpm
+.mkpm/*
+**/.mkpm/*
+!/.mkpm/.cache.tar.gz
+!/.mkpm/.bootstrap.mk
