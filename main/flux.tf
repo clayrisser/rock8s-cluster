@@ -4,7 +4,7 @@
  * File Created: 23-02-2022 11:40:50
  * Author: Clay Risser
  * -----
- * Last Modified: 30-04-2022 12:23:31
+ * Last Modified: 11-06-2022 06:54:41
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -28,7 +28,10 @@ resource "kubernetes_namespace" "flux_system" {
   ]
   lifecycle {
     prevent_destroy = false
-    ignore_changes  = []
+    ignore_changes = [
+      metadata[0].annotations,
+      metadata[0].labels
+    ]
   }
 }
 

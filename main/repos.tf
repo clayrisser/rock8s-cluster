@@ -4,7 +4,7 @@
  * File Created: 21-04-2022 08:46:03
  * Author: Clay Risser
  * -----
- * Last Modified: 20-05-2022 11:01:18
+ * Last Modified: 11-06-2022 06:46:12
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -16,7 +16,9 @@ resource "rancher2_catalog_v2" "risserlabs" {
   name       = "risserlabs"
   lifecycle {
     prevent_destroy = false
-    ignore_changes  = []
+    ignore_changes = [
+      resource_version
+    ]
   }
 }
 
@@ -26,6 +28,8 @@ resource "rancher2_catalog_v2" "fluxcd" {
   url        = "https://charts.fluxcd.io"
   lifecycle {
     prevent_destroy = false
-    ignore_changes  = []
+    ignore_changes = [
+      resource_version
+    ]
   }
 }

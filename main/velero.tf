@@ -4,7 +4,7 @@
  * File Created: 21-04-2022 08:53:47
  * Author: Clay Risser
  * -----
- * Last Modified: 20-05-2022 11:00:50
+ * Last Modified: 11-06-2022 05:17:44
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -43,7 +43,9 @@ velero:
       config:
         region: ${var.region}
 EOF
-  depends_on    = []
+  depends_on = [
+    rancher2_app_v2.integration_operator
+  ]
   lifecycle {
     prevent_destroy = false
     ignore_changes  = []

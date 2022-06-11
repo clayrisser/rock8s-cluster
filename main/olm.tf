@@ -4,7 +4,7 @@
  * File Created: 17-04-2022 06:13:18
  * Author: Clay Risser
  * -----
- * Last Modified: 20-05-2022 14:41:34
+ * Last Modified: 11-06-2022 05:20:37
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -14,15 +14,25 @@ locals {
   olm_version = "v0.21.2"
 }
 
+module "olm_crds" {
+  source     = "../modules/kubectl_apply"
+  kubeconfig = local.kubeconfig
+  resources = [
+    "https://raw.githubusercontent.com/operator-framework/operator-lifecycle-manager/${local.olm_version}/deploy/upstream/quickstart/crds.yaml"
+  ]
+  depends_on = [
+    null_resource.wait_for_nodes
+  ]
+}
+
 module "olm" {
   source     = "../modules/kubectl_apply"
   kubeconfig = local.kubeconfig
   resources = [
-    "https://raw.githubusercontent.com/operator-framework/operator-lifecycle-manager/${local.olm_version}/deploy/upstream/quickstart/crds.yaml",
     "https://raw.githubusercontent.com/operator-framework/operator-lifecycle-manager/${local.olm_version}/deploy/upstream/quickstart/olm.yaml"
   ]
   depends_on = [
-    null_resource.wait_for_nodes
+    module.olm_crds
   ]
 }
 
