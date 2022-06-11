@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 07-05-2022 03:14:42
+ * Last Modified: 11-06-2022 07:46:06
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -272,6 +272,7 @@ resource "kops_instance_group" "master-0" {
 resource "kops_instance_group" "node-0" {
   cluster_name               = kops_cluster.this.id
   name                       = "node-0"
+  autoscale                  = true
   role                       = "Node"
   min_size                   = 1
   max_size                   = 2
@@ -287,6 +288,7 @@ resource "kops_instance_group" "node-0" {
 resource "kops_instance_group" "node-1" {
   cluster_name               = kops_cluster.this.id
   name                       = "node-1"
+  autoscale                  = true
   role                       = "Node"
   min_size                   = 1
   max_size                   = 2
@@ -302,6 +304,7 @@ resource "kops_instance_group" "node-1" {
 resource "kops_instance_group" "node-2" {
   cluster_name               = kops_cluster.this.id
   name                       = "node-2"
+  autoscale                  = true
   role                       = "Node"
   min_size                   = 1
   max_size                   = 2
