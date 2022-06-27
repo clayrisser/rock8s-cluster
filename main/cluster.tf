@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 11-06-2022 07:46:06
+ * Last Modified: 27-06-2022 10:56:45
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -51,10 +51,10 @@ resource "aws_security_group" "nodes" {
 resource "null_resource" "auth" {
   provisioner "local-exec" {
     command     = <<EOF
-mkdir -p ../auth
-echo '${tls_private_key.node.public_key_openssh}' > ../auth/node_rsa.pub
-echo '${tls_private_key.node.private_key_openssh}' > ../auth/node_rsa
-echo '${local.kubeconfig}' | yq -P > ../auth/iam_kubeconfig
+mkdir -p ../artifacts
+echo '${tls_private_key.node.public_key_openssh}' > ../artifacts/node_rsa.pub
+echo '${tls_private_key.node.private_key_openssh}' > ../artifacts/node_rsa
+echo '${local.kubeconfig}' | yq -P > ../artifacts/iam_kubeconfig
 EOF
     interpreter = ["sh", "-c"]
     environment = {
@@ -346,11 +346,11 @@ resource "kops_cluster_updater" "updater" {
 resource "null_resource" "kubeconfig" {
   provisioner "local-exec" {
     command     = <<EOF
-mkdir -p ../auth
+mkdir -p ../artifacts
 kops export kubeconfig '${local.cluster_name}' \
   --state '${local.kops_state_store}' \
   --admin \
-  --kubeconfig ../auth/kubeconfig
+  --kubeconfig ../artifacts/kubeconfig
 EOF
     interpreter = ["sh", "-c"]
     environment = {}

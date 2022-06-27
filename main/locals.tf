@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 13:36:29
  * Author: Clay Risser
  * -----
- * Last Modified: 30-04-2022 16:53:11
+ * Last Modified: 27-06-2022 10:55:50
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -14,7 +14,7 @@ locals {
   cluster_name         = "${var.cluster_prefix}-${tostring(var.iteration)}.${var.dns_zone}"
   cluster_entrypoint   = local.cluster_name
   bucket               = var.bucket == "" ? var.dns_zone : var.bucket
-  kops_kubeconfig_file = "../auth/iam_kubeconfig"
+  kops_kubeconfig_file = "../artifacts/iam_kubeconfig"
   rancher_cluster_id   = "local"
   kops_state_store     = "s3://${local.bucket}/kops"
   public_api_ports     = [for port in split(",", var.public_api_ports) : parseint(port, 10)]

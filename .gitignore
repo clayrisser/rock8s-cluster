@@ -10,7 +10,7 @@ override.tf.json
 
 # app
 /.env
-/auth
+/artifacts
 /id_*.pub
 /mwc-rancher.cattle.io.yaml
 /vwc-rancher.cattle.io.yaml
