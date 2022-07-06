@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 27-06-2022 10:56:45
+ * Last Modified: 06-07-2022 12:06:17
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -275,7 +275,7 @@ resource "kops_instance_group" "node-0" {
   autoscale                  = true
   role                       = "Node"
   min_size                   = 1
-  max_size                   = 2
+  max_size                   = 3
   machine_type               = "t3.medium"
   subnets                    = [data.aws_subnet.public[0].id]
   additional_security_groups = [aws_security_group.nodes.id]
@@ -291,7 +291,7 @@ resource "kops_instance_group" "node-1" {
   autoscale                  = true
   role                       = "Node"
   min_size                   = 1
-  max_size                   = 2
+  max_size                   = 3
   machine_type               = "t3.medium"
   subnets                    = [data.aws_subnet.public[1].id]
   additional_security_groups = [aws_security_group.nodes.id]
@@ -307,7 +307,7 @@ resource "kops_instance_group" "node-2" {
   autoscale                  = true
   role                       = "Node"
   min_size                   = 1
-  max_size                   = 2
+  max_size                   = 3
   machine_type               = "t3.medium"
   subnets                    = [data.aws_subnet.public[2].id]
   additional_security_groups = [aws_security_group.nodes.id]
