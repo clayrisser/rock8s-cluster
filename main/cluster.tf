@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 06-07-2022 12:06:17
+ * Last Modified: 18-07-2022 03:52:59
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -209,10 +209,16 @@ resource "kops_cluster" "this" {
       enabled = true
     }
   }
-  secrets {
-    cluster_ca_cert = tls_self_signed_cert.ca.cert_pem
-    cluster_ca_key  = tls_private_key.ca.private_key_pem
-  }
+  # kube_api_server {
+  #   client_ca_file = tls_self_signed_cert.client_ca.cert_pem
+  # }
+  # kube_controller_manager {
+  #   root_ca_file = tls_self_signed_cert.root_ca.cert_pem
+  # }
+  # secrets {
+  #   cluster_ca_cert = tls_self_signed_cert.ca.cert_pem
+  #   cluster_ca_key  = tls_private_key.ca.private_key_pem
+  # }
   depends_on = [
     null_resource.auth
   ]
