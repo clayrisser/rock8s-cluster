@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 18-07-2022 14:17:45
+ * Last Modified: 19-07-2022 13:59:34
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -48,7 +48,7 @@ resource "aws_security_group" "nodes" {
   }
 }
 
-resource "null_resource" "auth" {
+resource "null_resource" "artifacts" {
   provisioner "local-exec" {
     command     = <<EOF
 mkdir -p ../artifacts
@@ -209,18 +209,18 @@ resource "kops_cluster" "this" {
       enabled = true
     }
   }
-  kube_api_server {
-    client_ca_file = tls_self_signed_cert.client_ca.cert_pem
-  }
-  kube_controller_manager {
-    root_ca_file = tls_self_signed_cert.root_ca.cert_pem
-  }
+  # kube_api_server {
+  #   client_ca_file = local_file.client_ca.filename
+  # }
+  # kube_controller_manager {
+  #   root_ca_file = local_file.root_ca.filename
+  # }
   secrets {
     cluster_ca_cert = tls_self_signed_cert.ca.cert_pem
     cluster_ca_key  = tls_private_key.ca.private_key_pem
   }
   depends_on = [
-    null_resource.auth
+    null_resource.artifacts
   ]
   lifecycle {
     prevent_destroy = false

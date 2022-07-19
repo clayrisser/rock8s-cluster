@@ -4,7 +4,7 @@
  * File Created: 27-04-2022 12:01:36
  * Author: Clay Risser
  * -----
- * Last Modified: 18-07-2022 14:17:21
+ * Last Modified: 19-07-2022 13:02:23
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -50,6 +50,11 @@ resource "tls_self_signed_cert" "root_ca" {
   ]
 }
 
+resource "local_file" "root_ca" {
+  content  = tls_self_signed_cert.root_ca.cert_pem
+  filename = "${path.module}/../artifacts/root_ca.crt"
+}
+
 resource "tls_private_key" "client_ca" {
   algorithm = "RSA"
   rsa_bits  = 4096
@@ -68,6 +73,11 @@ resource "tls_self_signed_cert" "client_ca" {
     "key_encipherment",
     "server_auth"
   ]
+}
+
+resource "local_file" "client_ca" {
+  content  = tls_self_signed_cert.client_ca.cert_pem
+  filename = "${path.module}/../artifacts/client_ca.crt"
 }
 
 resource "tls_private_key" "admin" {

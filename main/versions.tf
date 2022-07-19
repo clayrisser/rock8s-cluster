@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:04:44
  * Author: Clay Risser
  * -----
- * Last Modified: 30-04-2022 16:54:28
+ * Last Modified: 19-07-2022 12:55:58
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -46,19 +46,19 @@ terraform {
     }
     flux = {
       source  = "fluxcd/flux"
-      version = "0.11.0"
+      version = ">= 0.11.0"
     }
     gitlab = {
       source  = "gitlabhq/gitlab"
-      version = "3.7.0"
+      version = ">= 3.7.0"
     }
     kops = {
       source  = "eddycharly/kops"
-      version = "1.23.0-alpha.2"
+      version = ">= 1.23.5"
     }
     tls = {
       source  = "hashicorp/tls"
-      version = "3.3.0"
+      version = ">= 3.3.0"
     }
   }
 }
