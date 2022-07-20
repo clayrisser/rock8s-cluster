@@ -4,7 +4,7 @@
  * File Created: 27-04-2022 12:01:36
  * Author: Clay Risser
  * -----
- * Last Modified: 19-07-2022 13:02:23
+ * Last Modified: 20-07-2022 10:10:28
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -19,7 +19,7 @@ resource "tls_self_signed_cert" "ca" {
   private_key_pem   = tls_private_key.ca.private_key_pem
   is_ca_certificate = true
   subject {
-    common_name = "kubernetes-ca-ca"
+    common_name = "kubernetes-ca"
   }
   validity_period_hours = 43800
   allowed_uses = [
