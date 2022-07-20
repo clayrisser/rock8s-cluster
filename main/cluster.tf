@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 20-07-2022 12:44:04
+ * Last Modified: 20-07-2022 18:08:44
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -48,19 +48,9 @@ resource "aws_security_group" "nodes" {
   }
 }
 
-resource "null_resource" "artifacts" {
-  provisioner "local-exec" {
-    command     = <<EOF
-mkdir -p ../artifacts
-echo '${tls_private_key.node.public_key_openssh}' > ../artifacts/node_rsa.pub
-echo '${tls_private_key.node.private_key_openssh}' > ../artifacts/node_rsa
-echo '${local.kubeconfig}' | yq -P > ../artifacts/iam_kubeconfig
-EOF
-    interpreter = ["sh", "-c"]
-    environment = {
-      KUBECONFIG = local.kubeconfig
-    }
-  }
+resource "local_file" "iam_kubeconfig" {
+  content  = yamlencode(local.kubeconfig)
+  filename = "${path.module}/../artifacts/iam_kubeconfig"
 }
 
 resource "kops_cluster" "this" {
@@ -209,18 +199,16 @@ resource "kops_cluster" "this" {
       enabled = true
     }
   }
-  # kube_api_server {
-  #   client_ca_file = local_file.client_ca.filename
-  # }
-  # kube_controller_manager {
-  #   root_ca_file = local_file.root_ca.filename
-  # }
-  # secrets {
-  #   cluster_ca_cert = tls_self_signed_cert.ca.cert_pem
-  #   cluster_ca_key  = tls_private_key.ca.private_key_pem
-  # }
+  secrets {
+    cluster_ca_cert = tls_self_signed_cert.ca.cert_pem
+    cluster_ca_key  = tls_private_key.ca.private_key_pem
+  }
   depends_on = [
-    null_resource.artifacts
+    local_file.admin_rsa,
+    local_file.admin_rsa_pub,
+    local_file.iam_kubeconfig,
+    local_file.node_rsa,
+    local_file.node_rsa_pub,
   ]
   lifecycle {
     prevent_destroy = false
