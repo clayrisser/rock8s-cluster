@@ -4,7 +4,7 @@
  * File Created: 29-04-2022 14:41:49
  * Author: Clay Risser
  * -----
- * Last Modified: 12-08-2022 10:38:03
+ * Last Modified: 12-08-2022 11:39:50
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -26,7 +26,7 @@ config:
   region: ${var.region}
   secretKey: ${var.aws_secret_access_key}
   defaultBucket: ${var.bucket}
-  defaultPrefix: dangerous/${local.cluster_name}
+  defaultPrefix: default/${local.cluster_name}
 EOF
   lifecycle {
     prevent_destroy = false
