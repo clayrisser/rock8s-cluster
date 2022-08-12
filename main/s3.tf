@@ -4,13 +4,13 @@
  * File Created: 29-04-2022 14:41:49
  * Author: Clay Risser
  * -----
- * Last Modified: 12-08-2022 11:39:50
+ * Last Modified: 12-08-2022 12:22:58
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
 
-resource "rancher2_app_v2" "helm_operator" {
+resource "rancher2_app_v2" "s3" {
   chart_name    = "s3"
   chart_version = "0.0.1"
   cluster_id    = local.rancher_cluster_id
