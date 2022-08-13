@@ -4,7 +4,7 @@
  * File Created: 29-04-2022 14:41:49
  * Author: Clay Risser
  * -----
- * Last Modified: 12-08-2022 12:22:58
+ * Last Modified: 13-08-2022 08:11:45
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -20,13 +20,15 @@ resource "rancher2_app_v2" "s3" {
   wait          = true
   values        = <<EOF
 config:
-  accessKey: ${var.aws_access_key_id}
-  endpoint: s3.dualstack.${var.region}.amazonaws.com
-  pathStyle: true
-  region: ${var.region}
-  secretKey: ${var.aws_secret_access_key}
-  defaultBucket: ${var.bucket}
-  defaultPrefix: default/${local.cluster_name}
+  s3:
+    accessKey: ${var.aws_access_key_id}
+    defaultBucket: ${var.bucket}
+    defaultPrefix: default/${local.cluster_name}
+    endpoint: s3.dualstack.${var.region}.amazonaws.com
+    pathStyle: true
+    region: ${var.region}
+    secretKey: ${var.aws_secret_access_key}
+    tls: true
 EOF
   lifecycle {
     prevent_destroy = false

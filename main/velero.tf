@@ -4,7 +4,7 @@
  * File Created: 21-04-2022 08:53:47
  * Author: Clay Risser
  * -----
- * Last Modified: 12-08-2022 13:58:52
+ * Last Modified: 13-08-2022 07:18:47
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -21,8 +21,10 @@ resource "rancher2_app_v2" "velero" {
   values        = <<EOF
 config:
   allowIntegration: true
-  accessKeyId: ${var.aws_access_key_id}
-  secretAccessKey: ${var.aws_secret_access_key}
+  s3:
+    integration: kube-system
+    bucket: ${var.bucket}
+    prefix: velero/${local.cluster_name}
 velero:
   backupsEnabled: true
   deployRestic: true
@@ -31,13 +33,6 @@ velero:
     enabled: true
   configuration:
     provider: aws
-    backupStorageLocation:
-      bucket: ${var.bucket}
-      prefix: velero/${local.cluster_name}
-      config:
-        profile: default
-        region: ${var.region}
-        s3Url:
     volumeSnapshotLocation:
       provider: velero.io/aws
       config:
@@ -45,7 +40,8 @@ velero:
 EOF
   depends_on = [
     rancher2_app_v2.integration_operator,
-    rancher2_app_v2.helm_controller
+    rancher2_app_v2.helm_controller,
+    rancher2_app_v2.s3
   ]
   lifecycle {
     prevent_destroy = false
