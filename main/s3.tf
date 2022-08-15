@@ -4,7 +4,7 @@
  * File Created: 29-04-2022 14:41:49
  * Author: Clay Risser
  * -----
- * Last Modified: 13-08-2022 08:11:45
+ * Last Modified: 15-08-2022 08:06:23
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -30,6 +30,9 @@ config:
     secretKey: ${var.aws_secret_access_key}
     tls: true
 EOF
+  depends_on = [
+    rancher2_app_v2.integration_operator
+  ]
   lifecycle {
     prevent_destroy = false
     ignore_changes  = []
