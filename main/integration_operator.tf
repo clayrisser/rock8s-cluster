@@ -4,7 +4,7 @@
  * File Created: 21-04-2022 09:05:39
  * Author: Clay Risser
  * -----
- * Last Modified: 14-08-2022 15:00:33
+ * Last Modified: 15-08-2022 08:13:12
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -22,7 +22,8 @@ resource "rancher2_app_v2" "integration_operator" {
 {}
 EOF
   depends_on = [
-    rancher2_app_v2.patch_operator
+    rancher2_app_v2.patch_operator,
+    kubernetes_secret.registry
   ]
   lifecycle {
     prevent_destroy = false
