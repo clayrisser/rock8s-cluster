@@ -4,7 +4,7 @@
  * File Created: 09-02-2022 11:24:10
  * Author: Clay Risser
  * -----
- * Last Modified: 20-05-2022 12:28:58
+ * Last Modified: 16-09-2022 10:30:43
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -28,7 +28,7 @@ resource "helm_release" "rancher" {
   name             = "rancher"
   repository       = "https://releases.rancher.com/server-charts/latest"
   chart            = "rancher"
-  version          = "v2.6.5"
+  version          = "v2.6.8"
   namespace        = "cattle-system"
   create_namespace = true
   values = [<<EOF
