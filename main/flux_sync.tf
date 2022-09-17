@@ -1,10 +1,10 @@
 /**
- * File: /flux_sync.tf
- * Project: eks
+ * File: /main/flux_sync.tf
+ * Project: kops
  * File Created: 23-02-2022 11:40:50
  * Author: Clay Risser
  * -----
- * Last Modified: 11-06-2022 06:57:31
+ * Last Modified: 17-09-2022 06:55:28
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022

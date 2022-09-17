@@ -1,10 +1,10 @@
 /**
- * File: /cleanup_operator.tf
- * Project: eks
+ * File: /main/cleanup_operator.tf
+ * Project: kops
  * File Created: 12-02-2022 12:16:54
  * Author: Clay Risser
  * -----
- * Last Modified: 17-09-2022 06:39:22
+ * Last Modified: 17-09-2022 06:55:28
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022

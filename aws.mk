@@ -1,9 +1,9 @@
 # File: /aws.mk
-# Project: eks
+# Project: kops
 # File Created: 19-04-2022 08:50:29
 # Author: Clay Risser
 # -----
-# Last Modified: 22-04-2022 13:07:22
+# Last Modified: 17-09-2022 06:55:28
 # Modified By: Clay Risser
 # -----
 # Risser Labs LLC (c) Copyright 2022

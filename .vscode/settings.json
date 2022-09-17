@@ -3,6 +3,7 @@
     "awscli",
     "gmake",
     "hashicorp",
+    "kops",
     "kube",
     "kubeconfig",
     "risserlabs",

@@ -1,10 +1,10 @@
 /**
- * File: /variables.tf
- * Project: main
+ * File: /main/variables.tf
+ * Project: kops
  * File Created: 14-04-2022 08:12:06
  * Author: Clay Risser
  * -----
- * Last Modified: 03-05-2022 12:37:40
+ * Last Modified: 17-09-2022 06:55:25
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022

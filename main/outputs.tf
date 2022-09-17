@@ -1,10 +1,10 @@
 /**
- * File: /outputs.tf
- * Project: main
+ * File: /main/outputs.tf
+ * Project: kops
  * File Created: 14-04-2022 08:17:04
  * Author: Clay Risser
  * -----
- * Last Modified: 11-06-2022 06:31:04
+ * Last Modified: 17-09-2022 06:55:25
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022

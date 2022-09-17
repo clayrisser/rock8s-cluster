@@ -1,10 +1,10 @@
 /**
- * File: /docker_registry.tf
- * Project: main
+ * File: /main/docker_registry.tf
+ * Project: kops
  * File Created: 24-02-2022 16:17:10
  * Author: Clay Risser
  * -----
- * Last Modified: 11-06-2022 06:57:09
+ * Last Modified: 17-09-2022 06:55:25
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022

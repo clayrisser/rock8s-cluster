@@ -1,10 +1,10 @@
 /**
- * File: /locals.tf
- * Project: main
+ * File: /main/locals.tf
+ * Project: kops
  * File Created: 14-04-2022 13:36:29
  * Author: Clay Risser
  * -----
- * Last Modified: 19-07-2022 15:02:42
+ * Last Modified: 17-09-2022 06:55:25
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022

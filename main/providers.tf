@@ -1,10 +1,10 @@
 /**
- * File: /providers.tf
- * Project: main
+ * File: /main/providers.tf
+ * Project: kops
  * File Created: 14-04-2022 08:04:21
  * Author: Clay Risser
  * -----
- * Last Modified: 30-04-2022 16:54:44
+ * Last Modified: 17-09-2022 06:55:25
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022

@@ -1,10 +1,10 @@
 /**
- * File: /dns.tf
- * Project: main
+ * File: /main/dns.tf
+ * Project: kops
  * File Created: 30-04-2022 16:46:19
  * Author: Clay Risser
  * -----
- * Last Modified: 30-04-2022 16:52:57
+ * Last Modified: 17-09-2022 06:55:25
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
