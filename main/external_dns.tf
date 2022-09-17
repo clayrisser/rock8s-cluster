@@ -4,7 +4,7 @@
  * File Created: 21-04-2022 09:03:40
  * Author: Clay Risser
  * -----
- * Last Modified: 11-06-2022 06:45:29
+ * Last Modified: 17-09-2022 05:03:01
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -24,6 +24,13 @@ config:
   cloudflare:
     apiKey: ${var.cloudflare_api_key}
     email: ${var.cloudflare_email}
+resources:
+  limits:
+    cpu: 50m
+    memory: 25Mi
+  requests:
+    cpu: 10m
+    memory: 25Mi
 EOF
   depends_on = [
     rancher2_app_v2.integration_operator,

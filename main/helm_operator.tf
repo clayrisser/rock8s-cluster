@@ -4,7 +4,7 @@
  * File Created: 07-05-2022 03:17:43
  * Author: Clay Risser
  * -----
- * Last Modified: 12-08-2022 12:34:05
+ * Last Modified: 17-09-2022 05:02:12
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -30,6 +30,13 @@ affinity:
               operator: In
               values:
                 - amd64
+resources:
+  limits:
+    cpu: 50m
+    memory: 1Gi
+  requests:
+    cpu: 40m
+    memory: 64Mi
 EOF
   lifecycle {
     prevent_destroy = false
