@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 17-09-2022 06:55:25
+ * Last Modified: 18-09-2022 09:18:54
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -224,7 +224,7 @@ resource "kops_instance_group" "master-0" {
   role                       = "Master"
   min_size                   = 1
   max_size                   = 1
-  machine_type               = "t3.xlarge"
+  machine_type               = "a1.xlarge"
   subnets                    = [data.aws_subnet.public[0].id]
   additional_security_groups = [aws_security_group.api.id]
   lifecycle {
