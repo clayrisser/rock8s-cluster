@@ -4,7 +4,7 @@
  * File Created: 18-09-2022 07:59:35
  * Author: Clay Risser
  * -----
- * Last Modified: 18-09-2022 09:26:35
+ * Last Modified: 18-09-2022 09:59:22
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -36,7 +36,11 @@ resource "rancher2_app_v2" "loki" {
   repo_name     = rancher2_catalog_v2.grafana.name
   wait          = true
   values        = <<EOF
+gateway:
+  basicAuth:
+    enabled: false
 loki:
+  auth_enabled: false
   commonConfig:
     replication_factor: 1
   storage:
@@ -68,7 +72,7 @@ metadata:
   namespace: cattle-logging-system
 spec:
   loki:
-    url: http://loki-write.loki.svc.cluster.local:3100
+    url: http://loki-gateway.loki.svc.cluster.local
     configure_kubernetes_labels: true
     buffer:
       timekey: 1m
