@@ -4,7 +4,7 @@
  * File Created: 21-04-2022 08:39:20
  * Author: Clay Risser
  * -----
- * Last Modified: 18-09-2022 06:07:22
+ * Last Modified: 18-09-2022 07:07:38
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -12,7 +12,7 @@
 
 resource "rancher2_app_v2" "kanister" {
   chart_name    = "kanister"
-  chart_version = "0.0.1"
+  chart_version = "0.71.0"
   cluster_id    = local.rancher_cluster_id
   name          = "kanister"
   namespace     = rancher2_namespace.kanister.name
