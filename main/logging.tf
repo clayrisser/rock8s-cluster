@@ -1,10 +1,10 @@
 /**
- * File: /main/rancher_logging.tf
+ * File: /main/logging.tf
  * Project: kops
  * File Created: 18-09-2022 07:59:35
  * Author: Clay Risser
  * -----
- * Last Modified: 18-09-2022 08:43:41
+ * Last Modified: 18-09-2022 09:26:35
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -68,7 +68,7 @@ metadata:
   namespace: cattle-logging-system
 spec:
   loki:
-    url: http://loki.loki.svc.cluster.local
+    url: http://loki-write.loki.svc.cluster.local:3100
     configure_kubernetes_labels: true
     buffer:
       timekey: 1m
