@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 18-09-2022 10:57:04
+ * Last Modified: 18-09-2022 12:18:18
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -226,7 +226,7 @@ resource "kops_instance_group" "master-0" {
   role                       = "Master"
   min_size                   = 1
   max_size                   = 1
-  machine_type               = "a1.xlarge"
+  machine_type               = "t3.xlarge"
   subnets                    = [data.aws_subnet.public[0].id]
   additional_security_groups = [aws_security_group.api.id]
   lifecycle {
@@ -265,12 +265,12 @@ resource "kops_instance_group" "master-0" {
 #   }
 # }
 
-resource "kops_instance_group" "node-0" {
+resource "kops_instance_group" "amd64-0" {
   cluster_name               = kops_cluster.this.id
-  name                       = "node-0"
+  name                       = "amd64-0"
   autoscale                  = true
   role                       = "Node"
-  min_size                   = 1
+  min_size                   = 0
   max_size                   = 3
   machine_type               = "t3.medium"
   subnets                    = [data.aws_subnet.public[0].id]
@@ -281,12 +281,12 @@ resource "kops_instance_group" "node-0" {
   }
 }
 
-resource "kops_instance_group" "node-1" {
+resource "kops_instance_group" "amd64-1" {
   cluster_name               = kops_cluster.this.id
-  name                       = "node-1"
+  name                       = "amd64-1"
   autoscale                  = true
   role                       = "Node"
-  min_size                   = 1
+  min_size                   = 0
   max_size                   = 3
   machine_type               = "t3.medium"
   subnets                    = [data.aws_subnet.public[1].id]
@@ -297,14 +297,62 @@ resource "kops_instance_group" "node-1" {
   }
 }
 
-resource "kops_instance_group" "node-2" {
+resource "kops_instance_group" "amd64-2" {
   cluster_name               = kops_cluster.this.id
-  name                       = "node-2"
+  name                       = "amd64-2"
   autoscale                  = true
   role                       = "Node"
-  min_size                   = 1
+  min_size                   = 0
   max_size                   = 3
   machine_type               = "t3.medium"
+  subnets                    = [data.aws_subnet.public[2].id]
+  additional_security_groups = [aws_security_group.nodes.id]
+  lifecycle {
+    prevent_destroy = false
+    ignore_changes  = []
+  }
+}
+
+resource "kops_instance_group" "arm64-0" {
+  cluster_name               = kops_cluster.this.id
+  name                       = "arm64-0"
+  autoscale                  = true
+  role                       = "Node"
+  min_size                   = 0
+  max_size                   = 3
+  machine_type               = "a1.medium"
+  subnets                    = [data.aws_subnet.public[0].id]
+  additional_security_groups = [aws_security_group.nodes.id]
+  lifecycle {
+    prevent_destroy = false
+    ignore_changes  = []
+  }
+}
+
+resource "kops_instance_group" "arm64-1" {
+  cluster_name               = kops_cluster.this.id
+  name                       = "arm64-1"
+  autoscale                  = true
+  role                       = "Node"
+  min_size                   = 0
+  max_size                   = 3
+  machine_type               = "a1.medium"
+  subnets                    = [data.aws_subnet.public[1].id]
+  additional_security_groups = [aws_security_group.nodes.id]
+  lifecycle {
+    prevent_destroy = false
+    ignore_changes  = []
+  }
+}
+
+resource "kops_instance_group" "arm64-2" {
+  cluster_name               = kops_cluster.this.id
+  name                       = "arm64-2"
+  autoscale                  = true
+  role                       = "Node"
+  min_size                   = 0
+  max_size                   = 3
+  machine_type               = "a1.medium"
   subnets                    = [data.aws_subnet.public[2].id]
   additional_security_groups = [aws_security_group.nodes.id]
   lifecycle {
@@ -320,9 +368,12 @@ resource "kops_cluster_updater" "updater" {
     master-0 = kops_instance_group.master-0.revision
     # master-1 = kops_instance_group.master-1.revision
     # master-2 = kops_instance_group.master-2.revision
-    node-0 = kops_instance_group.node-0.revision
-    node-1 = kops_instance_group.node-1.revision
-    node-2 = kops_instance_group.node-2.revision
+    amd64-0 = kops_instance_group.amd64-0.revision
+    amd64-1 = kops_instance_group.amd64-1.revision
+    amd64-2 = kops_instance_group.amd64-2.revision
+    arm64-0 = kops_instance_group.arm64-0.revision
+    arm64-1 = kops_instance_group.arm64-1.revision
+    arm64-2 = kops_instance_group.arm64-2.revision
   }
   rolling_update {
     skip                = false
