@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:10:56
  * Author: Clay Risser
  * -----
- * Last Modified: 17-09-2022 06:55:25
+ * Last Modified: 18-09-2022 10:55:37
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -12,10 +12,10 @@
 
 module "vpc" {
   source                               = "terraform-aws-modules/vpc/aws"
-  version                              = "~> 3.0"
+  version                              = "3.14.4"
   name                                 = local.cluster_name
   cidr                                 = "10.0.0.0/16"
-  azs                                  = data.aws_availability_zones.available.names
+  azs                                  = ["${var.region}a", "${var.region}b", "${var.region}c"]
   private_subnets                      = ["10.0.0.0/19", "10.0.32.0/19", "10.0.64.0/19"]
   public_subnets                       = ["10.0.224.0/19", "10.0.192.0/19", "10.0.160.0/19"]
   enable_nat_gateway                   = false

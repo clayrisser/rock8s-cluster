@@ -4,7 +4,7 @@
  * File Created: 23-02-2022 11:40:50
  * Author: Clay Risser
  * -----
- * Last Modified: 17-09-2022 06:55:28
+ * Last Modified: 18-09-2022 10:36:13
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -61,18 +61,5 @@ resource "kubernetes_secret" "flux_sync" {
   }
   depends_on = [
     kubectl_manifest.flux_sync
-  ]
-}
-
-module "deploy_key" {
-  count          = var.flux_git_repository == "" ? 0 : 1
-  source         = "../modules/deploy_key/gitlab"
-  name           = local.cluster_name
-  gitlab_project = var.gitlab_project_id
-  providers = {
-    gitlab = gitlab
-  }
-  depends_on = [
-    kubernetes_secret.flux_sync
   ]
 }

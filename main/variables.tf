@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:12:06
  * Author: Clay Risser
  * -----
- * Last Modified: 18-09-2022 08:49:16
+ * Last Modified: 18-09-2022 10:55:32
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -93,10 +93,6 @@ variable "gitlab_registry_token" {
 }
 
 variable "gitlab_registry_username" {
-  type = string
-}
-
-variable "gitlab_token" {
   type = string
 }
 

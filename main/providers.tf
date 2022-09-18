@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:04:21
  * Author: Clay Risser
  * -----
- * Last Modified: 17-09-2022 06:55:25
+ * Last Modified: 18-09-2022 10:36:30
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -46,10 +46,6 @@ provider "kubectl" {
     command     = local.user_exec.command
     args        = local.user_exec.args
   }
-}
-
-provider "gitlab" {
-  token = var.gitlab_token
 }
 
 provider "kops" {

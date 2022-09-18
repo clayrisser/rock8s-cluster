@@ -4,15 +4,13 @@
  * File Created: 14-04-2022 08:09:15
  * Author: Clay Risser
  * -----
- * Last Modified: 17-09-2022 06:55:25
+ * Last Modified: 18-09-2022 10:55:43
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
 
 data "aws_caller_identity" "this" {}
-
-data "aws_availability_zones" "available" {}
 
 data "aws_subnet" "public" {
   count  = length(module.vpc.public_subnets)
