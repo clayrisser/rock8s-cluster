@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 13:36:29
  * Author: Clay Risser
  * -----
- * Last Modified: 18-09-2022 08:49:12
+ * Last Modified: 18-09-2022 11:28:07
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -20,7 +20,7 @@ locals {
   public_nodes_ports   = [for port in split(",", var.public_nodes_ports) : parseint(port, 10)]
   cluster_endpoint     = "https://api.${var.cluster_prefix}-${tostring(var.iteration)}.${var.dns_zone}"
   user_exec = {
-    api_version = "client.authentication.k8s.io/v1alpha1"
+    api_version = "client.authentication.k8s.io/v1beta1"
     command     = "aws-iam-authenticator"
     args = [
       "token",
