@@ -4,7 +4,7 @@
  * File Created: 07-05-2022 03:17:43
  * Author: Clay Risser
  * -----
- * Last Modified: 17-09-2022 06:55:25
+ * Last Modified: 18-09-2022 06:07:17
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -15,7 +15,7 @@ resource "rancher2_app_v2" "helm_operator" {
   chart_version = "1.2.0"
   cluster_id    = local.rancher_cluster_id
   name          = "helm-operator"
-  namespace     = "flux"
+  namespace     = rancher2_namespace.flux.name
   repo_name     = rancher2_catalog_v2.fluxcd.name
   wait          = true
   values        = <<EOF
@@ -38,6 +38,15 @@ resources:
     cpu: 40m
     memory: 64Mi
 EOF
+  lifecycle {
+    prevent_destroy = false
+    ignore_changes  = []
+  }
+}
+
+resource "rancher2_namespace" "flux" {
+  name       = "flux"
+  project_id = data.rancher2_project.system.id
   lifecycle {
     prevent_destroy = false
     ignore_changes  = []

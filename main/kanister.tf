@@ -4,7 +4,7 @@
  * File Created: 21-04-2022 08:39:20
  * Author: Clay Risser
  * -----
- * Last Modified: 17-09-2022 06:55:25
+ * Last Modified: 18-09-2022 06:07:22
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -15,7 +15,7 @@ resource "rancher2_app_v2" "kanister" {
   chart_version = "0.0.1"
   cluster_id    = local.rancher_cluster_id
   name          = "kanister"
-  namespace     = "kanister"
+  namespace     = rancher2_namespace.kanister.name
   repo_name     = rancher2_catalog_v2.risserlabs.name
   wait          = true
   values        = <<EOF
@@ -33,6 +33,15 @@ EOF
     rancher2_app_v2.integration_operator,
     rancher2_app_v2.helm_operator
   ]
+  lifecycle {
+    prevent_destroy = false
+    ignore_changes  = []
+  }
+}
+
+resource "rancher2_namespace" "kanister" {
+  name       = "kanister"
+  project_id = data.rancher2_project.system.id
   lifecycle {
     prevent_destroy = false
     ignore_changes  = []

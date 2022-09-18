@@ -4,7 +4,7 @@
  * File Created: 20-04-2022 13:40:49
  * Author: Clay Risser
  * -----
- * Last Modified: 17-09-2022 06:55:25
+ * Last Modified: 18-09-2022 06:06:55
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -15,7 +15,7 @@ resource "rancher2_app_v2" "rancher_monitoring" {
   chart_version = "100.1.2+up19.0.3"
   cluster_id    = local.rancher_cluster_id
   name          = "rancher-monitoring"
-  namespace     = "cattle-monitoring-system"
+  namespace     = rancher2_namespace.cattle_monitoring_system.name
   repo_name     = "rancher-charts"
   wait          = true
   values        = <<EOF
@@ -92,6 +92,15 @@ EOF
     rancher2_app_v2.integration_operator,
     rancher2_app_v2.helm_operator
   ]
+  lifecycle {
+    prevent_destroy = false
+    ignore_changes  = []
+  }
+}
+
+resource "rancher2_namespace" "cattle_monitoring_system" {
+  name       = "cattle-monitoring-system"
+  project_id = data.rancher2_project.system.id
   lifecycle {
     prevent_destroy = false
     ignore_changes  = []
