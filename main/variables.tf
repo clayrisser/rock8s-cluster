@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:12:06
  * Author: Clay Risser
  * -----
- * Last Modified: 17-09-2022 06:55:25
+ * Last Modified: 18-09-2022 08:49:16
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -60,7 +60,19 @@ variable "flux_known_hosts" {
   default = ""
 }
 
-variable "bucket" {
+variable "main_bucket" {
+  default = ""
+}
+
+variable "loki_chunks_bucket" {
+  default = ""
+}
+
+variable "loki_ruler_bucket" {
+  default = ""
+}
+
+variable "loki_admin_bucket" {
   default = ""
 }
 

@@ -4,7 +4,7 @@
  * File Created: 20-04-2022 13:40:49
  * Author: Clay Risser
  * -----
- * Last Modified: 18-09-2022 06:06:55
+ * Last Modified: 18-09-2022 08:03:34
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -88,10 +88,7 @@ kube-state-metrics:
                 values:
                   - amd64
 EOF
-  depends_on = [
-    rancher2_app_v2.integration_operator,
-    rancher2_app_v2.helm_operator
-  ]
+  depends_on    = []
   lifecycle {
     prevent_destroy = false
     ignore_changes  = []

@@ -3,7 +3,7 @@
 # File Created: 15-04-2022 09:14:48
 # Author: Clay Risser
 # -----
-# Last Modified: 17-09-2022 06:55:28
+# Last Modified: 18-09-2022 08:51:30
 # Modified By: Clay Risser
 # -----
 # Risser Labs LLC (c) Copyright 2022
@@ -11,11 +11,6 @@
 export TF_VAR_api_strategy ?= $(API_STRATEGY)
 export TF_VAR_aws_access_key_id ?= $(AWS_ACCESS_KEY_ID)
 export TF_VAR_aws_secret_access_key ?= $(AWS_SECRET_ACCESS_KEY)
-ifeq (,$(BUCKET))
-export TF_VAR_bucket ?= $(DNS_ZONE)
-else
-export TF_VAR_bucket ?= $(BUCKET)
-endif
 export TF_VAR_cloudflare_api_key ?= $(CLOUDFLARE_API_KEY)
 export TF_VAR_cloudflare_email ?= $(CLOUDFLARE_EMAIL)
 export TF_VAR_cluster_prefix ?= $(CLUSTER_PREFIX)
