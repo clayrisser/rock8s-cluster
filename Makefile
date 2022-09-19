@@ -3,7 +3,7 @@
 # File Created: 27-01-2022 11:41:37
 # Author: Clay Risser
 # -----
-# Last Modified: 17-09-2022 06:55:28
+# Last Modified: 19-09-2022 06:33:14
 # Modified By: Clay Risser
 # -----
 # Risser Labs LLC (c) Copyright 2022
@@ -91,7 +91,7 @@ prevent-destroy:
 .PHONY: kubeconfig
 kubeconfig: ## authenticate local environment with the kube cluster
 	@$(KOPS) export kubeconfig '$(CLUSTER_NAME)' \
-		--state s3://$$([ "$(BUCKET)" = "" ] && $(ECHO) $(DNS_ZONE) || echo $(BUCKET))/kops \
+		--state s3://$(CLUSTER_NAME)/kops \
 		--admin \
 		--kubeconfig $(HOME)/.kube/config
 	@export KUBE_CONTEXT=$(CLUSTER_NAME) && \
