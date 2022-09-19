@@ -4,7 +4,7 @@
  * File Created: 18-09-2022 07:59:35
  * Author: Clay Risser
  * -----
- * Last Modified: 19-09-2022 09:18:08
+ * Last Modified: 19-09-2022 09:19:03
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -121,7 +121,7 @@ resource "kubectl_manifest" "cluster_flow" {
 apiVersion: logging.banzaicloud.io/v1beta1
 kind: ClusterFlow
 metadata:
-  name: loki
+  name: loki-all
   namespace: cattle-logging-system
 spec:
   globalOutputRefs:
