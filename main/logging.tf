@@ -4,7 +4,7 @@
  * File Created: 18-09-2022 07:59:35
  * Author: Clay Risser
  * -----
- * Last Modified: 19-09-2022 09:19:03
+ * Last Modified: 19-09-2022 10:10:27
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -89,16 +89,16 @@ EOF
 }
 
 resource "kubectl_manifest" "loki_datasource" {
-  yaml_body = <<EOF
+  yaml_body  = <<EOF
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: rancher-logging-loki-datasource
+  name: loki-datasource
   namespace: cattle-monitoring-system
   labels:
     grafana_datasource: '1'
 data:
-  datasource.yaml: |-
+  loki-datasource.yaml: |-
     apiVersion: 1
     datasources:
       - name: Loki
@@ -107,9 +107,7 @@ data:
         access: proxy
         version: 1
 EOF
-  depends_on = [
-    rancher2_app_v2.rancher_logging
-  ]
+  depends_on = []
   lifecycle {
     prevent_destroy = false
     ignore_changes  = []
