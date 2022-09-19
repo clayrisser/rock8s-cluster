@@ -4,7 +4,7 @@
  * File Created: 18-09-2022 07:59:35
  * Author: Clay Risser
  * -----
- * Last Modified: 18-09-2022 09:59:22
+ * Last Modified: 19-09-2022 08:51:33
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -68,7 +68,7 @@ resource "kubectl_manifest" "loki_output" {
 apiVersion: logging.banzaicloud.io/v1beta1
 kind: ClusterOutput
 metadata:
-  name: loki-output
+  name: loki
   namespace: cattle-logging-system
 spec:
   loki:
@@ -78,6 +78,34 @@ spec:
       timekey: 1m
       timekey_use_utc: true
       timekey_wait: 30s
+EOF
+  depends_on = [
+    rancher2_app_v2.rancher_logging
+  ]
+  lifecycle {
+    prevent_destroy = false
+    ignore_changes  = []
+  }
+}
+
+resource "kubectl_manifest" "loki_datasource" {
+  yaml_body = <<EOF
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rancher-logging-loki-datasource
+  namespace: cattle-monitoring-system
+data:
+  datasource.yaml: |
+    apiVersion: 1
+    datasources:
+      - name: Loki
+        type: loki
+        url: http://loki-gateway.loki.svc.cluster.local
+        access: proxy
+        isDefault: true
+        jsonData:
+          timeInterval: 2m
 EOF
   depends_on = [
     rancher2_app_v2.rancher_logging
