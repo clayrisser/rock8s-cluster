@@ -4,7 +4,7 @@
  * File Created: 18-09-2022 07:59:35
  * Author: Clay Risser
  * -----
- * Last Modified: 19-09-2022 09:05:00
+ * Last Modified: 19-09-2022 09:18:08
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -105,9 +105,29 @@ data:
         type: loki
         url: http://loki-gateway.loki.svc.cluster.local
         access: proxy
-        isDefault: true
-        jsonData:
-          timeInterval: 2m
+        version: 1
+EOF
+  depends_on = [
+    rancher2_app_v2.rancher_logging
+  ]
+  lifecycle {
+    prevent_destroy = false
+    ignore_changes  = []
+  }
+}
+
+resource "kubectl_manifest" "cluster_flow" {
+  yaml_body = <<EOF
+apiVersion: logging.banzaicloud.io/v1beta1
+kind: ClusterFlow
+metadata:
+  name: loki
+  namespace: cattle-logging-system
+spec:
+  globalOutputRefs:
+    - loki
+  match:
+    - select: {}
 EOF
   depends_on = [
     rancher2_app_v2.rancher_logging
