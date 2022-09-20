@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 18-09-2022 13:14:03
+ * Last Modified: 20-09-2022 13:55:35
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -265,12 +265,12 @@ resource "kops_instance_group" "master-0" {
 #   }
 # }
 
-resource "kops_instance_group" "amd64-0" {
+resource "kops_instance_group" "t3-medium-a" {
   cluster_name               = kops_cluster.this.id
-  name                       = "amd64-0"
+  name                       = "t3-medium-a"
   autoscale                  = true
   role                       = "Node"
-  min_size                   = 1
+  min_size                   = 2
   max_size                   = 3
   machine_type               = "t3.medium"
   subnets                    = [data.aws_subnet.public[0].id]
@@ -281,9 +281,9 @@ resource "kops_instance_group" "amd64-0" {
   }
 }
 
-resource "kops_instance_group" "amd64-1" {
+resource "kops_instance_group" "t3-medium-b" {
   cluster_name               = kops_cluster.this.id
-  name                       = "amd64-1"
+  name                       = "t3-medium-b"
   autoscale                  = true
   role                       = "Node"
   min_size                   = 1
@@ -297,9 +297,9 @@ resource "kops_instance_group" "amd64-1" {
   }
 }
 
-resource "kops_instance_group" "amd64-2" {
+resource "kops_instance_group" "t3-medium-c" {
   cluster_name               = kops_cluster.this.id
-  name                       = "amd64-2"
+  name                       = "t3-medium-c"
   autoscale                  = true
   role                       = "Node"
   min_size                   = 1
@@ -313,54 +313,6 @@ resource "kops_instance_group" "amd64-2" {
   }
 }
 
-# resource "kops_instance_group" "arm64-0" {
-#   cluster_name               = kops_cluster.this.id
-#   name                       = "arm64-0"
-#   autoscale                  = true
-#   role                       = "Node"
-#   min_size                   = 0
-#   max_size                   = 3
-#   machine_type               = "a1.medium"
-#   subnets                    = [data.aws_subnet.public[0].id]
-#   additional_security_groups = [aws_security_group.nodes.id]
-#   lifecycle {
-#     prevent_destroy = false
-#     ignore_changes  = []
-#   }
-# }
-
-# resource "kops_instance_group" "arm64-1" {
-#   cluster_name               = kops_cluster.this.id
-#   name                       = "arm64-1"
-#   autoscale                  = true
-#   role                       = "Node"
-#   min_size                   = 0
-#   max_size                   = 3
-#   machine_type               = "a1.medium"
-#   subnets                    = [data.aws_subnet.public[1].id]
-#   additional_security_groups = [aws_security_group.nodes.id]
-#   lifecycle {
-#     prevent_destroy = false
-#     ignore_changes  = []
-#   }
-# }
-
-# resource "kops_instance_group" "arm64-2" {
-#   cluster_name               = kops_cluster.this.id
-#   name                       = "arm64-2"
-#   autoscale                  = true
-#   role                       = "Node"
-#   min_size                   = 0
-#   max_size                   = 3
-#   machine_type               = "a1.medium"
-#   subnets                    = [data.aws_subnet.public[2].id]
-#   additional_security_groups = [aws_security_group.nodes.id]
-#   lifecycle {
-#     prevent_destroy = false
-#     ignore_changes  = []
-#   }
-# }
-
 resource "kops_cluster_updater" "updater" {
   cluster_name = kops_cluster.this.id
   keepers = {
@@ -368,12 +320,9 @@ resource "kops_cluster_updater" "updater" {
     master-0 = kops_instance_group.master-0.revision
     # master-1 = kops_instance_group.master-1.revision
     # master-2 = kops_instance_group.master-2.revision
-    amd64-0 = kops_instance_group.amd64-0.revision
-    amd64-1 = kops_instance_group.amd64-1.revision
-    amd64-2 = kops_instance_group.amd64-2.revision
-    # arm64-0 = kops_instance_group.arm64-0.revision
-    # arm64-1 = kops_instance_group.arm64-1.revision
-    # arm64-2 = kops_instance_group.arm64-2.revision
+    t3-medium-a = kops_instance_group.t3-medium-a.revision
+    t3-medium-b = kops_instance_group.t3-medium-b.revision
+    t3-medium-c = kops_instance_group.t3-medium-c.revision
   }
   rolling_update {
     skip                = false
