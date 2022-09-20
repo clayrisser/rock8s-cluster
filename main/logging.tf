@@ -4,7 +4,7 @@
  * File Created: 18-09-2022 07:59:35
  * Author: Clay Risser
  * -----
- * Last Modified: 20-09-2022 07:40:45
+ * Last Modified: 20-09-2022 14:20:45
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -143,7 +143,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: loki-datasource
-  namespace: cattle-monitoring-system
+  namespace: ${rancher2_namespace.cattle_monitoring_system.name}
   labels:
     grafana_datasource: '1'
 data:
