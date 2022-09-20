@@ -4,7 +4,7 @@
  * File Created: 18-09-2022 07:59:35
  * Author: Clay Risser
  * -----
- * Last Modified: 19-09-2022 10:45:22
+ * Last Modified: 20-09-2022 07:40:45
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -110,6 +110,15 @@ EOF
   }
 }
 
+resource "rancher2_namespace" "cattle_dashboards" {
+  name       = "cattle-dashboards"
+  project_id = data.rancher2_project.system.id
+  lifecycle {
+    prevent_destroy = false
+    ignore_changes  = []
+  }
+}
+
 resource "rancher2_namespace" "cattle_logging_system" {
   name       = "cattle-logging-system"
   project_id = data.rancher2_project.system.id
@@ -162,7 +171,7 @@ metadata:
   labels:
     grafana_dashboard: '1'
   name: loki-logs-search
-  namespace: cattle-dashboards
+  namespace: ${rancher2_namespace.cattle_dashboards.name}
 data:
   loki-logs-search.json: |-
     {
