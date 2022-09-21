@@ -89,8 +89,7 @@ kube-state-metrics:
                   - amd64
 EOF
   depends_on = [
-    kubectl_manifest.loki_datasource,
-    rancher2_namespace.cattle_dashboards
+    kubectl_manifest.loki_datasource
   ]
   lifecycle {
     prevent_destroy = false
