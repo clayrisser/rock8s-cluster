@@ -466,7 +466,8 @@ data:
     }
 EOF
   depends_on = [
-    rancher2_app_v2.rancher_logging
+    rancher2_app_v2.rancher_logging,
+    time_sleep.rancher_monitoring_ready
   ]
   lifecycle {
     prevent_destroy = false
