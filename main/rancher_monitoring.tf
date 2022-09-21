@@ -98,6 +98,13 @@ EOF
   }
 }
 
+resource "time_sleep" "rancher_monitoring_ready" {
+  depends_on = [
+    rancher2_app_v2.rancher_monitoring
+  ]
+  create_duration = "15s"
+}
+
 resource "rancher2_namespace" "cattle_monitoring_system" {
   name       = "cattle-monitoring-system"
   project_id = data.rancher2_project.system.id
