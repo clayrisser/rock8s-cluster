@@ -89,13 +89,19 @@ kube-state-metrics:
                   - amd64
 EOF
   depends_on = [
-    kubectl_manifest.loki_datasource,
-    rancher2_namespace.cattle_dashboards
+    kubectl_manifest.loki_datasource
   ]
   lifecycle {
     prevent_destroy = false
     ignore_changes  = []
   }
+}
+
+resource "time_sleep" "rancher_monitoring_ready" {
+  depends_on = [
+    rancher2_app_v2.rancher_monitoring
+  ]
+  create_duration = "15s"
 }
 
 resource "rancher2_namespace" "cattle_monitoring_system" {

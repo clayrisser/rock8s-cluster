@@ -110,15 +110,6 @@ EOF
   }
 }
 
-resource "rancher2_namespace" "cattle_dashboards" {
-  name       = "cattle-dashboards"
-  project_id = data.rancher2_project.system.id
-  lifecycle {
-    prevent_destroy = false
-    ignore_changes  = []
-  }
-}
-
 resource "rancher2_namespace" "cattle_logging_system" {
   name       = "cattle-logging-system"
   project_id = data.rancher2_project.system.id
@@ -171,7 +162,7 @@ metadata:
   labels:
     grafana_dashboard: '1'
   name: loki-logs-search
-  namespace: ${rancher2_namespace.cattle_dashboards.name}
+  namespace: cattle-dashboards
 data:
   loki-logs-search.json: |-
     {
@@ -475,7 +466,8 @@ data:
     }
 EOF
   depends_on = [
-    rancher2_app_v2.rancher_logging
+    rancher2_app_v2.rancher_logging,
+    time_sleep.rancher_monitoring_ready
   ]
   lifecycle {
     prevent_destroy = false
