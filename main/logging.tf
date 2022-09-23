@@ -4,7 +4,7 @@
  * File Created: 18-09-2022 07:59:35
  * Author: Clay Risser
  * -----
- * Last Modified: 23-09-2022 11:58:08
+ * Last Modified: 23-09-2022 14:49:12
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -63,9 +63,6 @@ loki:
     retention_delete_delay: 2h
     retention_delete_worker_count: 150
     retention_enabled: true
-  table_manager:
-    retention_deletes_enabled: true
-    retention_period: 7d
   storage:
     type: s3
     s3:
@@ -78,101 +75,6 @@ loki:
       admin: '${aws_s3_bucket.loki_admin.bucket}'
       chunks: '${aws_s3_bucket.loki_chunks.bucket}'
       ruler: '${aws_s3_bucket.loki_chunks.bucket}'
-  config: |
-    {{- if .Values.enterprise.enabled}}
-    {{- tpl .Values.enterprise.config . }}
-    {{- else }}
-    auth_enabled: {{ .Values.loki.auth_enabled }}
-    {{- end }}
-    {{- with .Values.loki.server }}
-    server:
-      {{- toYaml . | nindent 2}}
-    {{- end}}
-    memberlist:
-      join_members:
-        - {{ include "loki.memberlist" . }}
-    {{- if .Values.loki.commonConfig}}
-    common:
-    {{- toYaml .Values.loki.commonConfig | nindent 2}}
-      storage:
-      {{- include "loki.commonStorageConfig" . | nindent 4}}
-    {{- end}}
-    {{- with .Values.loki.limits_config }}
-    limits_config:
-      {{- tpl (. | toYaml) $ | nindent 4 }}
-    {{- end }}
-    {{- with .Values.loki.memcached.chunk_cache }}
-    {{- if and .enabled .host }}
-    chunk_store_config:
-      chunk_cache_config:
-        memcached:
-          batch_size: {{ .batch_size }}
-          parallelism: {{ .parallelism }}
-        memcached_client:
-          host: {{ .host }}
-          service: {{ .service }}
-    {{- end }}
-    {{- end }}
-    {{- if .Values.loki.schemaConfig}}
-    schema_config:
-    {{- toYaml .Values.loki.schemaConfig | nindent 2}}
-    {{- else }}
-    schema_config:
-      configs:
-        - from: 2022-01-11
-          store: boltdb-shipper
-          {{- if eq .Values.loki.storage.type "s3" }}
-          object_store: s3
-          {{- else if eq .Values.loki.storage.type "gcs" }}
-          object_store: gcs
-          {{- else }}
-          object_store: filesystem
-          {{- end }}
-          schema: v12
-          index:
-            prefix: loki_index_
-            period: 24h
-          chunks:
-            period: 24h
-    {{- end }}
-    ruler:
-      storage:
-      {{- if or .Values.minio.enabled (eq .Values.loki.storage.type "s3") (eq .Values.loki.storage.type "gcs") }}
-      {{- include "loki.rulerStorageConfig" . | nindent 4}}
-      {{- end }}
-    {{- with .Values.loki.rulerConfig}}
-    {{- toYaml . | nindent 2}}
-    {{- end }}
-    {{- with .Values.loki.memcached.results_cache }}
-    query_range:
-      align_queries_with_step: true
-      {{- if and .enabled .host }}
-      cache_results: {{ .enabled }}
-      results_cache:
-        cache:
-          default_validity: {{ .default_validity }}
-          memcached_client:
-            host: {{ .host }}
-            service: {{ .service }}
-            timeout: {{ .timeout }}
-      {{- end }}
-    {{- end }}
-    {{- with .Values.loki.storage_config }}
-    storage_config:
-      {{- tpl (. | toYaml) $ | nindent 4 }}
-    {{- end }}
-    {{- with .Values.loki.query_scheduler }}
-    query_scheduler:
-      {{- tpl (. | toYaml) $ | nindent 4 }}
-    {{- end }}
-    {{- with .Values.loki.compactor }}
-    compactor:
-      {{- tpl (. | toYaml) $ | nindent 4 }}
-    {{- end }}
-    {{- with .Values.loki.table_manager }}
-    table_manager:
-      {{- tpl (. | toYaml) $ | nindent 4 }}
-    {{- end }}
 EOF
   depends_on    = []
   lifecycle {
