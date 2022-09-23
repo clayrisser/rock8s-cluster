@@ -4,7 +4,7 @@
  * File Created: 21-04-2022 08:53:47
  * Author: Clay Risser
  * -----
- * Last Modified: 18-09-2022 08:49:35
+ * Last Modified: 23-09-2022 10:32:00
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -23,7 +23,7 @@ config:
   allowIntegration: true
   s3:
     integration: kube-system
-    bucket: ${aws_s3_bucket.main_bucket.bucket}
+    bucket: ${aws_s3_bucket.main.bucket}
     prefix: velero
 velero:
   backupsEnabled: true

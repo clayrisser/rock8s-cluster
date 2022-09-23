@@ -17,6 +17,7 @@ stages:
 plan:
   stage: plan
   script:
+    - echo AWS_ACCESS_KEY_ID $AWS_ACCESS_KEY_ID
     - make -s plan
   artifacts:
     paths:

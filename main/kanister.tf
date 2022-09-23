@@ -4,7 +4,7 @@
  * File Created: 21-04-2022 08:39:20
  * Author: Clay Risser
  * -----
- * Last Modified: 18-09-2022 08:49:52
+ * Last Modified: 23-09-2022 10:31:36
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -22,7 +22,7 @@ resource "rancher2_app_v2" "kanister" {
 config:
   s3:
     accessKey: '${var.aws_access_key_id}'
-    bucket: '${aws_s3_bucket.main_bucket.bucket}'
+    bucket: '${aws_s3_bucket.main.bucket}'
     endpoint: 's3.${var.region}.amazonaws.com'
     pathStyle: true
     prefix: kanister
