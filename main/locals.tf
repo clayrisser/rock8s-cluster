@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 13:36:29
  * Author: Clay Risser
  * -----
- * Last Modified: 18-09-2022 11:28:07
+ * Last Modified: 23-09-2022 10:31:41
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -15,7 +15,7 @@ locals {
   cluster_entrypoint   = local.cluster_name
   kops_kubeconfig_file = "../artifacts/iam_kubeconfig"
   rancher_cluster_id   = "local"
-  kops_state_store     = "s3://${aws_s3_bucket.main_bucket.bucket}/kops"
+  kops_state_store     = "s3://${aws_s3_bucket.main.bucket}/kops"
   public_api_ports     = [for port in split(",", var.public_api_ports) : parseint(port, 10)]
   public_nodes_ports   = [for port in split(",", var.public_nodes_ports) : parseint(port, 10)]
   cluster_endpoint     = "https://api.${var.cluster_prefix}-${tostring(var.iteration)}.${var.dns_zone}"

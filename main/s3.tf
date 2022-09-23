@@ -4,7 +4,7 @@
  * File Created: 29-04-2022 14:41:49
  * Author: Clay Risser
  * -----
- * Last Modified: 18-09-2022 08:57:22
+ * Last Modified: 23-09-2022 10:31:55
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -22,7 +22,7 @@ resource "rancher2_app_v2" "s3" {
 config:
   s3:
     accessKey: ${var.aws_access_key_id}
-    defaultBucket: '${aws_s3_bucket.main_bucket.bucket}'
+    defaultBucket: '${aws_s3_bucket.main.bucket}'
     defaultPrefix: default/${local.cluster_name}
     endpoint: s3.dualstack.${var.region}.amazonaws.com
     pathStyle: true

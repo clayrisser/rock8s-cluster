@@ -4,7 +4,7 @@
  * File Created: 20-04-2022 13:40:49
  * Author: Clay Risser
  * -----
- * Last Modified: 20-09-2022 07:42:50
+ * Last Modified: 23-09-2022 11:07:24
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -21,9 +21,6 @@ resource "rancher2_app_v2" "rancher_monitoring" {
   values        = <<EOF
 grafana:
   sidecar:
-    image:
-      repository: rancher/kiwigrid-k8s-sidecar
-      tag: 1.1.0
     dashboards:
       searchNamespace: cattle-dashboards
   persistence:
@@ -57,6 +54,22 @@ prometheus:
                   operator: In
                   values:
                     - amd64
+  thanos:
+    enabled: true
+    additionalArgs:
+      - '--retention.resolution-1h=30d'
+      - '--retention.resolution-5m=7d'
+      - '--retention.resolution-raw=1d'
+    objectConfig:
+      type: S3
+      config:
+        access_key: '${var.aws_access_key_id}'
+        bucket: ${aws_s3_bucket.thanos.bucket}
+        endpoint: 's3.${var.region}.amazonaws.com'
+        insecure: false
+        region: '${var.region}'
+        secret_key: '${var.aws_secret_access_key}'
+        signature_version2: false
 prometheusOperator:
   affinity:
     nodeAffinity:
@@ -89,7 +102,8 @@ kube-state-metrics:
                   - amd64
 EOF
   depends_on = [
-    kubectl_manifest.loki_datasource
+    kubectl_manifest.loki_datasource,
+    kubectl_manifest.tempo_datasource
   ]
   lifecycle {
     prevent_destroy = false
