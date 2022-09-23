@@ -3,7 +3,7 @@
 # File Created: 27-01-2022 11:41:37
 # Author: Clay Risser
 # -----
-# Last Modified: 23-09-2022 12:31:38
+# Last Modified: 23-09-2022 13:28:06
 # Modified By: Clay Risser
 # -----
 # Risser Labs LLC (c) Copyright 2022
@@ -55,7 +55,6 @@ $(ACTION)/lint: $(call git_deps,\.((tf)|(hcl))$$)
 
 ACTIONS += plan~format ## creates terraform plan
 $(ACTION)/plan: $(call git_deps,\.((tf)|(hcl))$$)
-	@echo AWS_PROFILE $(AWS_PROFILE)
 	@$(CD) $(TF_ROOT) && $(TERRAFORM) plan $(TERRAFORM_INPUT_FLAG) -out=tfplan.cache $(ARGS) && \
 		$(TERRAFORM) show -json tfplan.cache | jq -r '$(JQ_PLAN)' > $(TF_PLAN_JSON)
 	@$(CAT) $(TF_PLAN_JSON) | $(JQ)
