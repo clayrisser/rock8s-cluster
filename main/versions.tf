@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:04:44
  * Author: Clay Risser
  * -----
- * Last Modified: 23-09-2022 13:27:47
+ * Last Modified: 23-09-2022 13:42:40
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -18,7 +18,7 @@ terraform {
     }
     helm = {
       source  = "hashicorp/helm"
-      version = "2.5.1"
+      version = "2.6.0"
     }
     kubectl = {
       source  = "gavinbunney/kubectl"
