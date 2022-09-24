@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 23-09-2022 14:43:07
+ * Last Modified: 23-09-2022 14:57:40
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -286,7 +286,7 @@ resource "kops_instance_group" "t3-medium-b" {
   name                       = "t3-medium-b"
   autoscale                  = true
   role                       = "Node"
-  min_size                   = 2
+  min_size                   = 1
   max_size                   = 3
   machine_type               = "t3.medium"
   subnets                    = [data.aws_subnet.public[1].id]
