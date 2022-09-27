@@ -4,7 +4,7 @@
  * File Created: 21-04-2022 08:39:20
  * Author: Clay Risser
  * -----
- * Last Modified: 27-09-2022 12:55:20
+ * Last Modified: 27-09-2022 13:36:33
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -15,7 +15,7 @@ module "kanister" {
   chart_name         = "kanister"
   chart_version      = "0.71.0"
   name               = "kanister"
-  repo               = rancher2_catalog_v2.risserlabs.name
+  repo               = module.risserlabs_repo.repo
   create_namespace   = true
   namespace          = "kanister"
   rancher_project_id = data.rancher2_project.system.id

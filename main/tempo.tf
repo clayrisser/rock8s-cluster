@@ -4,7 +4,7 @@
  * File Created: 23-09-2022 10:17:08
  * Author: Clay Risser
  * -----
- * Last Modified: 27-09-2022 12:39:17
+ * Last Modified: 27-09-2022 13:36:33
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -15,7 +15,7 @@ module "tempo" {
   chart_name         = "tempo"
   chart_version      = "1.5.0"
   name               = "tempo"
-  repo               = rancher2_catalog_v2.grafana.name
+  repo               = module.grafana_repo.repo
   namespace          = "tempo"
   create_namespace   = true
   rancher_project_id = data.rancher2_project.system.id

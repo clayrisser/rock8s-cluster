@@ -4,7 +4,7 @@
  * File Created: 07-05-2022 03:17:43
  * Author: Clay Risser
  * -----
- * Last Modified: 27-09-2022 12:50:18
+ * Last Modified: 27-09-2022 13:36:33
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -15,7 +15,7 @@ module "helm_operator" {
   chart_name         = "helm-operator"
   chart_version      = "1.2.0"
   name               = "helm-operator"
-  repo               = rancher2_catalog_v2.fluxcd.name
+  repo               = module.fluxcd_repo.repo
   namespace          = "flux"
   create_namespace   = true
   rancher_project_id = data.rancher2_project.system.id

@@ -4,7 +4,7 @@
  * File Created: 17-04-2022 06:13:18
  * Author: Clay Risser
  * -----
- * Last Modified: 27-09-2022 12:38:37
+ * Last Modified: 27-09-2022 13:36:33
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -15,7 +15,7 @@ module "olm" {
   chart_name         = "olm"
   chart_version      = "0.21.2"
   name               = "olm"
-  repo               = rancher2_catalog_v2.risserlabs.name
+  repo               = module.risserlabs_repo.repo
   namespace          = "olm"
   create_namespace   = true
   rancher_project_id = data.rancher2_project.system.id

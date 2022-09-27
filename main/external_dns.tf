@@ -4,7 +4,7 @@
  * File Created: 21-04-2022 09:03:40
  * Author: Clay Risser
  * -----
- * Last Modified: 27-09-2022 12:55:05
+ * Last Modified: 27-09-2022 13:36:33
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -13,7 +13,7 @@
 module "external_dns" {
   source             = "../modules/helm_release"
   name               = "external-dns"
-  repo               = rancher2_catalog_v2.risserlabs.name
+  repo               = module.risserlabs_repo.repo
   chart_name         = "external-dns"
   chart_version      = "0.0.1"
   namespace          = "external-dns"

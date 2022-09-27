@@ -4,7 +4,7 @@
  * File Created: 18-09-2022 07:59:35
  * Author: Clay Risser
  * -----
- * Last Modified: 27-09-2022 12:51:09
+ * Last Modified: 27-09-2022 13:36:33
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -30,7 +30,7 @@ module "loki" {
   chart_name         = "loki"
   chart_version      = "3.0.7"
   name               = "loki"
-  repo               = rancher2_catalog_v2.grafana.name
+  repo               = module.grafana_repo.repo
   namespace          = "loki"
   create_namespace   = true
   rancher_project_id = data.rancher2_project.system.id
