@@ -4,21 +4,23 @@
  * File Created: 07-05-2022 03:17:43
  * Author: Clay Risser
  * -----
- * Last Modified: 18-09-2022 06:07:17
+ * Last Modified: 27-09-2022 12:50:18
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
 
-resource "rancher2_app_v2" "helm_operator" {
-  chart_name    = "helm-operator"
-  chart_version = "1.2.0"
-  cluster_id    = local.rancher_cluster_id
-  name          = "helm-operator"
-  namespace     = rancher2_namespace.flux.name
-  repo_name     = rancher2_catalog_v2.fluxcd.name
-  wait          = true
-  values        = <<EOF
+module "helm_operator" {
+  source             = "../modules/helm_release"
+  chart_name         = "helm-operator"
+  chart_version      = "1.2.0"
+  name               = "helm-operator"
+  repo               = rancher2_catalog_v2.fluxcd.name
+  namespace          = "flux"
+  create_namespace   = true
+  rancher_project_id = data.rancher2_project.system.id
+  rancher_cluster_id = local.rancher_cluster_id
+  values             = <<EOF
 helm:
   versions: v3
 affinity:
@@ -38,17 +40,4 @@ resources:
     cpu: 40m
     memory: 64Mi
 EOF
-  lifecycle {
-    prevent_destroy = false
-    ignore_changes  = []
-  }
-}
-
-resource "rancher2_namespace" "flux" {
-  name       = "flux"
-  project_id = data.rancher2_project.system.id
-  lifecycle {
-    prevent_destroy = false
-    ignore_changes  = []
-  }
 }

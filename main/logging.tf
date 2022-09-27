@@ -4,38 +4,38 @@
  * File Created: 18-09-2022 07:59:35
  * Author: Clay Risser
  * -----
- * Last Modified: 23-09-2022 14:49:12
+ * Last Modified: 27-09-2022 12:51:09
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
 
-resource "rancher2_app_v2" "rancher_logging" {
-  chart_name    = "rancher-logging"
-  chart_version = "100.1.3+up3.17.7"
-  cluster_id    = local.rancher_cluster_id
-  name          = "rancher-logging"
-  namespace     = rancher2_namespace.cattle_logging_system.name
-  repo_name     = "rancher-charts"
-  wait          = true
-  values        = <<EOF
+module "rancher_logging" {
+  source             = "../modules/helm_release"
+  chart_name         = "rancher-logging"
+  chart_version      = "100.1.3+up3.17.7"
+  name               = "rancher-logging"
+  repo               = "rancher-charts"
+  namespace          = "cattle-logging-system"
+  create_namespace   = true
+  rancher_project_id = data.rancher2_project.system.id
+  rancher_cluster_id = local.rancher_cluster_id
+  values             = <<EOF
 EOF
-  depends_on    = []
-  lifecycle {
-    prevent_destroy = false
-    ignore_changes  = []
-  }
+  depends_on         = []
 }
 
-resource "rancher2_app_v2" "loki" {
-  chart_name    = "loki"
-  chart_version = "3.0.7"
-  cluster_id    = local.rancher_cluster_id
-  name          = "loki"
-  namespace     = rancher2_namespace.loki.name
-  repo_name     = rancher2_catalog_v2.grafana.name
-  wait          = true
-  values        = <<EOF
+module "loki" {
+  source             = "../modules/helm_release"
+  chart_name         = "loki"
+  chart_version      = "3.0.7"
+  name               = "loki"
+  repo               = rancher2_catalog_v2.grafana.name
+  namespace          = "loki"
+  create_namespace   = true
+  rancher_project_id = data.rancher2_project.system.id
+  rancher_cluster_id = local.rancher_cluster_id
+  values             = <<EOF
 gateway:
   basicAuth:
     enabled: false
@@ -76,11 +76,7 @@ loki:
       chunks: '${aws_s3_bucket.loki_chunks.bucket}'
       ruler: '${aws_s3_bucket.loki_chunks.bucket}'
 EOF
-  depends_on    = []
-  lifecycle {
-    prevent_destroy = false
-    ignore_changes  = []
-  }
+  depends_on         = []
 }
 
 resource "kubectl_manifest" "loki_output" {
@@ -100,7 +96,7 @@ spec:
       timekey_wait: 30s
 EOF
   depends_on = [
-    rancher2_app_v2.rancher_logging
+    module.rancher_logging
   ]
   lifecycle {
     prevent_destroy = false
@@ -122,26 +118,8 @@ spec:
     - select: {}
 EOF
   depends_on = [
-    rancher2_app_v2.rancher_logging
+    module.rancher_logging
   ]
-  lifecycle {
-    prevent_destroy = false
-    ignore_changes  = []
-  }
-}
-
-resource "rancher2_namespace" "cattle_logging_system" {
-  name       = "cattle-logging-system"
-  project_id = data.rancher2_project.system.id
-  lifecycle {
-    prevent_destroy = false
-    ignore_changes  = []
-  }
-}
-
-resource "rancher2_namespace" "loki" {
-  name       = "loki"
-  project_id = data.rancher2_project.system.id
   lifecycle {
     prevent_destroy = false
     ignore_changes  = []
@@ -486,7 +464,7 @@ data:
     }
 EOF
   depends_on = [
-    rancher2_app_v2.rancher_logging,
+    module.rancher_logging,
     time_sleep.rancher_monitoring_ready
   ]
   lifecycle {

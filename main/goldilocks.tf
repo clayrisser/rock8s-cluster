@@ -4,20 +4,21 @@
  * File Created: 20-04-2022 10:21:22
  * Author: Clay Risser
  * -----
- * Last Modified: 17-09-2022 06:55:25
+ * Last Modified: 27-09-2022 12:37:14
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
 
-resource "helm_release" "goldilocks" {
-  version          = "6.1.1"
+module "goldilocks" {
+  source           = "../modules/helm_release"
+  chart_version    = "6.1.1"
   name             = "goldilocks"
-  repository       = "https://charts.fairwinds.com/stable"
-  chart            = "goldilocks"
+  repo             = "https://charts.fairwinds.com/stable"
+  chart_name       = "goldilocks"
   namespace        = "goldilocks"
   create_namespace = true
-  values = [<<EOF
+  values           = <<EOF
 vpa:
   enabled: true
   updater:
@@ -25,12 +26,7 @@ vpa:
 dashboard:
   excludeContainers: 'linkerd-proxy,istio-proxy'
 EOF
-  ]
   depends_on = [
     null_resource.wait_for_nodes
   ]
-  lifecycle {
-    prevent_destroy = false
-    ignore_changes  = []
-  }
 }

@@ -4,21 +4,21 @@
  * File Created: 20-04-2022 13:40:49
  * Author: Clay Risser
  * -----
- * Last Modified: 23-09-2022 11:07:24
+ * Last Modified: 27-09-2022 12:52:07
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
 
-resource "rancher2_app_v2" "rancher_monitoring" {
-  chart_name    = "rancher-monitoring"
-  chart_version = "100.1.2+up19.0.3"
-  cluster_id    = local.rancher_cluster_id
-  name          = "rancher-monitoring"
-  namespace     = rancher2_namespace.cattle_monitoring_system.name
-  repo_name     = "rancher-charts"
-  wait          = true
-  values        = <<EOF
+module "rancher_monitoring" {
+  source             = "../modules/helm_release"
+  chart_name         = "rancher-monitoring"
+  chart_version      = "100.1.2+up19.0.3"
+  name               = "rancher-monitoring"
+  repo               = "rancher-charts"
+  namespace          = rancher2_namespace.cattle_monitoring_system.name
+  rancher_cluster_id = local.rancher_cluster_id
+  values             = <<EOF
 grafana:
   sidecar:
     dashboards:
@@ -105,15 +105,11 @@ EOF
     kubectl_manifest.loki_datasource,
     kubectl_manifest.tempo_datasource
   ]
-  lifecycle {
-    prevent_destroy = false
-    ignore_changes  = []
-  }
 }
 
 resource "time_sleep" "rancher_monitoring_ready" {
   depends_on = [
-    rancher2_app_v2.rancher_monitoring
+    module.rancher_monitoring
   ]
   create_duration = "15s"
 }

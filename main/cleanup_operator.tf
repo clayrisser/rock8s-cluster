@@ -4,20 +4,20 @@
  * File Created: 12-02-2022 12:16:54
  * Author: Clay Risser
  * -----
- * Last Modified: 17-09-2022 06:55:28
+ * Last Modified: 27-09-2022 12:37:00
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
 
-resource "helm_release" "cleanup_operator" {
-  version          = "1.0.3"
-  name             = "cleanup-operator"
-  repository       = "https://charts.lwolf.org"
-  chart            = "kube-cleanup-operator"
-  namespace        = "kube-system"
-  create_namespace = true
-  values = [<<EOF
+module "cleanup_operator" {
+  source        = "../modules/helm_release"
+  chart_version = "1.0.3"
+  name          = "cleanup-operator"
+  repo          = "https://charts.lwolf.org"
+  chart_name    = "kube-cleanup-operator"
+  namespace     = "kube-system"
+  values        = <<EOF
 args:
   - --delete-successful-after=5m
   - --delete-failed-after=120m
@@ -33,12 +33,7 @@ resources:
    cpu: 10m
    memory: 32Mi
 EOF
-  ]
   depends_on = [
     null_resource.wait_for_nodes
   ]
-  lifecycle {
-    prevent_destroy = false
-    ignore_changes  = []
-  }
 }

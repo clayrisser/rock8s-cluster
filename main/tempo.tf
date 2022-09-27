@@ -4,21 +4,23 @@
  * File Created: 23-09-2022 10:17:08
  * Author: Clay Risser
  * -----
- * Last Modified: 23-09-2022 11:59:16
+ * Last Modified: 27-09-2022 12:39:17
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
 
-resource "rancher2_app_v2" "tempo" {
-  chart_name    = "tempo"
-  chart_version = "1.5.0"
-  cluster_id    = local.rancher_cluster_id
-  name          = "tempo"
-  namespace     = rancher2_namespace.tempo.name
-  repo_name     = rancher2_catalog_v2.grafana.name
-  wait          = true
-  values        = <<EOF
+module "tempo" {
+  source             = "../modules/helm_release"
+  chart_name         = "tempo"
+  chart_version      = "1.5.0"
+  name               = "tempo"
+  repo               = rancher2_catalog_v2.grafana.name
+  namespace          = "tempo"
+  create_namespace   = true
+  rancher_project_id = data.rancher2_project.system.id
+  rancher_cluster_id = local.rancher_cluster_id
+  values             = <<EOF
 replicas: 1
 tempo:
   retention: 7d
@@ -59,20 +61,7 @@ tempo:
         http:
           endpoint: "0.0.0.0:4318"
 EOF
-  depends_on    = []
-  lifecycle {
-    prevent_destroy = false
-    ignore_changes  = []
-  }
-}
-
-resource "rancher2_namespace" "tempo" {
-  name       = "tempo"
-  project_id = data.rancher2_project.system.id
-  lifecycle {
-    prevent_destroy = false
-    ignore_changes  = []
-  }
+  depends_on         = []
 }
 
 resource "kubectl_manifest" "tempo_datasource" {
