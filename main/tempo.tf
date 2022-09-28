@@ -4,7 +4,7 @@
  * File Created: 23-09-2022 10:17:08
  * Author: Clay Risser
  * -----
- * Last Modified: 28-09-2022 03:15:44
+ * Last Modified: 28-09-2022 03:17:26
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -14,7 +14,6 @@ module "tempo" {
   source             = "../modules/helm_release"
   chart_name         = "tempo"
   chart_version      = "0.16.2"
-
   name               = "tempo"
   repo               = module.grafana_repo.repo
   namespace          = "tempo"
