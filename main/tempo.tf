@@ -13,7 +13,8 @@
 module "tempo" {
   source             = "../modules/helm_release"
   chart_name         = "tempo"
-  chart_version      = "1.5.0"
+  chart_version      = "0.16.2"
+
   name               = "tempo"
   repo               = module.grafana_repo.repo
   namespace          = "tempo"
