@@ -4,7 +4,7 @@
  * File Created: 23-09-2022 10:17:08
  * Author: Clay Risser
  * -----
- * Last Modified: 27-09-2022 13:36:33
+ * Last Modified: 28-09-2022 03:15:44
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -23,7 +23,7 @@ module "tempo" {
   values             = <<EOF
 replicas: 1
 tempo:
-  retention: 7d
+  retention: 168h
   repository: grafana/tempo
   tag: 1.5.0
   resources:
