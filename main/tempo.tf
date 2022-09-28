@@ -4,7 +4,7 @@
  * File Created: 23-09-2022 10:17:08
  * Author: Clay Risser
  * -----
- * Last Modified: 28-09-2022 03:17:26
+ * Last Modified: 28-09-2022 06:34:50
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -39,7 +39,7 @@ tempo:
       s3:
         bucket: '${aws_s3_bucket.tempo.bucket}'
         endpoint: 's3.${var.region}.amazonaws.com'
-        access_key: '${var.aws_secret_access_key}'
+        access_key: '${var.aws_access_key_id}'
         secret_key: '${var.aws_secret_access_key}'
         insecure: false
   receivers:
