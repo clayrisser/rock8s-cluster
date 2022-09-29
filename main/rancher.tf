@@ -4,7 +4,7 @@
  * File Created: 09-02-2022 11:24:10
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 14:16:45
+ * Last Modified: 29-09-2022 14:18:58
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -14,7 +14,7 @@ locals {
   cert_manager_letsencrypt_email       = var.cloudflare_email
   cert_manager_letsencrypt_environment = "production"
   rancher_bootstrap_password           = "P@ssw0rd"
-  rancher_hostname                     = length(aws_route53_record.cluster) > 0 ? aws_route53_record.cluster[0].name : ""
+  rancher_hostname                     = length(aws_route53_record.cluster) > 0 ? aws_route53_record.cluster[0].name : "localhost"
 }
 
 provider "rancher2" {
