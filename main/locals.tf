@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 13:36:29
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 12:03:54
+ * Last Modified: 29-09-2022 12:21:21
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -70,4 +70,5 @@ locals {
   s3                           = var.s3 && local.integration_operator
   velero                       = var.velero && local.s3 && local.integration_operator
   aws_load_balancer_controller = var.aws_load_balancer_controller && var.cert_manager
+  snapshot_controller          = var.snapshot_controller && var.cert_manager
 }

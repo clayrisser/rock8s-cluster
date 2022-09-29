@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:12:06
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 12:03:30
+ * Last Modified: 29-09-2022 12:20:43
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -227,6 +227,11 @@ variable "cert_manager" {
 }
 
 variable "aws_load_balancer_controller" {
+  type    = bool
+  default = true
+}
+
+variable "snapshot_controller" {
   type    = bool
   default = true
 }

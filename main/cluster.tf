@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 12:04:20
+ * Last Modified: 29-09-2022 12:21:31
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -155,7 +155,7 @@ resource "kops_cluster" "this" {
     enabled = true
   }
   snapshot_controller {
-    enabled = true
+    enabled = local.snapshot_controller
   }
   cloud_config {
     manage_storage_classes = true
