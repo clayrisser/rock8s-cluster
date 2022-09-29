@@ -4,7 +4,7 @@
  * File Created: 23-02-2022 11:40:50
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 10:26:12
+ * Last Modified: 29-09-2022 11:23:19
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -49,7 +49,7 @@ resource "kubectl_manifest" "flux_sync" {
 }
 
 resource "kubernetes_secret" "flux_sync" {
-  count = (!var.flux || var.flux_git_repository) == "" ? 0 : 1
+  count = (!var.flux || var.flux_git_repository == "") ? 0 : 1
   metadata {
     name      = data.flux_sync.this[0].secret
     namespace = data.flux_sync.this[0].namespace
