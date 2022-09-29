@@ -4,7 +4,7 @@
  * File Created: 20-04-2022 13:40:49
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 09:16:50
+ * Last Modified: 29-09-2022 09:23:03
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -16,7 +16,7 @@ module "rancher_monitoring" {
   chart_version      = "100.1.2+up19.0.3"
   name               = "rancher-monitoring"
   repo               = "rancher-charts"
-  namespace          = rancher2_namespace.cattle_monitoring_system[0].name
+  namespace          = length(rancher2_namespace.cattle_monitoring_system) > 0 ? rancher2_namespace.cattle_monitoring_system[0].name : null
   rancher_cluster_id = local.rancher_cluster_id
   values             = <<EOF
 grafana:
