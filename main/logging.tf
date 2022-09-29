@@ -4,7 +4,7 @@
  * File Created: 18-09-2022 07:59:35
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 09:17:39
+ * Last Modified: 29-09-2022 11:07:04
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -12,6 +12,7 @@
 
 module "rancher_logging" {
   source             = "../modules/helm_release"
+  enabled            = var.logging
   chart_name         = "rancher-logging"
   chart_version      = "100.1.3+up3.17.7"
   name               = "rancher-logging"
@@ -27,6 +28,7 @@ EOF
 
 module "loki" {
   source             = "../modules/helm_release"
+  enabled            = var.logging
   chart_name         = "loki"
   chart_version      = "3.0.7"
   name               = "loki"
@@ -80,7 +82,7 @@ EOF
 }
 
 resource "kubectl_manifest" "loki_output" {
-  count     = var.rancher ? 1 : 0
+  count     = (var.logging && local.rancher) ? 1 : 0
   yaml_body = <<EOF
 apiVersion: logging.banzaicloud.io/v1beta1
 kind: ClusterOutput
@@ -106,7 +108,7 @@ EOF
 }
 
 resource "kubectl_manifest" "cluster_flow" {
-  count     = var.rancher ? 1 : 0
+  count     = (var.logging && local.rancher) ? 1 : 0
   yaml_body = <<EOF
 apiVersion: logging.banzaicloud.io/v1beta1
 kind: ClusterFlow
@@ -129,7 +131,7 @@ EOF
 }
 
 resource "kubectl_manifest" "loki_datasource" {
-  count      = var.rancher ? 1 : 0
+  count      = (var.logging && local.rancher_monitoring) ? 1 : 0
   yaml_body  = <<EOF
 apiVersion: v1
 kind: ConfigMap
@@ -156,7 +158,7 @@ EOF
 }
 
 resource "kubectl_manifest" "logs_dashboard" {
-  count     = var.rancher ? 1 : 0
+  count     = (var.logging && local.rancher_monitoring) ? 1 : 0
   yaml_body = <<EOF
 apiVersion: v1
 kind: ConfigMap

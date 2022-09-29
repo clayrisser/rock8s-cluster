@@ -4,7 +4,7 @@
  * File Created: 07-05-2022 03:17:43
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 05:33:33
+ * Last Modified: 29-09-2022 10:31:30
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -12,6 +12,7 @@
 
 module "helm_operator" {
   source             = "../modules/helm_release"
+  enabled            = var.helm_operator
   chart_name         = "helm-operator"
   chart_version      = "1.2.0"
   name               = "helm-operator"

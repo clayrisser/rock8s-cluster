@@ -3,7 +3,7 @@
 # File Created: 15-04-2022 09:14:48
 # Author: Clay Risser
 # -----
-# Last Modified: 29-09-2022 09:51:47
+# Last Modified: 29-09-2022 11:16:09
 # Modified By: Clay Risser
 # -----
 # Risser Labs LLC (c) Copyright 2022
@@ -31,6 +31,24 @@ export TF_VAR_rancher ?= $(RANCHER)
 export TF_VAR_cleanup_operator ?= $(CLEANUP_OPERATOR)
 export TF_VAR_cluster_issuer ?= $(CLUSTER_ISSUER)
 export TF_VAR_external_dns ?= $(EXTERNAL_DNS)
+export TF_VAR_flux ?= $(FLUX)
+export TF_VAR_goldilocks ?= $(GOLDILOCKS)
+export TF_VAR_helm_controller ?= $(HELM_CONTROLLER)
+export TF_VAR_helm_operator ?= $(HELM_OPERATOR)
+export TF_VAR_integration_operator ?= $(INTEGRATION_OPERATOR)
+export TF_VAR_kanister ?= $(KANISTER)
+export TF_VAR_kubed ?= $(KUBED)
+export TF_VAR_logging ?= $(LOGGING)
+export TF_VAR_ingress_nginx ?= $(INGRESS_NGINX)
+export TF_VAR_olm ?= $(OLM)
+export TF_VAR_patch_operator ?= $(PATCH_OPERATOR)
+export TF_VAR_rancher_istio ?= $(RANCHER_ISTIO)
+export TF_VAR_rancher_monitoring ?= $(RANCHER_MONITORING)
+export TF_VAR_s3 ?= $(S3)
+export TF_VAR_tempo ?= $(TEMPO)
+export TF_VAR_velero ?= $(VELERO)
+export TF_VAR_autoscaler ?= $(AUTOSCALER)
+export TF_VAR_cert_manager ?= $(CERT_MANAGER)
 
 define prevent_destroy
 for f in $$($(GIT) ls-files | $(GREP) "\.tf$$"); do \

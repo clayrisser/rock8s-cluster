@@ -4,7 +4,7 @@
  * File Created: 20-04-2022 10:21:22
  * Author: Clay Risser
  * -----
- * Last Modified: 27-09-2022 12:37:14
+ * Last Modified: 29-09-2022 10:28:40
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -12,6 +12,7 @@
 
 module "goldilocks" {
   source           = "../modules/helm_release"
+  enabled          = var.goldilocks
   chart_version    = "6.1.1"
   name             = "goldilocks"
   repo             = "https://charts.fairwinds.com/stable"

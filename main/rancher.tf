@@ -4,7 +4,7 @@
  * File Created: 09-02-2022 11:24:10
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 05:43:46
+ * Last Modified: 29-09-2022 11:08:58
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -25,7 +25,7 @@ provider "rancher2" {
 }
 
 resource "helm_release" "rancher" {
-  count            = var.rancher ? 1 : 0
+  count            = local.rancher ? 1 : 0
   name             = "rancher"
   repository       = "https://releases.rancher.com/server-charts/latest"
   chart            = "rancher"
@@ -57,7 +57,7 @@ EOF
 }
 
 resource "null_resource" "wait_for_rancher" {
-  count = var.rancher ? 1 : 0
+  count = local.rancher ? 1 : 0
   provisioner "local-exec" {
     command     = <<EOF
 while [ "$${subject}" != "*  subject: CN=$RANCHER_HOSTNAME" ]; do
@@ -86,7 +86,7 @@ EOF
 }
 
 resource "rancher2_bootstrap" "admin" {
-  count            = var.rancher ? 1 : 0
+  count            = local.rancher ? 1 : 0
   provider         = rancher2.bootstrap
   initial_password = local.rancher_bootstrap_password
   password         = var.rancher_admin_password
@@ -103,7 +103,7 @@ provider "rancher2" {
 }
 
 resource "rancher2_token" "this" {
-  count       = var.rancher ? 1 : 0
+  count       = local.rancher ? 1 : 0
   provider    = rancher2.admin
   description = "terraform"
   depends_on = [
@@ -117,7 +117,7 @@ provider "rancher2" {
 }
 
 data "rancher2_project" "system" {
-  count      = var.rancher ? 1 : 0
+  count      = local.rancher ? 1 : 0
   cluster_id = local.rancher_cluster_id
   name       = "System"
   depends_on = [

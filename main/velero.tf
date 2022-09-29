@@ -4,7 +4,7 @@
  * File Created: 21-04-2022 08:53:47
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 05:35:59
+ * Last Modified: 29-09-2022 11:12:54
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -12,6 +12,7 @@
 
 module "velero" {
   source             = "../modules/helm_release"
+  enabled            = local.velero
   chart_name         = "velero"
   chart_version      = "2.14.1"
   name               = "velero"

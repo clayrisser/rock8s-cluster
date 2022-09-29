@@ -4,7 +4,7 @@
  * File Created: 21-04-2022 08:39:20
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 09:58:51
+ * Last Modified: 29-09-2022 11:11:54
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -12,6 +12,7 @@
 
 module "kanister-operator" {
   source             = "../modules/helm_release"
+  enabled            = local.kanister
   chart_name         = "kanister-operator"
   chart_version      = "0.71.0"
   name               = "kanister-operator"
@@ -28,6 +29,7 @@ module "kanister-operator" {
 
 module "kanister" {
   source             = "../modules/helm_release"
+  enabled            = local.kanister
   chart_name         = "kanister"
   chart_version      = "0.71.0"
   name               = "kanister"

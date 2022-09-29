@@ -4,7 +4,7 @@
  * File Created: 20-04-2022 13:40:49
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 09:23:03
+ * Last Modified: 29-09-2022 11:12:26
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -12,6 +12,7 @@
 
 module "rancher_monitoring" {
   source             = "../modules/helm_release"
+  enabled            = local.rancher_monitoring
   chart_name         = "rancher-monitoring"
   chart_version      = "100.1.2+up19.0.3"
   name               = "rancher-monitoring"
@@ -108,7 +109,7 @@ EOF
 }
 
 resource "time_sleep" "rancher_monitoring_ready" {
-  count = var.rancher ? 1 : 0
+  count = local.rancher_monitoring ? 1 : 0
   depends_on = [
     module.rancher_monitoring
   ]
@@ -116,7 +117,7 @@ resource "time_sleep" "rancher_monitoring_ready" {
 }
 
 resource "rancher2_namespace" "cattle_monitoring_system" {
-  count      = var.rancher ? 1 : 0
+  count      = local.rancher_monitoring ? 1 : 0
   name       = "cattle-monitoring-system"
   project_id = local.rancher_project_id
   lifecycle {

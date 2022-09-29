@@ -4,7 +4,7 @@
  * File Created: 23-09-2022 10:17:08
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 09:17:04
+ * Last Modified: 29-09-2022 11:10:00
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -12,6 +12,7 @@
 
 module "tempo" {
   source             = "../modules/helm_release"
+  enabled            = var.tempo
   chart_name         = "tempo"
   chart_version      = "0.16.2"
   name               = "tempo"
@@ -65,7 +66,7 @@ EOF
 }
 
 resource "kubectl_manifest" "tempo_datasource" {
-  count      = var.rancher ? 1 : 0
+  count      = (var.tempo && local.rancher_monitoring) ? 1 : 0
   yaml_body  = <<EOF
 apiVersion: v1
 kind: ConfigMap

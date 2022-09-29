@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:12:06
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 09:52:09
+ * Last Modified: 29-09-2022 11:15:31
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -132,6 +132,96 @@ variable "cluster_issuer" {
 }
 
 variable "external_dns" {
+  type    = bool
+  default = true
+}
+
+variable "flux" {
+  type    = bool
+  default = true
+}
+
+variable "goldilocks" {
+  type    = bool
+  default = true
+}
+
+variable "helm_controller" {
+  type    = bool
+  default = true
+}
+
+variable "helm_operator" {
+  type    = bool
+  default = true
+}
+
+variable "integration_operator" {
+  type    = bool
+  default = true
+}
+
+variable "kanister" {
+  type    = bool
+  default = true
+}
+
+variable "kubed" {
+  type    = bool
+  default = true
+}
+
+variable "logging" {
+  type    = bool
+  default = true
+}
+
+variable "ingress_nginx" {
+  type    = bool
+  default = true
+}
+
+variable "olm" {
+  type    = bool
+  default = true
+}
+
+variable "patch_operator" {
+  type    = bool
+  default = true
+}
+
+variable "rancher_istio" {
+  type    = bool
+  default = true
+}
+
+variable "rancher_monitoring" {
+  type    = bool
+  default = true
+}
+
+variable "s3" {
+  type    = bool
+  default = true
+}
+
+variable "tempo" {
+  type    = bool
+  default = true
+}
+
+variable "velero" {
+  type    = bool
+  default = true
+}
+
+variable "autoscaler" {
+  type    = bool
+  default = true
+}
+
+variable "cert_manager" {
   type    = bool
   default = true
 }

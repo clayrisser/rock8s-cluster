@@ -4,7 +4,7 @@
  * File Created: 18-09-2022 07:59:35
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 09:18:15
+ * Last Modified: 29-09-2022 11:07:32
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -12,6 +12,7 @@
 
 module "rancher_istio" {
   source             = "../modules/helm_release"
+  enabled            = local.rancher_istio
   chart_name         = "rancher-istio"
   chart_version      = "100.4.0+up1.14.1"
   name               = "rancher-istio"

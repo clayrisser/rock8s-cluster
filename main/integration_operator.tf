@@ -4,7 +4,7 @@
  * File Created: 21-04-2022 09:05:39
  * Author: Clay Risser
  * -----
- * Last Modified: 27-09-2022 13:36:33
+ * Last Modified: 29-09-2022 11:11:38
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -12,6 +12,7 @@
 
 module "integration_operator" {
   source             = "../modules/helm_release"
+  enabled            = local.integration_operator
   chart_name         = "integration-operator"
   chart_version      = "0.1.2"
   name               = "integration-operator"
