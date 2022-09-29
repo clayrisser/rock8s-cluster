@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 12:21:31
+ * Last Modified: 29-09-2022 12:38:07
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -118,7 +118,7 @@ resource "kops_cluster" "this" {
     }
   }
   aws_load_balancer_controller {
-    enabled = local.aws_load_balancer_controller
+    enabled = true
   }
   cluster_autoscaler {
     aws_use_static_instance_list     = false
@@ -132,7 +132,7 @@ resource "kops_cluster" "this" {
     skip_nodes_with_system_pods      = true
   }
   cert_manager {
-    enabled = var.cert_manager
+    enabled = true
     managed = true
   }
   kube_dns {
@@ -155,7 +155,7 @@ resource "kops_cluster" "this" {
     enabled = true
   }
   snapshot_controller {
-    enabled = local.snapshot_controller
+    enabled = true
   }
   cloud_config {
     manage_storage_classes = true

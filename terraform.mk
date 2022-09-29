@@ -3,7 +3,7 @@
 # File Created: 15-04-2022 09:14:48
 # Author: Clay Risser
 # -----
-# Last Modified: 29-09-2022 12:20:18
+# Last Modified: 29-09-2022 12:38:49
 # Modified By: Clay Risser
 # -----
 # Risser Labs LLC (c) Copyright 2022
@@ -11,9 +11,7 @@
 export TF_VAR_api_strategy ?= $(API_STRATEGY)
 export TF_VAR_autoscaler ?= $(AUTOSCALER)
 export TF_VAR_aws_access_key_id ?= $(AWS_ACCESS_KEY_ID)
-export TF_VAR_aws_load_balancer_controller ?= $(AWS_LOAD_BALANCER_CONTROLLER)
 export TF_VAR_aws_secret_access_key ?= $(AWS_SECRET_ACCESS_KEY)
-export TF_VAR_cert_manager ?= $(CERT_MANAGER)
 export TF_VAR_cleanup_operator ?= $(CLEANUP_OPERATOR)
 export TF_VAR_cloudflare_api_key ?= $(CLOUDFLARE_API_KEY)
 export TF_VAR_cloudflare_email ?= $(CLOUDFLARE_EMAIL)
@@ -48,7 +46,6 @@ export TF_VAR_rancher_istio ?= $(RANCHER_ISTIO)
 export TF_VAR_rancher_monitoring ?= $(RANCHER_MONITORING)
 export TF_VAR_region ?= $(AWS_REGION)
 export TF_VAR_s3 ?= $(S3)
-export TF_VAR_snapshot_controller ?= $(SNAPSHOT_CONTROLLER)
 export TF_VAR_tempo ?= $(TEMPO)
 export TF_VAR_velero ?= $(VELERO)
 

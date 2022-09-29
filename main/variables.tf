@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:12:06
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 12:20:43
+ * Last Modified: 29-09-2022 12:38:21
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -217,21 +217,6 @@ variable "velero" {
 }
 
 variable "autoscaler" {
-  type    = bool
-  default = true
-}
-
-variable "cert_manager" {
-  type    = bool
-  default = true
-}
-
-variable "aws_load_balancer_controller" {
-  type    = bool
-  default = true
-}
-
-variable "snapshot_controller" {
   type    = bool
   default = true
 }
