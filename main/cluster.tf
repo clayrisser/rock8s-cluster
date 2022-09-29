@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 23-09-2022 14:57:40
+ * Last Modified: 29-09-2022 07:18:42
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -41,6 +41,13 @@ resource "aws_security_group" "nodes" {
       cidr_blocks      = ["0.0.0.0/0"]
       ipv6_cidr_blocks = ["::/0"]
     }
+  }
+  ingress {
+    from_port        = "30000"
+    to_port          = "32768"
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
   }
   lifecycle {
     prevent_destroy = false

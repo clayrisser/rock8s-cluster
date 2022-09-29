@@ -4,7 +4,7 @@
  * File Created: 23-09-2022 10:17:08
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 05:36:08
+ * Last Modified: 29-09-2022 09:17:04
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -65,12 +65,13 @@ EOF
 }
 
 resource "kubectl_manifest" "tempo_datasource" {
+  count      = var.rancher ? 1 : 0
   yaml_body  = <<EOF
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: tempo-datasource
-  namespace: ${rancher2_namespace.cattle_monitoring_system.name}
+  namespace: ${rancher2_namespace.cattle_monitoring_system[0].name}
   labels:
     grafana_datasource: '1'
 data:

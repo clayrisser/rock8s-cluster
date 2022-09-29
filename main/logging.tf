@@ -4,7 +4,7 @@
  * File Created: 18-09-2022 07:59:35
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 05:36:49
+ * Last Modified: 29-09-2022 09:17:39
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -80,6 +80,7 @@ EOF
 }
 
 resource "kubectl_manifest" "loki_output" {
+  count     = var.rancher ? 1 : 0
   yaml_body = <<EOF
 apiVersion: logging.banzaicloud.io/v1beta1
 kind: ClusterOutput
@@ -105,6 +106,7 @@ EOF
 }
 
 resource "kubectl_manifest" "cluster_flow" {
+  count     = var.rancher ? 1 : 0
   yaml_body = <<EOF
 apiVersion: logging.banzaicloud.io/v1beta1
 kind: ClusterFlow
@@ -127,12 +129,13 @@ EOF
 }
 
 resource "kubectl_manifest" "loki_datasource" {
+  count      = var.rancher ? 1 : 0
   yaml_body  = <<EOF
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: loki-datasource
-  namespace: ${rancher2_namespace.cattle_monitoring_system.name}
+  namespace: ${rancher2_namespace.cattle_monitoring_system[0].name}
   labels:
     grafana_datasource: '1'
 data:
@@ -153,6 +156,7 @@ EOF
 }
 
 resource "kubectl_manifest" "logs_dashboard" {
+  count     = var.rancher ? 1 : 0
   yaml_body = <<EOF
 apiVersion: v1
 kind: ConfigMap
@@ -465,7 +469,7 @@ data:
 EOF
   depends_on = [
     module.rancher_logging,
-    time_sleep.rancher_monitoring_ready
+    time_sleep.rancher_monitoring_ready[0]
   ]
   lifecycle {
     prevent_destroy = false

@@ -4,7 +4,7 @@
  * File Created: 18-09-2022 07:59:35
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 06:30:47
+ * Last Modified: 29-09-2022 09:18:15
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -29,6 +29,6 @@ tracing:
   enabled: true
 EOF
   depends_on = [
-    time_sleep.rancher_monitoring_ready
+    time_sleep.rancher_monitoring_ready[0]
   ]
 }
