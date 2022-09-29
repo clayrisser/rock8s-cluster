@@ -1,0 +1,11 @@
+
+gitops:
+  manifest_projects:
+    - id: risserlabs/k8s/internal-kops
+      default_namespace: default
+      paths:
+        - glob: 'manifests/**/*.{yaml,yml,json}'
+
+ci_access:
+  groups:
+    - id: risserlabs
