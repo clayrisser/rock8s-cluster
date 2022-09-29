@@ -4,7 +4,7 @@
  * File Created: 27-09-2022 10:24:31
  * Author: Clay Risser
  * -----
- * Last Modified: 27-09-2022 12:39:47
+ * Last Modified: 29-09-2022 09:46:49
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -33,6 +33,11 @@ variable "namespace" {
 variable "values" {
   type    = string
   default = "{}"
+}
+
+variable "enabled" {
+  type    = bool
+  default = true
 }
 
 variable "create_namespace" {

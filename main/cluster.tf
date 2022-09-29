@@ -4,49 +4,11 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 23-09-2022 14:57:40
+ * Last Modified: 29-09-2022 10:40:11
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
-
-resource "aws_security_group" "api" {
-  name   = "api-additional.${local.cluster_name}"
-  vpc_id = module.vpc.vpc_id
-  dynamic "ingress" {
-    for_each = local.public_api_ports
-    content {
-      from_port        = ingress.value
-      to_port          = ingress.value
-      protocol         = "tcp"
-      cidr_blocks      = ["0.0.0.0/0"]
-      ipv6_cidr_blocks = ["::/0"]
-    }
-  }
-  lifecycle {
-    prevent_destroy = false
-    ignore_changes  = []
-  }
-}
-
-resource "aws_security_group" "nodes" {
-  name   = "nodes-additional.${local.cluster_name}"
-  vpc_id = module.vpc.vpc_id
-  dynamic "ingress" {
-    for_each = local.public_nodes_ports
-    content {
-      from_port        = ingress.value
-      to_port          = ingress.value
-      protocol         = "tcp"
-      cidr_blocks      = ["0.0.0.0/0"]
-      ipv6_cidr_blocks = ["::/0"]
-    }
-  }
-  lifecycle {
-    prevent_destroy = false
-    ignore_changes  = []
-  }
-}
 
 resource "local_file" "iam_kubeconfig" {
   content  = yamlencode(local.kubeconfig)
@@ -161,7 +123,7 @@ resource "kops_cluster" "this" {
   cluster_autoscaler {
     aws_use_static_instance_list     = false
     balance_similar_node_groups      = false
-    enabled                          = true
+    enabled                          = var.autoscaler
     expander                         = "least-waste"
     new_pod_scale_up_delay           = "0s"
     scale_down_delay_after_add       = "10m0s"
@@ -170,7 +132,7 @@ resource "kops_cluster" "this" {
     skip_nodes_with_system_pods      = true
   }
   cert_manager {
-    enabled = true
+    enabled = var.cert_manager
     managed = true
   }
   kube_dns {

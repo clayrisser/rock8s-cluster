@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 13:36:29
  * Author: Clay Risser
  * -----
- * Last Modified: 23-09-2022 10:31:41
+ * Last Modified: 29-09-2022 11:32:31
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -14,10 +14,11 @@ locals {
   cluster_name         = "${var.cluster_prefix}-${tostring(var.iteration)}.${var.dns_zone}"
   cluster_entrypoint   = local.cluster_name
   kops_kubeconfig_file = "../artifacts/iam_kubeconfig"
-  rancher_cluster_id   = "local"
+  rancher_cluster_id   = var.rancher ? "local" : ""
+  rancher_project_id   = var.rancher ? data.rancher2_project.system[0].id : ""
   kops_state_store     = "s3://${aws_s3_bucket.main.bucket}/kops"
-  public_api_ports     = [for port in split(",", var.public_api_ports) : parseint(port, 10)]
-  public_nodes_ports   = [for port in split(",", var.public_nodes_ports) : parseint(port, 10)]
+  public_api_ports     = [for port in split(",", var.public_api_ports) : port]
+  public_nodes_ports   = [for port in split(",", var.public_nodes_ports) : port]
   cluster_endpoint     = "https://api.${var.cluster_prefix}-${tostring(var.iteration)}.${var.dns_zone}"
   user_exec = {
     api_version = "client.authentication.k8s.io/v1beta1"
@@ -59,4 +60,13 @@ locals {
       }
     }]
   })
+  rancher              = var.rancher && var.ingress_nginx
+  cluster_issuer       = var.cluster_issuer && var.cert_manager
+  external_dns         = var.external_dns && var.helm_operator
+  integration_operator = var.integration_operator && var.patch_operator
+  kanister             = var.kanister && local.integration_operator
+  rancher_istio        = var.rancher_istio && local.rancher
+  rancher_monitoring   = var.rancher_monitoring && local.rancher
+  s3                   = var.s3 && local.integration_operator
+  velero               = var.velero && local.s3 && local.integration_operator
 }

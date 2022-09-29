@@ -4,7 +4,7 @@
  * File Created: 09-02-2022 11:24:10
  * Author: Clay Risser
  * -----
- * Last Modified: 17-09-2022 06:55:28
+ * Last Modified: 29-09-2022 11:08:58
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -25,6 +25,7 @@ provider "rancher2" {
 }
 
 resource "helm_release" "rancher" {
+  count            = local.rancher ? 1 : 0
   name             = "rancher"
   repository       = "https://releases.rancher.com/server-charts/latest"
   chart            = "rancher"
@@ -56,6 +57,7 @@ EOF
 }
 
 resource "null_resource" "wait_for_rancher" {
+  count = local.rancher ? 1 : 0
   provisioner "local-exec" {
     command     = <<EOF
 while [ "$${subject}" != "*  subject: CN=$RANCHER_HOSTNAME" ]; do
@@ -79,43 +81,46 @@ EOF
     }
   }
   depends_on = [
-    helm_release.rancher
+    helm_release.rancher[0]
   ]
 }
 
 resource "rancher2_bootstrap" "admin" {
+  count            = local.rancher ? 1 : 0
   provider         = rancher2.bootstrap
   initial_password = local.rancher_bootstrap_password
   password         = var.rancher_admin_password
   telemetry        = true
   depends_on = [
-    null_resource.wait_for_rancher
+    null_resource.wait_for_rancher[0]
   ]
 }
 
 provider "rancher2" {
   alias     = "admin"
   api_url   = "https://${local.rancher_hostname}"
-  token_key = rancher2_bootstrap.admin.token
+  token_key = length(rancher2_bootstrap.admin) > 0 ? rancher2_bootstrap.admin[0].token : ""
 }
 
 resource "rancher2_token" "this" {
+  count       = local.rancher ? 1 : 0
   provider    = rancher2.admin
   description = "terraform"
   depends_on = [
-    null_resource.wait_for_rancher
+    null_resource.wait_for_rancher[0]
   ]
 }
 
 provider "rancher2" {
   api_url   = "https://${local.rancher_hostname}"
-  token_key = rancher2_token.this.token
+  token_key = length(rancher2_token.this) > 0 ? rancher2_token.this[0].token : ""
 }
 
 data "rancher2_project" "system" {
+  count      = local.rancher ? 1 : 0
   cluster_id = local.rancher_cluster_id
   name       = "System"
   depends_on = [
-    rancher2_token.this
+    rancher2_token.this[0]
   ]
 }

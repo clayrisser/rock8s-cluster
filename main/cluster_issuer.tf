@@ -4,7 +4,7 @@
  * File Created: 07-05-2022 03:17:43
  * Author: Clay Risser
  * -----
- * Last Modified: 27-09-2022 13:36:33
+ * Last Modified: 29-09-2022 11:11:10
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -12,6 +12,7 @@
 
 module "cluster_issuer" {
   source             = "../modules/helm_release"
+  enabled            = local.cluster_issuer
   chart_name         = "cluster-issuer"
   chart_version      = "1.1.0"
   name               = "cluster-issuer"

@@ -4,7 +4,7 @@
  * File Created: 18-09-2022 07:59:35
  * Author: Clay Risser
  * -----
- * Last Modified: 27-09-2022 13:36:33
+ * Last Modified: 29-09-2022 11:07:04
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -12,13 +12,14 @@
 
 module "rancher_logging" {
   source             = "../modules/helm_release"
+  enabled            = var.logging
   chart_name         = "rancher-logging"
   chart_version      = "100.1.3+up3.17.7"
   name               = "rancher-logging"
   repo               = "rancher-charts"
   namespace          = "cattle-logging-system"
   create_namespace   = true
-  rancher_project_id = data.rancher2_project.system.id
+  rancher_project_id = local.rancher_project_id
   rancher_cluster_id = local.rancher_cluster_id
   values             = <<EOF
 EOF
@@ -27,13 +28,14 @@ EOF
 
 module "loki" {
   source             = "../modules/helm_release"
+  enabled            = var.logging
   chart_name         = "loki"
   chart_version      = "3.0.7"
   name               = "loki"
   repo               = module.grafana_repo.repo
   namespace          = "loki"
   create_namespace   = true
-  rancher_project_id = data.rancher2_project.system.id
+  rancher_project_id = local.rancher_project_id
   rancher_cluster_id = local.rancher_cluster_id
   values             = <<EOF
 gateway:
@@ -80,6 +82,7 @@ EOF
 }
 
 resource "kubectl_manifest" "loki_output" {
+  count     = (var.logging && local.rancher) ? 1 : 0
   yaml_body = <<EOF
 apiVersion: logging.banzaicloud.io/v1beta1
 kind: ClusterOutput
@@ -105,6 +108,7 @@ EOF
 }
 
 resource "kubectl_manifest" "cluster_flow" {
+  count     = (var.logging && local.rancher) ? 1 : 0
   yaml_body = <<EOF
 apiVersion: logging.banzaicloud.io/v1beta1
 kind: ClusterFlow
@@ -127,12 +131,13 @@ EOF
 }
 
 resource "kubectl_manifest" "loki_datasource" {
+  count      = (var.logging && local.rancher_monitoring) ? 1 : 0
   yaml_body  = <<EOF
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: loki-datasource
-  namespace: ${rancher2_namespace.cattle_monitoring_system.name}
+  namespace: ${rancher2_namespace.cattle_monitoring_system[0].name}
   labels:
     grafana_datasource: '1'
 data:
@@ -153,6 +158,7 @@ EOF
 }
 
 resource "kubectl_manifest" "logs_dashboard" {
+  count     = (var.logging && local.rancher_monitoring) ? 1 : 0
   yaml_body = <<EOF
 apiVersion: v1
 kind: ConfigMap
@@ -465,7 +471,7 @@ data:
 EOF
   depends_on = [
     module.rancher_logging,
-    time_sleep.rancher_monitoring_ready
+    time_sleep.rancher_monitoring_ready[0]
   ]
   lifecycle {
     prevent_destroy = false

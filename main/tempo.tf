@@ -4,7 +4,7 @@
  * File Created: 23-09-2022 10:17:08
  * Author: Clay Risser
  * -----
- * Last Modified: 28-09-2022 03:17:26
+ * Last Modified: 29-09-2022 11:10:00
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -12,13 +12,14 @@
 
 module "tempo" {
   source             = "../modules/helm_release"
+  enabled            = var.tempo
   chart_name         = "tempo"
   chart_version      = "0.16.2"
   name               = "tempo"
   repo               = module.grafana_repo.repo
   namespace          = "tempo"
   create_namespace   = true
-  rancher_project_id = data.rancher2_project.system.id
+  rancher_project_id = local.rancher_project_id
   rancher_cluster_id = local.rancher_cluster_id
   values             = <<EOF
 replicas: 1
@@ -39,7 +40,7 @@ tempo:
       s3:
         bucket: '${aws_s3_bucket.tempo.bucket}'
         endpoint: 's3.${var.region}.amazonaws.com'
-        access_key: '${var.aws_secret_access_key}'
+        access_key: '${var.aws_access_key_id}'
         secret_key: '${var.aws_secret_access_key}'
         insecure: false
   receivers:
@@ -65,12 +66,13 @@ EOF
 }
 
 resource "kubectl_manifest" "tempo_datasource" {
+  count      = (var.tempo && local.rancher_monitoring) ? 1 : 0
   yaml_body  = <<EOF
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: tempo-datasource
-  namespace: ${rancher2_namespace.cattle_monitoring_system.name}
+  namespace: ${rancher2_namespace.cattle_monitoring_system[0].name}
   labels:
     grafana_datasource: '1'
 data:

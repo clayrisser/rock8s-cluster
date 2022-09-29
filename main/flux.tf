@@ -4,13 +4,14 @@
  * File Created: 23-02-2022 11:40:50
  * Author: Clay Risser
  * -----
- * Last Modified: 17-09-2022 06:55:28
+ * Last Modified: 29-09-2022 10:25:07
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
 
 data "flux_install" "this" {
+  count       = var.flux ? 1 : 0
   target_path = "clusters/main"
   version     = "v0.27.2"
   components_extra = [
@@ -20,6 +21,7 @@ data "flux_install" "this" {
 }
 
 resource "kubernetes_namespace" "flux_system" {
+  count = var.flux ? 1 : 0
   metadata {
     name = "flux-system"
   }
@@ -36,11 +38,12 @@ resource "kubernetes_namespace" "flux_system" {
 }
 
 data "kubectl_file_documents" "flux_install" {
-  content = data.flux_install.this.content
+  count   = var.flux ? 1 : 0
+  content = data.flux_install.this[0].content
 }
 
 locals {
-  flux_install = [for v in data.kubectl_file_documents.flux_install.documents : {
+  flux_install = [for v in(length(data.kubectl_file_documents.flux_install) > 0 ? data.kubectl_file_documents.flux_install[0].documents : []) : {
     data : yamldecode(v)
     content : v
     }

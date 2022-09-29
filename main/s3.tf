@@ -4,7 +4,7 @@
  * File Created: 29-04-2022 14:41:49
  * Author: Clay Risser
  * -----
- * Last Modified: 27-09-2022 13:36:33
+ * Last Modified: 29-09-2022 11:12:43
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -12,6 +12,7 @@
 
 module "s3" {
   source             = "../modules/helm_release"
+  enabled            = local.s3
   chart_name         = "s3"
   chart_version      = "0.0.1"
   name               = "s3"

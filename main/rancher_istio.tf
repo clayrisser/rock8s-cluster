@@ -4,7 +4,7 @@
  * File Created: 18-09-2022 07:59:35
  * Author: Clay Risser
  * -----
- * Last Modified: 27-09-2022 12:57:22
+ * Last Modified: 29-09-2022 11:07:32
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -12,13 +12,14 @@
 
 module "rancher_istio" {
   source             = "../modules/helm_release"
+  enabled            = local.rancher_istio
   chart_name         = "rancher-istio"
   chart_version      = "100.4.0+up1.14.1"
   name               = "rancher-istio"
   repo               = "rancher-charts"
   namespace          = "istio-system"
   create_namespace   = true
-  rancher_project_id = data.rancher2_project.system.id
+  rancher_project_id = local.rancher_project_id
   rancher_cluster_id = local.rancher_cluster_id
   values             = <<EOF
 cni:
@@ -29,6 +30,6 @@ tracing:
   enabled: true
 EOF
   depends_on = [
-    time_sleep.rancher_monitoring_ready
+    time_sleep.rancher_monitoring_ready[0]
   ]
 }
