@@ -4,7 +4,7 @@
  * File Created: 17-04-2022 06:13:18
  * Author: Clay Risser
  * -----
- * Last Modified: 27-09-2022 13:36:33
+ * Last Modified: 29-09-2022 05:36:35
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -18,7 +18,7 @@ module "olm" {
   repo               = module.risserlabs_repo.repo
   namespace          = "olm"
   create_namespace   = true
-  rancher_project_id = data.rancher2_project.system.id
+  rancher_project_id = local.rancher_project_id
   rancher_cluster_id = local.rancher_cluster_id
   values             = <<EOF
 EOF

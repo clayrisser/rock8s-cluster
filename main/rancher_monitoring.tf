@@ -4,7 +4,7 @@
  * File Created: 20-04-2022 13:40:49
  * Author: Clay Risser
  * -----
- * Last Modified: 27-09-2022 12:52:07
+ * Last Modified: 29-09-2022 05:36:21
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -116,7 +116,7 @@ resource "time_sleep" "rancher_monitoring_ready" {
 
 resource "rancher2_namespace" "cattle_monitoring_system" {
   name       = "cattle-monitoring-system"
-  project_id = data.rancher2_project.system.id
+  project_id = local.rancher_project_id
   lifecycle {
     prevent_destroy = false
     ignore_changes  = []

@@ -3,7 +3,7 @@
 # File Created: 15-04-2022 09:14:48
 # Author: Clay Risser
 # -----
-# Last Modified: 18-09-2022 10:36:47
+# Last Modified: 29-09-2022 05:27:41
 # Modified By: Clay Risser
 # -----
 # Risser Labs LLC (c) Copyright 2022
@@ -27,6 +27,7 @@ export TF_VAR_public_api_ports ?= $(PUBLIC_API_PORTS)
 export TF_VAR_public_nodes_ports ?= $(PUBLIC_NODES_PORTS)
 export TF_VAR_rancher_admin_password ?= $(RANCHER_ADMIN_PASSWORD)
 export TF_VAR_region ?= $(AWS_REGION)
+export TF_VAR_rancher ?= $(RANCHER)
 
 define prevent_destroy
 for f in $$($(GIT) ls-files | $(GREP) "\.tf$$"); do \

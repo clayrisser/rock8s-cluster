@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:12:06
  * Author: Clay Risser
  * -----
- * Last Modified: 23-09-2022 10:31:13
+ * Last Modified: 29-09-2022 05:26:17
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -114,4 +114,9 @@ variable "aws_access_key_id" {
 
 variable "aws_secret_access_key" {
   type = string
+}
+
+variable "rancher" {
+  type    = bool
+  default = true
 }

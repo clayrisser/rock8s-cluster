@@ -4,7 +4,7 @@
  * File Created: 18-09-2022 07:59:35
  * Author: Clay Risser
  * -----
- * Last Modified: 27-09-2022 13:36:33
+ * Last Modified: 29-09-2022 05:36:49
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -18,7 +18,7 @@ module "rancher_logging" {
   repo               = "rancher-charts"
   namespace          = "cattle-logging-system"
   create_namespace   = true
-  rancher_project_id = data.rancher2_project.system.id
+  rancher_project_id = local.rancher_project_id
   rancher_cluster_id = local.rancher_cluster_id
   values             = <<EOF
 EOF
@@ -33,7 +33,7 @@ module "loki" {
   repo               = module.grafana_repo.repo
   namespace          = "loki"
   create_namespace   = true
-  rancher_project_id = data.rancher2_project.system.id
+  rancher_project_id = local.rancher_project_id
   rancher_cluster_id = local.rancher_cluster_id
   values             = <<EOF
 gateway:

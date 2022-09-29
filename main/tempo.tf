@@ -4,7 +4,7 @@
  * File Created: 23-09-2022 10:17:08
  * Author: Clay Risser
  * -----
- * Last Modified: 28-09-2022 06:34:50
+ * Last Modified: 29-09-2022 05:36:08
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -18,7 +18,7 @@ module "tempo" {
   repo               = module.grafana_repo.repo
   namespace          = "tempo"
   create_namespace   = true
-  rancher_project_id = data.rancher2_project.system.id
+  rancher_project_id = local.rancher_project_id
   rancher_cluster_id = local.rancher_cluster_id
   values             = <<EOF
 replicas: 1
