@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 10:40:11
+ * Last Modified: 29-09-2022 12:04:20
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -118,7 +118,7 @@ resource "kops_cluster" "this" {
     }
   }
   aws_load_balancer_controller {
-    enabled = true
+    enabled = local.aws_load_balancer_controller
   }
   cluster_autoscaler {
     aws_use_static_instance_list     = false

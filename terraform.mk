@@ -3,7 +3,7 @@
 # File Created: 15-04-2022 09:14:48
 # Author: Clay Risser
 # -----
-# Last Modified: 29-09-2022 11:16:09
+# Last Modified: 29-09-2022 12:03:09
 # Modified By: Clay Risser
 # -----
 # Risser Labs LLC (c) Copyright 2022
@@ -49,6 +49,7 @@ export TF_VAR_tempo ?= $(TEMPO)
 export TF_VAR_velero ?= $(VELERO)
 export TF_VAR_autoscaler ?= $(AUTOSCALER)
 export TF_VAR_cert_manager ?= $(CERT_MANAGER)
+export TF_VAR_aws_load_balancer_controller ?= $(AWS_LOAD_BALANCER_CONTROLLER)
 
 define prevent_destroy
 for f in $$($(GIT) ls-files | $(GREP) "\.tf$$"); do \
