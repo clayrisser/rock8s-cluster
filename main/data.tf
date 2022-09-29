@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:09:15
  * Author: Clay Risser
  * -----
- * Last Modified: 27-09-2022 12:49:49
+ * Last Modified: 29-09-2022 14:10:10
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -25,6 +25,7 @@ data "aws_subnet" "private" {
 }
 
 data "kubernetes_service" "ingress_nginx_controller" {
+  count = var.ingress_nginx ? 1 : 0
   metadata {
     name      = "ingress-nginx-controller"
     namespace = "ingress-nginx"
