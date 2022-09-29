@@ -4,7 +4,7 @@
  * File Created: 27-09-2022 10:24:31
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 06:31:19
+ * Last Modified: 29-09-2022 09:48:39
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -16,7 +16,7 @@ locals {
 }
 
 resource "helm_release" "ingress_nginx" {
-  count            = local.is_rancher ? 0 : (local.requires_rancher ? 0 : 1)
+  count            = (var.enabled && !local.is_rancher && !local.requires_rancher) ? 1 : 0
   version          = var.chart_version
   name             = var.name
   repository       = var.repo
@@ -31,7 +31,7 @@ resource "helm_release" "ingress_nginx" {
 }
 
 resource "rancher2_app_v2" "this" {
-  count         = local.is_rancher ? 1 : 0
+  count         = (var.enabled && local.is_rancher) ? 1 : 0
   chart_name    = var.chart_name
   chart_version = var.chart_version
   cluster_id    = var.rancher_cluster_id
@@ -47,7 +47,7 @@ resource "rancher2_app_v2" "this" {
 }
 
 resource "rancher2_namespace" "this" {
-  count      = local.is_rancher && var.create_namespace ? 1 : 0
+  count      = (var.enabled && local.is_rancher && var.create_namespace) ? 1 : 0
   name       = var.namespace
   project_id = var.rancher_project_id
   lifecycle {

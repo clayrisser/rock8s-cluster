@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:12:06
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 05:26:17
+ * Last Modified: 29-09-2022 09:52:09
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -117,6 +117,21 @@ variable "aws_secret_access_key" {
 }
 
 variable "rancher" {
+  type    = bool
+  default = true
+}
+
+variable "cleanup_operator" {
+  type    = bool
+  default = true
+}
+
+variable "cluster_issuer" {
+  type    = bool
+  default = true
+}
+
+variable "external_dns" {
   type    = bool
   default = true
 }

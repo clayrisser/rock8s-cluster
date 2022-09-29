@@ -4,7 +4,7 @@
  * File Created: 12-02-2022 12:16:54
  * Author: Clay Risser
  * -----
- * Last Modified: 27-09-2022 12:37:00
+ * Last Modified: 29-09-2022 09:49:07
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -12,6 +12,7 @@
 
 module "cleanup_operator" {
   source        = "../modules/helm_release"
+  enabled       = var.cleanup_operator
   chart_version = "1.0.3"
   name          = "cleanup-operator"
   repo          = "https://charts.lwolf.org"

@@ -4,11 +4,27 @@
  * File Created: 21-04-2022 08:39:20
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 05:36:57
+ * Last Modified: 29-09-2022 09:58:51
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
+
+module "kanister-operator" {
+  source             = "../modules/helm_release"
+  chart_name         = "kanister-operator"
+  chart_version      = "0.71.0"
+  name               = "kanister-operator"
+  repo               = module.risserlabs_repo.repo
+  create_namespace   = true
+  namespace          = "kanister"
+  rancher_project_id = local.rancher_project_id
+  rancher_cluster_id = local.rancher_cluster_id
+  depends_on = [
+    module.integration_operator,
+    module.helm_operator
+  ]
+}
 
 module "kanister" {
   source             = "../modules/helm_release"
@@ -16,7 +32,6 @@ module "kanister" {
   chart_version      = "0.71.0"
   name               = "kanister"
   repo               = module.risserlabs_repo.repo
-  create_namespace   = true
   namespace          = "kanister"
   rancher_project_id = local.rancher_project_id
   rancher_cluster_id = local.rancher_cluster_id
@@ -32,7 +47,6 @@ config:
     secretKey: '${var.aws_secret_access_key}'
 EOF
   depends_on = [
-    module.integration_operator,
-    module.helm_operator
+    module.kanister-operator,
   ]
 }
