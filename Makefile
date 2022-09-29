@@ -3,7 +3,7 @@
 # File Created: 27-01-2022 11:41:37
 # Author: Clay Risser
 # -----
-# Last Modified: 23-09-2022 13:28:06
+# Last Modified: 29-09-2022 11:50:17
 # Modified By: Clay Risser
 # -----
 # Risser Labs LLC (c) Copyright 2022
@@ -69,9 +69,6 @@ $(ACTION)/apply: $(call git_deps,\.((tf)|(hcl))$$)
 ACTIONS += destroy~format ## destroys terraform infrastructure
 $(ACTION)/destroy: $(call git_deps,\.((tf)|(hcl))$$)
 	@$(CD) $(TF_ROOT) && \
-		RM_RECORDS=$$($(TERRAFORM) state list | \
-		$(GREP) '^\(kubernetes_\|rancher2_\|helm_\|null_resource\|kubectl_\|data\.\|module\.aws_auth_\|time_sleep\|module\.olm\)' $(NOFAIL)) && \
-		[ "$$RM_RECORDS" = "" ] && $(TRUE) || $(TERRAFORM) state rm $$RM_RECORDS && \
 		$(TERRAFORM) destroy $(TERRAFORM_INPUT_FLAG) $(TERRAFORM_AUTO_APPROVE_FLAG) $(ARGS)
 	@$(call done,destroy)
 
