@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 13:36:29
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 11:16:57
+ * Last Modified: 29-09-2022 11:32:31
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -17,8 +17,8 @@ locals {
   rancher_cluster_id   = var.rancher ? "local" : ""
   rancher_project_id   = var.rancher ? data.rancher2_project.system[0].id : ""
   kops_state_store     = "s3://${aws_s3_bucket.main.bucket}/kops"
-  public_api_ports     = [for port in split(",", var.public_api_ports) : parseint(port, 10)]
-  public_nodes_ports   = [for port in split(",", var.public_nodes_ports) : parseint(port, 10)]
+  public_api_ports     = [for port in split(",", var.public_api_ports) : port]
+  public_nodes_ports   = [for port in split(",", var.public_nodes_ports) : port]
   cluster_endpoint     = "https://api.${var.cluster_prefix}-${tostring(var.iteration)}.${var.dns_zone}"
   user_exec = {
     api_version = "client.authentication.k8s.io/v1beta1"
