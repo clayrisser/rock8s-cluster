@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 30-09-2022 14:23:41
+ * Last Modified: 30-09-2022 14:44:19
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -132,9 +132,8 @@ resource "kops_cluster" "this" {
     skip_nodes_with_system_pods      = true
   }
   cert_manager {
-    enabled         = true
-    managed         = true
-    hosted_zone_ids = [data.aws_route53_zone.this.zone_id]
+    enabled = true
+    managed = true
   }
   kube_dns {
     provider = "CoreDNS"
