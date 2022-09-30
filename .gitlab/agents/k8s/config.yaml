@@ -8,3 +8,4 @@ gitops:
 ci_access:
   groups:
     - id: risserlabs
+    - id: risserlabs/tmp
