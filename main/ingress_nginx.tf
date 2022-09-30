@@ -4,7 +4,7 @@
  * File Created: 27-09-2022 12:47:58
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 11:17:18
+ * Last Modified: 30-09-2022 03:15:54
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -54,6 +54,7 @@ EOF
 }
 
 resource "null_resource" "wait_for_ingress_nginx" {
+  count = var.ingress_nginx ? 1 : 0
   provisioner "local-exec" {
     command     = <<EOF
 s=5
