@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 12:38:07
+ * Last Modified: 30-09-2022 08:46:17
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -191,6 +191,30 @@ resource "kops_instance_group" "master-0" {
   machine_type               = "t3.xlarge"
   subnets                    = [data.aws_subnet.public[0].id]
   additional_security_groups = [aws_security_group.api.id]
+  additional_user_data = [
+    {
+      name    = "assign-eip.sh"
+      type    = "text/x-shellscript"
+      content = <<EOF
+#!/bin/bash
+export EIPPOOL=${var.cluster_prefix}.${var.dns_zone}
+set -o nounset
+set -o errexit
+apk -q --no-cache add curl
+ASSOCIATED_INSTANCES=$(aws ec2 describe-addresses --filters="Name=tag:Name,Values=$EIPPOOL" | jq -r '.Addresses[] | "\(.InstanceId)"')
+INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
+while ! [[ $ASSOCIATED_INSTANCES =~ (^|[[:space:]])"$INSTANCE_ID"($|[[:space:]]) ]]; do
+  ALLOCATION_ID=$(aws ec2 describe-addresses --filters="Name=tag:Name,Values=$EIPPOOL" | jq -r '.Addresses[] | "\(.InstanceId) \(.AllocationId)"' | grep null | awk '{print $2}' | xargs shuf -n1 -e)
+  if [ ! -z $ALLOCATION_ID ]; then
+    aws ec2 associate-address --instance-id $INSTANCE_ID --allocation-id $ALLOCATION_ID --allow-reassociation
+    ASSOCIATED_INSTANCES=$(aws ec2 describe-addresses --filters="Name=tag:Name,Values=$EIPPOOL" | jq -r '.Addresses[] | "\(.InstanceId)"')
+  else
+    sleep 60
+  fi
+done
+EOF
+    }
+  ]
   lifecycle {
     prevent_destroy = false
     ignore_changes  = []
