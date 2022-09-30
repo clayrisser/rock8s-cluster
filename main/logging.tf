@@ -4,7 +4,7 @@
  * File Created: 18-09-2022 07:59:35
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 11:07:04
+ * Last Modified: 30-09-2022 04:16:54
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -60,7 +60,7 @@ write:
 loki:
   auth_enabled: false
   limits_config:
-    retention_period: 7d
+    retention_period: ${tostring(var.retention_hours)}h
   compactor:
     retention_delete_delay: 2h
     retention_delete_worker_count: 150

@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:12:06
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 12:38:21
+ * Last Modified: 30-09-2022 04:14:40
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -219,4 +219,9 @@ variable "velero" {
 variable "autoscaler" {
   type    = bool
   default = true
+}
+
+variable "retention_hours" {
+  type    = number
+  default = 168
 }

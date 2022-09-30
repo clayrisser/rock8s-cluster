@@ -3,7 +3,7 @@
 # File Created: 15-04-2022 09:14:48
 # Author: Clay Risser
 # -----
-# Last Modified: 29-09-2022 12:38:49
+# Last Modified: 30-09-2022 04:14:59
 # Modified By: Clay Risser
 # -----
 # Risser Labs LLC (c) Copyright 2022
@@ -48,6 +48,7 @@ export TF_VAR_region ?= $(AWS_REGION)
 export TF_VAR_s3 ?= $(S3)
 export TF_VAR_tempo ?= $(TEMPO)
 export TF_VAR_velero ?= $(VELERO)
+export TF_VAR_retention_hours ?= $(RETENTION_HOURS)
 
 define prevent_destroy
 for f in $$($(GIT) ls-files | $(GREP) "\.tf$$"); do \

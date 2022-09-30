@@ -4,7 +4,7 @@
  * File Created: 20-04-2022 13:40:49
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 11:12:26
+ * Last Modified: 30-09-2022 04:18:42
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -34,7 +34,7 @@ prometheus:
   prometheusSpec:
     scrapeInterval: 2m
     evaluationInterval: 2m
-    retention: 1d
+    retention: 3h
     retentionSize: 10GiB
     storageSpec:
       volumeClaimTemplate:
@@ -58,9 +58,9 @@ prometheus:
   thanos:
     enabled: true
     additionalArgs:
-      - '--retention.resolution-1h=30d'
-      - '--retention.resolution-5m=7d'
-      - '--retention.resolution-raw=1d'
+      - '--retention.resolution-1h=3h'
+      - '--retention.resolution-5m=2h'
+      - '--retention.resolution-raw=1h'
     objectConfig:
       type: S3
       config:
