@@ -4,7 +4,7 @@
  * File Created: 20-04-2022 13:40:49
  * Author: Clay Risser
  * -----
- * Last Modified: 30-09-2022 04:18:42
+ * Last Modified: 30-09-2022 05:31:34
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -58,9 +58,9 @@ prometheus:
   thanos:
     enabled: true
     additionalArgs:
-      - '--retention.resolution-1h=3h'
-      - '--retention.resolution-5m=2h'
-      - '--retention.resolution-raw=1h'
+      - '--retention.resolution-1h=${tostring(var.retention_hours)}h'
+      - '--retention.resolution-5m=${tostring(var.retention_hours * 0.6)}h'
+      - '--retention.resolution-raw=${tostring(var.retention_hours * 0.2)}h'
     objectConfig:
       type: S3
       config:
