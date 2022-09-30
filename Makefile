@@ -3,7 +3,7 @@
 # File Created: 27-01-2022 11:41:37
 # Author: Clay Risser
 # -----
-# Last Modified: 29-09-2022 12:31:19
+# Last Modified: 30-09-2022 04:47:45
 # Modified By: Clay Risser
 # -----
 # Risser Labs LLC (c) Copyright 2022
@@ -82,11 +82,11 @@ $(ACTION)/refresh: $(call git_deps,\.((tf)|(hcl))$$)
 	@$(call done,refresh)
 
 .PHONY: allow-destroy
-allow-destroy:
+allow-destroy: ## allow resource to be destroyed
 	@$(call prevent_destroy,false)
 
 .PHONY: prevent-destroy
-prevent-destroy:
+prevent-destroy: ## prevent resources from being destroyed
 	@$(call prevent_destroy,true)
 
 .PHONY: kubeconfig
@@ -104,7 +104,7 @@ kubeconfig: ## authenticate local environment with the kube cluster
 		$(KUBECTX) $(KUBE_CONTEXT)
 
 .PHONY: clean
-clean: ##
+clean: ## clean repo
 	-@$(GIT) clean -fXd \
 		$(MKPM_GIT_CLEAN_FLAGS) \
 		$(call git_clean_flags,.terraform) \
@@ -112,7 +112,7 @@ clean: ##
 		$(NOFAIL)
 
 .PHONY: purge
-purge: clean ##
+purge: clean ## purge repo
 	@$(GIT) clean -fXd
 
 .PHONY: count
