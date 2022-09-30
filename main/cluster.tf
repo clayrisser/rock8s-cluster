@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 30-09-2022 08:46:17
+ * Last Modified: 30-09-2022 08:50:33
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -191,11 +191,10 @@ resource "kops_instance_group" "master-0" {
   machine_type               = "t3.xlarge"
   subnets                    = [data.aws_subnet.public[0].id]
   additional_security_groups = [aws_security_group.api.id]
-  additional_user_data = [
-    {
-      name    = "assign-eip.sh"
-      type    = "text/x-shellscript"
-      content = <<EOF
+  additional_user_data {
+    name    = "assign-eip.sh"
+    type    = "text/x-shellscript"
+    content = <<EOF
 #!/bin/bash
 export EIPPOOL=${var.cluster_prefix}.${var.dns_zone}
 set -o nounset
@@ -213,8 +212,7 @@ while ! [[ $ASSOCIATED_INSTANCES =~ (^|[[:space:]])"$INSTANCE_ID"($|[[:space:]])
   fi
 done
 EOF
-    }
-  ]
+  }
   lifecycle {
     prevent_destroy = false
     ignore_changes  = []
