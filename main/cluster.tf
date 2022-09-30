@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 30-09-2022 09:22:42
+ * Last Modified: 30-09-2022 11:06:11
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -132,8 +132,9 @@ resource "kops_cluster" "this" {
     skip_nodes_with_system_pods      = true
   }
   cert_manager {
-    enabled = true
-    managed = true
+    enabled        = true
+    managed        = true
+    default_issuer = "letsencrypt-cloudflare-prod"
   }
   kube_dns {
     provider = "CoreDNS"
