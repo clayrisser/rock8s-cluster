@@ -4,7 +4,7 @@
  * File Created: 07-05-2022 03:17:43
  * Author: Clay Risser
  * -----
- * Last Modified: 01-10-2022 04:04:14
+ * Last Modified: 01-10-2022 09:55:52
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -50,9 +50,9 @@ spec:
       patch: |
         - op: replace
           path: /spec/template/spec/containers/0/args
-          value: |
+          value:
             - --v=2
-            - --cluster-resource-namespace=$(POD_NAMESPACE)
+            - --cluster-resource-namespace=\$(POD_NAMESPACE)
             - --leader-election-namespace=kube-system
             - --enable-certificate-owner-ref=true
             - --default-issuer-name=letsencrypt-cloudflare-prod
