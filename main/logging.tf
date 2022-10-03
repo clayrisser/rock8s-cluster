@@ -4,7 +4,7 @@
  * File Created: 18-09-2022 07:59:35
  * Author: Clay Risser
  * -----
- * Last Modified: 30-09-2022 05:27:37
+ * Last Modified: 03-10-2022 13:47:29
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -80,9 +80,9 @@ loki:
       accessKeyId: '${var.aws_access_key_id}'
       insecure: false
     bucketNames:
-      admin: '${aws_s3_bucket.loki_admin.bucket}'
-      chunks: '${aws_s3_bucket.loki_chunks.bucket}'
-      ruler: '${aws_s3_bucket.loki_chunks.bucket}'
+      admin: '${aws_s3_bucket.loki.bucket}'
+      chunks: '${aws_s3_bucket.loki.bucket}'
+      ruler: '${aws_s3_bucket.loki.bucket}'
 EOF
   depends_on         = []
 }

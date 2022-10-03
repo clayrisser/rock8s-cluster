@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:12:06
  * Author: Clay Risser
  * -----
- * Last Modified: 30-09-2022 04:14:40
+ * Last Modified: 03-10-2022 13:48:08
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -72,15 +72,7 @@ variable "thanos_bucket" {
   default = ""
 }
 
-variable "loki_chunks_bucket" {
-  default = ""
-}
-
-variable "loki_ruler_bucket" {
-  default = ""
-}
-
-variable "loki_admin_bucket" {
+variable "loki_bucket" {
   default = ""
 }
 
