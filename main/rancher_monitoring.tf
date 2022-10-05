@@ -4,7 +4,7 @@
  * File Created: 20-04-2022 13:40:49
  * Author: Clay Risser
  * -----
- * Last Modified: 30-09-2022 05:31:34
+ * Last Modified: 05-10-2022 10:03:58
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -25,7 +25,7 @@ grafana:
     dashboards:
       searchNamespace: cattle-dashboards
   persistence:
-    size: 10Gi
+    size: 1Gi
     storageClassName: gp2
     type: pvc
     accessModes:
@@ -34,8 +34,8 @@ prometheus:
   prometheusSpec:
     scrapeInterval: 2m
     evaluationInterval: 2m
-    retention: 3h
-    retentionSize: 10GiB
+    retention: ${tostring(var.retention_hours)}h
+    retentionSize: 1Gi
     storageSpec:
       volumeClaimTemplate:
         spec:
