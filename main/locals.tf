@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 13:36:29
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 12:41:13
+ * Last Modified: 07-10-2022 08:06:41
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -60,10 +60,11 @@ locals {
       }
     }]
   })
-  rancher              = var.rancher && var.ingress_nginx
   external_dns         = var.external_dns && var.helm_operator
   integration_operator = var.integration_operator && var.patch_operator
   kanister             = var.kanister && local.integration_operator
+  olm                  = var.olm && var.patch_operator
+  rancher              = var.rancher && var.ingress_nginx
   rancher_istio        = var.rancher_istio && local.rancher
   rancher_monitoring   = var.rancher_monitoring && local.rancher
   s3                   = var.s3 && local.integration_operator
