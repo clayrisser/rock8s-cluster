@@ -4,7 +4,7 @@
  * File Created: 20-04-2022 13:40:49
  * Author: Clay Risser
  * -----
- * Last Modified: 05-10-2022 10:03:58
+ * Last Modified: 07-10-2022 09:35:24
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -56,7 +56,7 @@ prometheus:
                   values:
                     - amd64
   thanos:
-    enabled: true
+    enabled: false
     additionalArgs:
       - '--retention.resolution-1h=${tostring(var.retention_hours)}h'
       - '--retention.resolution-5m=${tostring(var.retention_hours * 0.6)}h'
