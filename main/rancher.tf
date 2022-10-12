@@ -4,7 +4,7 @@
  * File Created: 09-02-2022 11:24:10
  * Author: Clay Risser
  * -----
- * Last Modified: 12-10-2022 15:27:30
+ * Last Modified: 12-10-2022 16:06:46
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -33,7 +33,7 @@ resource "helm_release" "rancher" {
   namespace        = "cattle-system"
   create_namespace = true
   values = [<<EOF
-replicas: 2
+replicas: 1
 bootstrapPassword: ${local.rancher_bootstrap_password}
 hostname: ${local.rancher_hostname}
 ingress:
@@ -48,10 +48,10 @@ letsEncrypt:
   environment: ${local.cert_manager_letsencrypt_environment}
 resources:
   limits:
-    cpu: 1
+    cpu: 2
     memory: 2Gi
   requests:
-    cpu: 1
+    cpu: 1.5
     memory: 1.5Gi
 EOF
   ]
