@@ -4,7 +4,7 @@
  * File Created: 09-02-2022 11:24:10
  * Author: Clay Risser
  * -----
- * Last Modified: 12-10-2022 12:37:16
+ * Last Modified: 12-10-2022 15:06:19
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -33,7 +33,7 @@ resource "helm_release" "rancher" {
   namespace        = "cattle-system"
   create_namespace = true
   values = [<<EOF
-replicas: 1
+replicas: 2
 bootstrapPassword: ${local.rancher_bootstrap_password}
 hostname: ${local.rancher_hostname}
 ingress:
