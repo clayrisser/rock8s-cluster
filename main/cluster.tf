@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 07-10-2022 09:04:34
+ * Last Modified: 12-10-2022 15:45:44
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -232,7 +232,7 @@ resource "kops_instance_group" "t3-medium-a" {
   name                       = "t3-medium-a"
   autoscale                  = true
   role                       = "Node"
-  min_size                   = 1
+  min_size                   = 2
   max_size                   = 3
   machine_type               = "t3.medium"
   subnets                    = [data.aws_subnet.public[0].id]
@@ -275,22 +275,6 @@ resource "kops_instance_group" "t3-medium-c" {
   }
 }
 
-resource "kops_instance_group" "t3-xlarge-a" {
-  cluster_name               = kops_cluster.this.id
-  name                       = "t3-xlarge-a"
-  autoscale                  = true
-  role                       = "Node"
-  min_size                   = 1
-  max_size                   = 3
-  machine_type               = "t3.xlarge"
-  subnets                    = [data.aws_subnet.public[2].id]
-  additional_security_groups = [aws_security_group.nodes.id]
-  lifecycle {
-    prevent_destroy = false
-    ignore_changes  = []
-  }
-}
-
 resource "kops_cluster_updater" "updater" {
   cluster_name = kops_cluster.this.id
   keepers = {
@@ -301,7 +285,6 @@ resource "kops_cluster_updater" "updater" {
     t3-medium-a = kops_instance_group.t3-medium-a.revision
     t3-medium-b = kops_instance_group.t3-medium-b.revision
     t3-medium-c = kops_instance_group.t3-medium-c.revision
-    t3-xlarge-a = kops_instance_group.t3-xlarge-a.revision
   }
   rolling_update {
     skip                = false
