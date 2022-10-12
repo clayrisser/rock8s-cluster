@@ -4,7 +4,7 @@
  * File Created: 09-02-2022 11:24:10
  * Author: Clay Risser
  * -----
- * Last Modified: 12-10-2022 12:21:48
+ * Last Modified: 12-10-2022 12:37:16
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -48,7 +48,7 @@ letsEncrypt:
   environment: ${local.cert_manager_letsencrypt_environment}
 resources:
   limits:
-    cpu: 2
+    cpu: 2010m
     memory: 2Gi
   requests:
     cpu: 2010m
