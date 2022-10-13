@@ -4,7 +4,7 @@
  * File Created: 09-02-2022 11:24:10
  * Author: Clay Risser
  * -----
- * Last Modified: 12-10-2022 16:06:46
+ * Last Modified: 13-10-2022 07:01:55
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -51,7 +51,7 @@ resources:
     cpu: 2
     memory: 2Gi
   requests:
-    cpu: 1.5
+    cpu: 1
     memory: 1.5Gi
 EOF
   ]
