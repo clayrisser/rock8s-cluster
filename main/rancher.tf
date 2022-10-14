@@ -4,7 +4,7 @@
  * File Created: 09-02-2022 11:24:10
  * Author: Clay Risser
  * -----
- * Last Modified: 14-10-2022 12:18:43
+ * Last Modified: 14-10-2022 14:16:47
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -103,6 +103,9 @@ spec:
                   matchExpressions:
                     - key: node-role.kubernetes.io/master
                       operator: Exists
+        - op: replace
+          path: /spec/strategy/type
+          value: Recreate
 EOF
   depends_on = [
     helm_release.rancher,
