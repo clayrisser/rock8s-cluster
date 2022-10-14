@@ -3,7 +3,7 @@
 # File Created: 15-04-2022 09:14:48
 # Author: Clay Risser
 # -----
-# Last Modified: 30-09-2022 04:14:59
+# Last Modified: 14-10-2022 02:19:13
 # Modified By: Clay Risser
 # -----
 # Risser Labs LLC (c) Copyright 2022
@@ -36,6 +36,7 @@ export TF_VAR_iteration ?= $(ITERATION)
 export TF_VAR_kanister ?= $(KANISTER)
 export TF_VAR_kubed ?= $(KUBED)
 export TF_VAR_logging ?= $(LOGGING)
+export TF_VAR_longhorn ?= $(LONGHORN)
 export TF_VAR_olm ?= $(OLM)
 export TF_VAR_patch_operator ?= $(PATCH_OPERATOR)
 export TF_VAR_public_api_ports ?= $(PUBLIC_API_PORTS)
@@ -45,10 +46,10 @@ export TF_VAR_rancher_admin_password ?= $(RANCHER_ADMIN_PASSWORD)
 export TF_VAR_rancher_istio ?= $(RANCHER_ISTIO)
 export TF_VAR_rancher_monitoring ?= $(RANCHER_MONITORING)
 export TF_VAR_region ?= $(AWS_REGION)
+export TF_VAR_retention_hours ?= $(RETENTION_HOURS)
 export TF_VAR_s3 ?= $(S3)
 export TF_VAR_tempo ?= $(TEMPO)
 export TF_VAR_velero ?= $(VELERO)
-export TF_VAR_retention_hours ?= $(RETENTION_HOURS)
 
 define prevent_destroy
 for f in $$($(GIT) ls-files | $(GREP) "\.tf$$"); do \

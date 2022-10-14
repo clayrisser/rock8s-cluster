@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:12:06
  * Author: Clay Risser
  * -----
- * Last Modified: 03-10-2022 13:48:08
+ * Last Modified: 14-10-2022 02:18:51
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -206,6 +206,11 @@ variable "tempo" {
 variable "velero" {
   type    = bool
   default = true
+}
+
+variable "longhorn" {
+  type    = bool
+  default = false
 }
 
 variable "autoscaler" {
