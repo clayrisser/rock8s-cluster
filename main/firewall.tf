@@ -4,7 +4,7 @@
  * File Created: 29-09-2022 09:20:26
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 11:27:32
+ * Last Modified: 14-10-2022 10:16:32
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -25,7 +25,6 @@ resource "aws_security_group" "api" {
   }
   lifecycle {
     prevent_destroy = false
-    ignore_changes  = []
   }
 }
 
@@ -44,6 +43,5 @@ resource "aws_security_group" "nodes" {
   }
   lifecycle {
     prevent_destroy = false
-    ignore_changes  = []
   }
 }

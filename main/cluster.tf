@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 14-10-2022 02:13:40
+ * Last Modified: 14-10-2022 10:16:32
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -194,7 +194,6 @@ resource "kops_instance_group" "master-0" {
   root_volume_size           = 32
   lifecycle {
     prevent_destroy = false
-    ignore_changes  = []
   }
 }
 
@@ -209,7 +208,7 @@ resource "kops_instance_group" "master-0" {
 #   additional_security_groups = [aws_security_group.api.id]
 #   lifecycle {
 #     prevent_destroy = false
-#     ignore_changes  = []
+#
 #   }
 # }
 
@@ -224,7 +223,7 @@ resource "kops_instance_group" "master-0" {
 #   additional_security_groups = [aws_security_group.api.id]
 #   lifecycle {
 #     prevent_destroy = false
-#     ignore_changes  = []
+#
 #   }
 # }
 
@@ -241,7 +240,6 @@ resource "kops_instance_group" "t3-medium-a" {
   root_volume_size           = 32
   lifecycle {
     prevent_destroy = false
-    ignore_changes  = []
   }
 }
 
@@ -258,7 +256,6 @@ resource "kops_instance_group" "t3-medium-b" {
   root_volume_size           = 32
   lifecycle {
     prevent_destroy = false
-    ignore_changes  = []
   }
 }
 
@@ -275,7 +272,6 @@ resource "kops_instance_group" "t3-medium-c" {
   root_volume_size           = 32
   lifecycle {
     prevent_destroy = false
-    ignore_changes  = []
   }
 }
 
@@ -301,7 +297,6 @@ resource "kops_cluster_updater" "updater" {
   }
   lifecycle {
     prevent_destroy = false
-    ignore_changes  = []
   }
 }
 

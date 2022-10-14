@@ -4,7 +4,7 @@
  * File Created: 18-09-2022 07:59:35
  * Author: Clay Risser
  * -----
- * Last Modified: 03-10-2022 13:47:29
+ * Last Modified: 14-10-2022 10:16:32
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -109,7 +109,6 @@ EOF
   ]
   lifecycle {
     prevent_destroy = false
-    ignore_changes  = []
   }
 }
 
@@ -132,7 +131,6 @@ EOF
   ]
   lifecycle {
     prevent_destroy = false
-    ignore_changes  = []
   }
 }
 
@@ -159,7 +157,6 @@ EOF
   depends_on = []
   lifecycle {
     prevent_destroy = false
-    ignore_changes  = []
   }
 }
 
@@ -481,6 +478,5 @@ EOF
   ]
   lifecycle {
     prevent_destroy = false
-    ignore_changes  = []
   }
 }

@@ -4,7 +4,7 @@
  * File Created: 24-02-2022 16:17:10
  * Author: Clay Risser
  * -----
- * Last Modified: 27-09-2022 12:48:55
+ * Last Modified: 14-10-2022 10:16:32
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -42,6 +42,5 @@ resource "kubernetes_secret" "registry" {
   ]
   lifecycle {
     prevent_destroy = false
-    ignore_changes  = []
   }
 }

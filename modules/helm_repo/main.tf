@@ -4,7 +4,7 @@
  * File Created: 27-09-2022 10:24:31
  * Author: Clay Risser
  * -----
- * Last Modified: 27-09-2022 13:10:08
+ * Last Modified: 14-10-2022 10:16:32
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -21,6 +21,5 @@ resource "rancher2_catalog_v2" "this" {
   url        = var.url
   lifecycle {
     prevent_destroy = false
-    ignore_changes  = []
   }
 }

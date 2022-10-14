@@ -4,7 +4,7 @@
  * File Created: 27-09-2022 10:24:31
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 09:48:39
+ * Last Modified: 14-10-2022 10:16:32
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -26,7 +26,6 @@ resource "helm_release" "ingress_nginx" {
   values           = [var.values]
   lifecycle {
     prevent_destroy = false
-    ignore_changes  = []
   }
 }
 
@@ -42,7 +41,6 @@ resource "rancher2_app_v2" "this" {
   values        = var.values
   lifecycle {
     prevent_destroy = false
-    ignore_changes  = []
   }
 }
 
@@ -52,6 +50,5 @@ resource "rancher2_namespace" "this" {
   project_id = var.rancher_project_id
   lifecycle {
     prevent_destroy = false
-    ignore_changes  = []
   }
 }

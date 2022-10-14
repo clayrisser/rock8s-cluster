@@ -4,7 +4,7 @@
  * File Created: 09-02-2022 11:24:10
  * Author: Clay Risser
  * -----
- * Last Modified: 14-10-2022 01:55:37
+ * Last Modified: 14-10-2022 10:34:12
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -51,7 +51,7 @@ resources:
     cpu: 1.6
     memory: 2Gi
   requests:
-    cpu: 1.2
+    cpu: 1
     memory: 1.5Gi
 EOF
   ]
@@ -62,6 +62,59 @@ EOF
   depends_on = [
     null_resource.wait_for_ingress_nginx
   ]
+}
+
+resource "kubectl_manifest" "rancher_patch" {
+  count     = (var.logging && local.rancher) ? 1 : 0
+  yaml_body = <<EOF
+apiVersion: patch.risserlabs.com/v1alpha1
+kind: Patch
+metadata:
+  name: rancher-patch
+  namespace: cattle-system
+spec:
+  epoch: {{ now | unixEpoch | quote }}
+  patches:
+    - id: rancher-patch
+      target:
+        group: apps
+        version: v1
+        kind: Deployment
+        name: rancher
+      waitForTimeout: 5
+      waitForResource: true
+      type: json
+      patch: |
+        - op: replace
+          path: /spec/template/spec/tolerations
+          value:
+            - key: "cattle.io/os"
+              value: "linux"
+              effect: "NoSchedule"
+              operator: "Equal"
+            - key: "cattle.io/master"
+              value: "yes"
+              effect: "NoSchedule"
+              operator: "Equal"
+        - op: add
+          path: /spec/template/spec/affinity/nodeAffinity
+          value:
+            preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 1
+                preference:
+                  matchExpressions:
+                    - key: disktype
+                      operator: In
+                      values:
+                        - ssd
+EOF
+  depends_on = [
+    helm_release.rancher,
+    module.patch_operator,
+  ]
+  lifecycle {
+    prevent_destroy = false
+  }
 }
 
 resource "null_resource" "wait_for_rancher" {
@@ -89,7 +142,7 @@ EOF
     }
   }
   depends_on = [
-    helm_release.rancher[0]
+    kubectl_manifest.rancher_patch
   ]
 }
 

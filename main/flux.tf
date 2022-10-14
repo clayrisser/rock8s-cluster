@@ -4,7 +4,7 @@
  * File Created: 23-02-2022 11:40:50
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 10:25:07
+ * Last Modified: 14-10-2022 10:16:32
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -58,6 +58,5 @@ resource "kubectl_manifest" "flux_install" {
   ]
   lifecycle {
     prevent_destroy = false
-    ignore_changes  = []
   }
 }

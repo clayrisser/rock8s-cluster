@@ -4,7 +4,7 @@
  * File Created: 20-04-2022 13:40:49
  * Author: Clay Risser
  * -----
- * Last Modified: 07-10-2022 09:37:42
+ * Last Modified: 14-10-2022 10:16:32
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -122,6 +122,5 @@ resource "rancher2_namespace" "cattle_monitoring_system" {
   project_id = local.rancher_project_id
   lifecycle {
     prevent_destroy = false
-    ignore_changes  = []
   }
 }
