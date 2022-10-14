@@ -4,7 +4,7 @@
  * File Created: 09-02-2022 11:24:10
  * Author: Clay Risser
  * -----
- * Last Modified: 14-10-2022 11:00:31
+ * Last Modified: 14-10-2022 12:13:13
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -87,14 +87,13 @@ spec:
         - op: replace
           path: /spec/template/spec/tolerations
           value:
-            - key: "cattle.io/os"
-              value: "linux"
-              effect: "NoSchedule"
-              operator: "Equal"
-            - key: "cattle.io/master"
-              value: "yes"
-              effect: "NoSchedule"
-              operator: "Equal"
+            - key: cattle.io/os
+              value: linux
+              effect: NoSchedule
+              operator: Equal
+            - key: node-role.kubernetes.io/master
+              effect: NoSchedule
+              operator: Exists
         - op: add
           path: /spec/template/spec/affinity/nodeAffinity
           value:
@@ -102,10 +101,8 @@ spec:
               - weight: 1
                 preference:
                   matchExpressions:
-                    - key: disktype
-                      operator: In
-                      values:
-                        - ssd
+                    - key: node-role.kubernetes.io/master
+                      operator: Exists
 EOF
   depends_on = [
     helm_release.rancher,
