@@ -4,13 +4,13 @@
  * File Created: 13-10-2022 02:34:15
  * Author: Clay Risser
  * -----
- * Last Modified: 14-10-2022 02:17:02
+ * Last Modified: 14-10-2022 04:55:47
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
 
-module "rancher_monitoring" {
+module "longhorn" {
   source             = "../modules/helm_release"
   enabled            = local.longhorn
   chart_name         = "longhorn"
