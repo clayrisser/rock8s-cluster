@@ -4,7 +4,7 @@
  * File Created: 09-02-2022 11:24:10
  * Author: Clay Risser
  * -----
- * Last Modified: 14-10-2022 10:34:12
+ * Last Modified: 14-10-2022 11:00:31
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -73,7 +73,6 @@ metadata:
   name: rancher-patch
   namespace: cattle-system
 spec:
-  epoch: {{ now | unixEpoch | quote }}
   patches:
     - id: rancher-patch
       target:
@@ -110,7 +109,7 @@ spec:
 EOF
   depends_on = [
     helm_release.rancher,
-    module.patch_operator,
+    helm_release.patch_operator,
   ]
   lifecycle {
     prevent_destroy = false

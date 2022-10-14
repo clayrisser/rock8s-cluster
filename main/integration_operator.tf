@@ -4,7 +4,7 @@
  * File Created: 21-04-2022 09:05:39
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 11:11:38
+ * Last Modified: 14-10-2022 10:58:11
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -20,7 +20,7 @@ module "integration_operator" {
   repo               = module.risserlabs_repo.repo
   rancher_cluster_id = local.rancher_cluster_id
   depends_on = [
-    module.patch_operator,
+    helm_release.patch_operator,
     kubernetes_secret.registry
   ]
 }
