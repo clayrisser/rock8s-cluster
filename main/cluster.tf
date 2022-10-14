@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 13-10-2022 05:57:48
+ * Last Modified: 14-10-2022 02:13:40
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -191,6 +191,7 @@ resource "kops_instance_group" "master-0" {
   machine_type               = "t3.xlarge"
   subnets                    = [data.aws_subnet.public[0].id]
   additional_security_groups = [aws_security_group.api.id]
+  root_volume_size           = 32
   lifecycle {
     prevent_destroy = false
     ignore_changes  = []
@@ -237,6 +238,7 @@ resource "kops_instance_group" "t3-medium-a" {
   machine_type               = "t3.medium"
   subnets                    = [data.aws_subnet.public[0].id]
   additional_security_groups = [aws_security_group.nodes.id]
+  root_volume_size           = 32
   lifecycle {
     prevent_destroy = false
     ignore_changes  = []
@@ -253,6 +255,7 @@ resource "kops_instance_group" "t3-medium-b" {
   machine_type               = "t3.medium"
   subnets                    = [data.aws_subnet.public[1].id]
   additional_security_groups = [aws_security_group.nodes.id]
+  root_volume_size           = 32
   lifecycle {
     prevent_destroy = false
     ignore_changes  = []
@@ -264,11 +267,12 @@ resource "kops_instance_group" "t3-medium-c" {
   name                       = "t3-medium-c"
   autoscale                  = true
   role                       = "Node"
-  min_size                   = 2
+  min_size                   = 1
   max_size                   = 4
   machine_type               = "t3.medium"
   subnets                    = [data.aws_subnet.public[2].id]
   additional_security_groups = [aws_security_group.nodes.id]
+  root_volume_size           = 32
   lifecycle {
     prevent_destroy = false
     ignore_changes  = []
