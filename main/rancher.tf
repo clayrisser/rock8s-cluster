@@ -4,7 +4,7 @@
  * File Created: 09-02-2022 11:24:10
  * Author: Clay Risser
  * -----
- * Last Modified: 15-10-2022 10:44:24
+ * Last Modified: 15-10-2022 13:00:28
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -122,9 +122,7 @@ resource "null_resource" "wait_for_rancher" {
   count = local.rancher ? 1 : 0
   provisioner "local-exec" {
     command     = <<EOF
-while [ ! "$(kubectl get jobs rancher-patch -n cattle-system -o json | jq '.status.succeeded')" = "1" ]; do
-  sleep 10
-done
+sleep 20
 while [ "$${subject}" != "*  subject: CN=$RANCHER_HOSTNAME" ]; do
     subject=$(curl -vk -m 2 "https://$RANCHER_HOSTNAME/ping" 2>&1 | grep "subject:")
     echo "Cert Subject Response: $${subject}"
