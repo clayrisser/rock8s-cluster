@@ -4,7 +4,7 @@
  * File Created: 09-02-2022 11:24:10
  * Author: Clay Risser
  * -----
- * Last Modified: 15-10-2022 01:10:46
+ * Last Modified: 15-10-2022 10:44:24
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -70,11 +70,11 @@ resource "kubectl_manifest" "rancher_patch" {
 apiVersion: patch.risserlabs.com/v1alpha1
 kind: Patch
 metadata:
-  name: rancher-patch
+  name: rancher
   namespace: cattle-system
 spec:
   patches:
-    - id: rancher-patch
+    - id: rancher
       target:
         group: apps
         version: v1
@@ -122,6 +122,9 @@ resource "null_resource" "wait_for_rancher" {
   count = local.rancher ? 1 : 0
   provisioner "local-exec" {
     command     = <<EOF
+while [ ! "$(kubectl get jobs rancher-patch -n cattle-system -o json | jq '.status.succeeded')" = "1" ]; do
+  sleep 10
+done
 while [ "$${subject}" != "*  subject: CN=$RANCHER_HOSTNAME" ]; do
     subject=$(curl -vk -m 2 "https://$RANCHER_HOSTNAME/ping" 2>&1 | grep "subject:")
     echo "Cert Subject Response: $${subject}"
