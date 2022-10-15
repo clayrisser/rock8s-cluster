@@ -4,7 +4,7 @@
  * File Created: 09-02-2022 11:24:10
  * Author: Clay Risser
  * -----
- * Last Modified: 14-10-2022 14:16:47
+ * Last Modified: 15-10-2022 01:04:07
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -103,6 +103,8 @@ spec:
                   matchExpressions:
                     - key: node-role.kubernetes.io/master
                       operator: Exists
+        - op: remove
+          path: /spec/strategy/rollingUpdate
         - op: replace
           path: /spec/strategy/type
           value: Recreate
