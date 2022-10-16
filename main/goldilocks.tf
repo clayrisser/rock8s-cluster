@@ -4,7 +4,7 @@
  * File Created: 20-04-2022 10:21:22
  * Author: Clay Risser
  * -----
- * Last Modified: 14-10-2022 04:58:25
+ * Last Modified: 16-10-2022 02:12:17
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -15,7 +15,7 @@ module "goldilocks" {
   enabled            = var.goldilocks
   chart_version      = "6.1.1"
   name               = "goldilocks"
-  repo               = "https://charts.fairwinds.com/stable"
+  repo               = module.grafana_repo.repo
   chart_name         = "goldilocks"
   namespace          = "goldilocks"
   create_namespace   = true

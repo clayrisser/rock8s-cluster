@@ -4,7 +4,7 @@
  * File Created: 21-04-2022 08:46:03
  * Author: Clay Risser
  * -----
- * Last Modified: 27-09-2022 13:34:48
+ * Last Modified: 16-10-2022 02:11:59
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -28,5 +28,12 @@ module "grafana_repo" {
   source             = "../modules/helm_repo"
   name               = "grafana"
   url                = "https://grafana.github.io/helm-charts"
+  rancher_cluster_id = local.rancher_cluster_id
+}
+
+module "fairwinds_repo" {
+  source             = "../modules/helm_repo"
+  name               = "fairwinds"
+  url                = "https://charts.fairwinds.com/stable"
   rancher_cluster_id = local.rancher_cluster_id
 }
