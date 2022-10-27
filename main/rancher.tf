@@ -4,7 +4,7 @@
  * File Created: 09-02-2022 11:24:10
  * Author: Clay Risser
  * -----
- * Last Modified: 16-10-2022 11:23:16
+ * Last Modified: 27-10-2022 05:27:57
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -97,10 +97,9 @@ spec:
         - op: add
           path: /spec/template/spec/affinity/nodeAffinity
           value:
-            preferredDuringSchedulingIgnoredDuringExecution:
-              - weight: 1
-                preference:
-                  matchExpressions:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
                     - key: node-role.kubernetes.io/master
                       operator: Exists
         - op: remove
