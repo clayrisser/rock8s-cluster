@@ -4,30 +4,11 @@
  * File Created: 28-10-2022 11:25:10
  * Author: Clay Risser
  * -----
- * Last Modified: 28-10-2022 12:25:41
+ * Last Modified: 28-10-2022 12:41:21
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
-
-data "aws_subnets" "this" {
-  filter {
-    name   = "vpc-id"
-    values = [module.vpc.vpc_id]
-  }
-  depends_on = [
-    module.vpc
-  ]
-}
-
-data "aws_security_group" "nodes" {
-  tags = {
-    Name = "nodes.${local.cluster_name}"
-  }
-  depends_on = [
-    kops_cluster.this
-  ]
-}
 
 resource "aws_efs_file_system" "this" {
   tags = {
@@ -39,9 +20,9 @@ resource "aws_efs_file_system" "this" {
 }
 
 resource "aws_efs_mount_target" "this" {
-  count           = var.efs_csi ? length(data.aws_subnets.this.ids) : 0
+  count           = var.efs_csi ? length(data.aws_subnet.public) : 0
   file_system_id  = aws_efs_file_system.this.id
-  subnet_id       = tolist(data.aws_subnets.this.ids)[count.index]
+  subnet_id       = data.aws_subnet.public[count.index].id
   security_groups = [data.aws_security_group.nodes.id]
   lifecycle {
     prevent_destroy = false

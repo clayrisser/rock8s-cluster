@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:09:15
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 14:10:10
+ * Last Modified: 28-10-2022 12:38:30
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -37,4 +37,13 @@ data "kubernetes_service" "ingress_nginx_controller" {
 
 data "aws_route53_zone" "this" {
   name = var.dns_zone
+}
+
+data "aws_security_group" "nodes" {
+  tags = {
+    Name = "nodes.${local.cluster_name}"
+  }
+  depends_on = [
+    kops_cluster.this
+  ]
 }
