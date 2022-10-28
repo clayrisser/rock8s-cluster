@@ -4,7 +4,7 @@
  * File Created: 28-10-2022 11:25:10
  * Author: Clay Risser
  * -----
- * Last Modified: 28-10-2022 12:06:05
+ * Last Modified: 28-10-2022 12:17:18
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -18,8 +18,8 @@ data "aws_subnet_ids" "kops" {
 }
 
 data "aws_security_group" "kops_nodes" {
-  tags {
-    Name = "nodes.${local.cluster_id}"
+  tags = {
+    Name = "nodes.${local.cluster_name}"
   }
   depends_on = [
     null_resource.wait_for_nodes
@@ -27,9 +27,8 @@ data "aws_security_group" "kops_nodes" {
 }
 
 resource "aws_efs_file_system" "efs" {
-  region = var.region
-  tags {
-    Name = local.cluster_id
+  tags = {
+    Name = local.cluster_name
   }
   lifecycle {
     prevent_destroy = false
@@ -40,7 +39,7 @@ resource "aws_efs_mount_target" "efs" {
   count           = var.efs_csi ? length(data.aws_subnet_ids.kops.ids) : 0
   file_system_id  = aws_efs_file_system.efs.id
   subnet_id       = data.aws_subnet_ids.kops.ids[count.index]
-  security_groups = [aws_security_group.kops_nodes.id]
+  security_groups = [data.aws_security_group.kops_nodes.id]
   lifecycle {
     prevent_destroy = false
   }
