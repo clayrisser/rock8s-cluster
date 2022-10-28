@@ -4,29 +4,32 @@
  * File Created: 28-10-2022 11:25:10
  * Author: Clay Risser
  * -----
- * Last Modified: 28-10-2022 12:17:18
+ * Last Modified: 28-10-2022 12:25:41
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
 
-data "aws_subnet_ids" "kops" {
-  vpc_id = module.vpc.vpc_id
+data "aws_subnets" "this" {
+  filter {
+    name   = "vpc-id"
+    values = [module.vpc.vpc_id]
+  }
   depends_on = [
-    null_resource.wait_for_nodes
+    module.vpc
   ]
 }
 
-data "aws_security_group" "kops_nodes" {
+data "aws_security_group" "nodes" {
   tags = {
     Name = "nodes.${local.cluster_name}"
   }
   depends_on = [
-    null_resource.wait_for_nodes
+    kops_cluster.this
   ]
 }
 
-resource "aws_efs_file_system" "efs" {
+resource "aws_efs_file_system" "this" {
   tags = {
     Name = local.cluster_name
   }
@@ -35,11 +38,11 @@ resource "aws_efs_file_system" "efs" {
   }
 }
 
-resource "aws_efs_mount_target" "efs" {
-  count           = var.efs_csi ? length(data.aws_subnet_ids.kops.ids) : 0
-  file_system_id  = aws_efs_file_system.efs.id
-  subnet_id       = data.aws_subnet_ids.kops.ids[count.index]
-  security_groups = [data.aws_security_group.kops_nodes.id]
+resource "aws_efs_mount_target" "this" {
+  count           = var.efs_csi ? length(data.aws_subnets.this.ids) : 0
+  file_system_id  = aws_efs_file_system.this.id
+  subnet_id       = tolist(data.aws_subnets.this.ids)[count.index]
+  security_groups = [data.aws_security_group.nodes.id]
   lifecycle {
     prevent_destroy = false
   }
@@ -66,7 +69,7 @@ storageClasses:
       - tls
     parameters:
       provisioningMode: efs-ap
-      fileSystemId: ${aws_efs_file_system.efs.id}
+      fileSystemId: ${aws_efs_file_system.this.id}
       basePath: '/'
     reclaimPolicy: Delete
     volumeBindingMode: Immediate
@@ -74,7 +77,7 @@ EOF
   ]
   depends_on = [
     null_resource.wait_for_nodes,
-    aws_efs_mount_target.efs
+    aws_efs_mount_target.this
   ]
   lifecycle {
     prevent_destroy = false

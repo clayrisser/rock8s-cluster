@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:17:04
  * Author: Clay Risser
  * -----
- * Last Modified: 28-10-2022 11:45:05
+ * Last Modified: 28-10-2022 12:25:21
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -19,5 +19,5 @@ output "cluster_endpoint" {
 }
 
 output "efs_id" {
-  value = aws_efs_file_system.efs.id
+  value = aws_efs_file_system.this.id
 }
