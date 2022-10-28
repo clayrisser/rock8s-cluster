@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:09:15
  * Author: Clay Risser
  * -----
- * Last Modified: 28-10-2022 12:38:30
+ * Last Modified: 28-10-2022 14:09:10
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -44,6 +44,6 @@ data "aws_security_group" "nodes" {
     Name = "nodes.${local.cluster_name}"
   }
   depends_on = [
-    kops_cluster.this
+    kops_cluster_updater.updater
   ]
 }
