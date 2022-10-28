@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:12:06
  * Author: Clay Risser
  * -----
- * Last Modified: 14-10-2022 02:18:51
+ * Last Modified: 28-10-2022 11:06:18
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -204,6 +204,11 @@ variable "tempo" {
 }
 
 variable "velero" {
+  type    = bool
+  default = true
+}
+
+variable "aws_efs_csi_driver" {
   type    = bool
   default = true
 }
