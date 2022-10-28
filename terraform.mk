@@ -3,7 +3,7 @@
 # File Created: 15-04-2022 09:14:48
 # Author: Clay Risser
 # -----
-# Last Modified: 28-10-2022 11:05:31
+# Last Modified: 28-10-2022 12:07:09
 # Modified By: Clay Risser
 # -----
 # Risser Labs LLC (c) Copyright 2022
@@ -11,7 +11,6 @@
 export TF_VAR_api_strategy ?= $(API_STRATEGY)
 export TF_VAR_autoscaler ?= $(AUTOSCALER)
 export TF_VAR_aws_access_key_id ?= $(AWS_ACCESS_KEY_ID)
-export TF_VAR_aws_efs_csi_driver ?= $(AWS_EFS_CSI_DRIVER)
 export TF_VAR_aws_secret_access_key ?= $(AWS_SECRET_ACCESS_KEY)
 export TF_VAR_cleanup_operator ?= $(CLEANUP_OPERATOR)
 export TF_VAR_cloudflare_api_key ?= $(CLOUDFLARE_API_KEY)
@@ -19,6 +18,7 @@ export TF_VAR_cloudflare_email ?= $(CLOUDFLARE_EMAIL)
 export TF_VAR_cluster_issuer ?= $(CLUSTER_ISSUER)
 export TF_VAR_cluster_prefix ?= $(CLUSTER_PREFIX)
 export TF_VAR_dns_zone ?= $(DNS_ZONE)
+export TF_VAR_efs_csi ?= $(EFS_CSI)
 export TF_VAR_external_dns ?= $(EXTERNAL_DNS)
 export TF_VAR_flux ?= $(FLUX)
 export TF_VAR_flux_git_branch ?= $(FLUX_GIT_BRANCH)
