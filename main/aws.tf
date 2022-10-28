@@ -4,7 +4,7 @@
  * File Created: 29-04-2022 14:41:49
  * Author: Clay Risser
  * -----
- * Last Modified: 28-10-2022 11:09:33
+ * Last Modified: 28-10-2022 11:22:50
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -48,7 +48,7 @@ resource "helm_release" "aws_efs_csi_driver" {
   create_namespace = true
   values = [<<EOF
 image:
-  repository: 602401143452.dkr.ecr.region-code.amazonaws.com/eks/aws-efs-csi-driver
+  repository: 602401143452.dkr.ecr.${var.region}.amazonaws.com/eks/aws-efs-csi-driver
 controller:
   serviceAccount:
     name: efs-csi-controller-sa
