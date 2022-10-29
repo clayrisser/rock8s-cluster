@@ -4,7 +4,7 @@
  * File Created: 28-10-2022 11:25:10
  * Author: Clay Risser
  * -----
- * Last Modified: 29-10-2022 08:14:24
+ * Last Modified: 29-10-2022 08:31:03
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -122,7 +122,7 @@ node:
     annotations:
       eks.amazonaws.com/role-arn: arn:aws:iam::${data.aws_caller_identity.this.id}:role/efs-csi-${local.cluster_name}
 storageClasses:
-  - name: efs
+  - name: aws-efs
     mountOptions:
       - tls
     parameters:
