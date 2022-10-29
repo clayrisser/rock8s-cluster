@@ -4,7 +4,7 @@
  * File Created: 28-10-2022 11:25:10
  * Author: Clay Risser
  * -----
- * Last Modified: 29-10-2022 05:20:01
+ * Last Modified: 29-10-2022 05:24:51
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -58,8 +58,23 @@ EOF
 }
 
 resource "aws_iam_role" "efs_csi_driver" {
-  count = var.efs_csi ? 1 : 0
-  name  = "efs-csi.${local.cluster_name}"
+  count              = var.efs_csi ? 1 : 0
+  name               = "efs-csi.${local.cluster_name}"
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "ec2.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
 }
 
 resource "aws_iam_role_policy_attachment" "efs_csi_driver" {
