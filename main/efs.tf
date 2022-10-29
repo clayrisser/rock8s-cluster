@@ -4,7 +4,7 @@
  * File Created: 28-10-2022 11:25:10
  * Author: Clay Risser
  * -----
- * Last Modified: 28-10-2022 22:04:46
+ * Last Modified: 28-10-2022 22:19:57
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -22,7 +22,7 @@ resource "aws_efs_file_system" "this" {
 
 resource "aws_efs_mount_target" "this" {
   count           = var.efs_csi ? length(data.aws_subnet.public) : 0
-  file_system_id  = aws_efs_file_system.this.id
+  file_system_id  = aws_efs_file_system.this[0].id
   subnet_id       = data.aws_subnet.public[count.index].id
   security_groups = [data.aws_security_group.nodes.id]
   lifecycle {
@@ -51,7 +51,7 @@ storageClasses:
       - tls
     parameters:
       provisioningMode: efs-ap
-      fileSystemId: ${aws_efs_file_system.this.id}
+      fileSystemId: ${aws_efs_file_system.this[0].id}
       basePath: '/'
     reclaimPolicy: Delete
     volumeBindingMode: Immediate
