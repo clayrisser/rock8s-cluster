@@ -4,7 +4,7 @@
  * File Created: 28-10-2022 11:25:10
  * Author: Clay Risser
  * -----
- * Last Modified: 29-10-2022 05:38:27
+ * Last Modified: 29-10-2022 08:14:24
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -12,7 +12,7 @@
 
 resource "aws_iam_policy" "efs_csi_driver" {
   count  = var.efs_csi ? 1 : 0
-  name   = "efs-csi.${local.cluster_name}"
+  name   = "efs-csi-${local.cluster_name}"
   policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -35,22 +35,12 @@ resource "aws_iam_policy" "efs_csi_driver" {
       "Action": [
         "elasticfilesystem:CreateAccessPoint"
       ],
-      "Resource": "*",
-      "Condition": {
-        "StringLike": {
-          "Name": "${local.cluster_name}"
-        }
-      }
+      "Resource": "*"
     },
     {
       "Effect": "Allow",
       "Action": "elasticfilesystem:DeleteAccessPoint",
-      "Resource": "*",
-      "Condition": {
-        "StringEquals": {
-          "Name": "${local.cluster_name}"
-        }
-      }
+      "Resource": "*"
     }
   ]
 }
@@ -59,18 +49,21 @@ EOF
 
 resource "aws_iam_role" "efs_csi_driver" {
   count              = var.efs_csi ? 1 : 0
-  name               = "efs-csi.${local.cluster_name}"
+  name               = "efs-csi-${local.cluster_name}"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "Service": "ec2.amazonaws.com"
-      },
       "Effect": "Allow",
-      "Sid": ""
+      "Action": [
+        "sts:AssumeRole"
+      ],
+      "Principal": {
+        "Service": [
+          "ec2.amazonaws.com"
+        ]
+      }
     }
   ]
 }
@@ -120,14 +113,14 @@ controller:
     create: true
     name: efs-csi-controller-sa
     annotations:
-      eks.amazonaws.com/role-arn: arn:aws:iam::${data.aws_caller_identity.this.id}:role/efs-csi.${local.cluster_name}
+      eks.amazonaws.com/role-arn: arn:aws:iam::${data.aws_caller_identity.this.id}:role/efs-csi-${local.cluster_name}
 node:
   logLevel: 2
   serviceAccount:
     create: true
     name: efs-csi-node-sa
     annotations:
-      eks.amazonaws.com/role-arn: arn:aws:iam::${data.aws_caller_identity.this.id}:role/efs-csi.${local.cluster_name}
+      eks.amazonaws.com/role-arn: arn:aws:iam::${data.aws_caller_identity.this.id}:role/efs-csi-${local.cluster_name}
 storageClasses:
   - name: efs
     mountOptions:
