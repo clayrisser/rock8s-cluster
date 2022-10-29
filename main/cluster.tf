@@ -4,11 +4,26 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 27-10-2022 05:32:28
+ * Last Modified: 29-10-2022 02:03:55
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
+
+locals {
+  node_additional_user_data = [
+    {
+      name    = "user_data.sh"
+      type    = "text/x-shellscript"
+      content = <<EOF
+#!/bin/sh
+sudo apt-get update
+sudo apt-get install -y \
+  nfs-common
+EOF
+    }
+  ]
+}
 
 resource "local_file" "iam_kubeconfig" {
   content  = yamlencode(local.kubeconfig)
@@ -238,6 +253,14 @@ resource "kops_instance_group" "t3-medium-a" {
   subnets                    = [data.aws_subnet.public[0].id]
   additional_security_groups = [aws_security_group.nodes.id]
   root_volume_size           = 32
+  dynamic "additional_user_data" {
+    for_each = local.node_additional_user_data
+    content {
+      name    = additional_user_data.value["name"]
+      type    = additional_user_data.value["type"]
+      content = additional_user_data.value["content"]
+    }
+  }
   lifecycle {
     prevent_destroy = false
   }
@@ -254,6 +277,14 @@ resource "kops_instance_group" "t3-medium-b" {
   subnets                    = [data.aws_subnet.public[1].id]
   additional_security_groups = [aws_security_group.nodes.id]
   root_volume_size           = 32
+  dynamic "additional_user_data" {
+    for_each = local.node_additional_user_data
+    content {
+      name    = additional_user_data.value["name"]
+      type    = additional_user_data.value["type"]
+      content = additional_user_data.value["content"]
+    }
+  }
   lifecycle {
     prevent_destroy = false
   }
@@ -270,6 +301,14 @@ resource "kops_instance_group" "t3-medium-c" {
   subnets                    = [data.aws_subnet.public[2].id]
   additional_security_groups = [aws_security_group.nodes.id]
   root_volume_size           = 32
+  dynamic "additional_user_data" {
+    for_each = local.node_additional_user_data
+    content {
+      name    = additional_user_data.value["name"]
+      type    = additional_user_data.value["type"]
+      content = additional_user_data.value["content"]
+    }
+  }
   lifecycle {
     prevent_destroy = false
   }
