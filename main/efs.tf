@@ -4,7 +4,7 @@
  * File Created: 28-10-2022 11:25:10
  * Author: Clay Risser
  * -----
- * Last Modified: 29-10-2022 05:03:22
+ * Last Modified: 29-10-2022 05:07:09
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -93,7 +93,7 @@ controller:
     create: true
     name: efs-csi-controller-sa
     annotations:
-      eks.amazonaws.com/role-arn: arn:aws:iam::${aws_caller_identity.this.id}:role/efs-csi.${local.cluster_name}
+      eks.amazonaws.com/role-arn: arn:aws:iam::${data.aws_caller_identity.this.id}:role/efs-csi.${local.cluster_name}
 storageClasses:
   - name: efs
     mountOptions:
