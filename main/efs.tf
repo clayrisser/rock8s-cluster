@@ -4,11 +4,58 @@
  * File Created: 28-10-2022 11:25:10
  * Author: Clay Risser
  * -----
- * Last Modified: 28-10-2022 22:19:57
+ * Last Modified: 29-10-2022 05:03:22
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
+
+resource "aws_iam_role" "efs_csi_driver" {
+  count              = var.efs_csi ? 1 : 0
+  name               = "efs-csi.${local.cluster_name}"
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:DescribeAvailabilityZones",
+        "elasticfilesystem:ClientMount",
+        "elasticfilesystem:ClientRootAccess",
+        "elasticfilesystem:ClientWrite",
+        "elasticfilesystem:DescribeAccessPoints",
+        "elasticfilesystem:DescribeFileSystems",
+        "elasticfilesystem:DescribeMountTargets"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "elasticfilesystem:CreateAccessPoint"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringLike": {
+          "Name": "${local.cluster_name}"
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": "elasticfilesystem:DeleteAccessPoint",
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "Name": "${local.cluster_name}"
+        }
+      }
+    }
+  ]
+}
+EOF
+}
 
 resource "aws_efs_file_system" "this" {
   count = var.efs_csi ? 1 : 0
@@ -43,8 +90,10 @@ image:
   repository: 602401143452.dkr.ecr.${var.region}.amazonaws.com/eks/aws-efs-csi-driver
 controller:
   serviceAccount:
-    name: efs-csi-controller-sa
     create: true
+    name: efs-csi-controller-sa
+    annotations:
+      eks.amazonaws.com/role-arn: arn:aws:iam::${aws_caller_identity.this.id}:role/efs-csi.${local.cluster_name}
 storageClasses:
   - name: efs
     mountOptions:
@@ -59,7 +108,8 @@ EOF
   ]
   depends_on = [
     null_resource.wait_for_nodes,
-    aws_efs_mount_target.this
+    aws_efs_mount_target.this,
+    aws_iam_role.efs_csi_driver
   ]
   lifecycle {
     prevent_destroy = false
