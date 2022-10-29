@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 29-10-2022 02:03:55
+ * Last Modified: 29-10-2022 09:06:27
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -57,6 +57,13 @@ resource "kops_cluster" "this" {
   iam {
     allow_container_registry                 = true
     use_service_account_external_permissions = false
+    service_account_external_permissions {
+      name      = "my-sa"
+      namespace = "kube-system"
+      aws {
+        policy_ar_ns = [aws_iam_policy.efs_csi_driver[0].arn]
+      }
+    }
   }
   networking {
     calico {}
