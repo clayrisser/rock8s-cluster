@@ -4,7 +4,7 @@
  * File Created: 28-10-2022 11:25:10
  * Author: Clay Risser
  * -----
- * Last Modified: 29-10-2022 05:28:36
+ * Last Modified: 29-10-2022 05:38:27
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -115,9 +115,17 @@ resource "helm_release" "aws_efs_csi_driver" {
 image:
   repository: 602401143452.dkr.ecr.${var.region}.amazonaws.com/eks/aws-efs-csi-driver
 controller:
+  logLevel: 2
   serviceAccount:
     create: true
     name: efs-csi-controller-sa
+    annotations:
+      eks.amazonaws.com/role-arn: arn:aws:iam::${data.aws_caller_identity.this.id}:role/efs-csi.${local.cluster_name}
+node:
+  logLevel: 2
+  serviceAccount:
+    create: true
+    name: efs-csi-node-sa
     annotations:
       eks.amazonaws.com/role-arn: arn:aws:iam::${data.aws_caller_identity.this.id}:role/efs-csi.${local.cluster_name}
 storageClasses:
