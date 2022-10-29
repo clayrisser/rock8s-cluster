@@ -4,13 +4,14 @@
  * File Created: 28-10-2022 11:25:10
  * Author: Clay Risser
  * -----
- * Last Modified: 28-10-2022 12:41:21
+ * Last Modified: 28-10-2022 22:04:46
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
 
 resource "aws_efs_file_system" "this" {
+  count = var.efs_csi ? 1 : 0
   tags = {
     Name = local.cluster_name
   }
