@@ -4,16 +4,16 @@
  * File Created: 28-10-2022 11:25:10
  * Author: Clay Risser
  * -----
- * Last Modified: 29-10-2022 05:24:51
+ * Last Modified: 29-10-2022 05:28:36
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
 
 resource "aws_iam_policy" "efs_csi_driver" {
-  count              = var.efs_csi ? 1 : 0
-  name               = "efs-csi.${local.cluster_name}"
-  assume_role_policy = <<EOF
+  count  = var.efs_csi ? 1 : 0
+  name   = "efs-csi.${local.cluster_name}"
+  policy = <<EOF
 {
   "Version": "2012-10-17",
   "Statement": [
