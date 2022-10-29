@@ -4,13 +4,13 @@
  * File Created: 28-10-2022 11:25:10
  * Author: Clay Risser
  * -----
- * Last Modified: 29-10-2022 05:07:09
+ * Last Modified: 29-10-2022 05:20:01
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
 
-resource "aws_iam_role" "efs_csi_driver" {
+resource "aws_iam_policy" "efs_csi_driver" {
   count              = var.efs_csi ? 1 : 0
   name               = "efs-csi.${local.cluster_name}"
   assume_role_policy = <<EOF
@@ -55,6 +55,17 @@ resource "aws_iam_role" "efs_csi_driver" {
   ]
 }
 EOF
+}
+
+resource "aws_iam_role" "efs_csi_driver" {
+  count = var.efs_csi ? 1 : 0
+  name  = "efs-csi.${local.cluster_name}"
+}
+
+resource "aws_iam_role_policy_attachment" "efs_csi_driver" {
+  count      = var.efs_csi ? 1 : 0
+  policy_arn = aws_iam_policy.efs_csi_driver[0].arn
+  role       = aws_iam_role.efs_csi_driver[0].name
 }
 
 resource "aws_efs_file_system" "this" {
