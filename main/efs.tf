@@ -4,11 +4,14 @@
  * File Created: 28-10-2022 11:25:10
  * Author: Clay Risser
  * -----
- * Last Modified: 29-10-2022 08:31:03
+ * Last Modified: 30-10-2022 08:20:36
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
+
+# https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html
+# https://medium.com/codex/irsa-implementation-in-kops-managed-kubernetes-cluster-18cef84960b6
 
 resource "aws_iam_policy" "efs_csi_driver" {
   count  = var.efs_csi ? 1 : 0
@@ -20,13 +23,10 @@ resource "aws_iam_policy" "efs_csi_driver" {
     {
       "Effect": "Allow",
       "Action": [
-        "ec2:DescribeAvailabilityZones",
-        "elasticfilesystem:ClientMount",
-        "elasticfilesystem:ClientRootAccess",
-        "elasticfilesystem:ClientWrite",
         "elasticfilesystem:DescribeAccessPoints",
         "elasticfilesystem:DescribeFileSystems",
-        "elasticfilesystem:DescribeMountTargets"
+        "elasticfilesystem:DescribeMountTargets",
+        "ec2:DescribeAvailabilityZones"
       ],
       "Resource": "*"
     },
@@ -35,16 +35,29 @@ resource "aws_iam_policy" "efs_csi_driver" {
       "Action": [
         "elasticfilesystem:CreateAccessPoint"
       ],
-      "Resource": "*"
+      "Resource": "*",
+      "Condition": {
+        "StringLike": {
+          "aws:RequestTag/efs.csi.aws.com/cluster": "true"
+        }
+      }
     },
     {
       "Effect": "Allow",
       "Action": "elasticfilesystem:DeleteAccessPoint",
-      "Resource": "*"
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:ResourceTag/efs.csi.aws.com/cluster": "true"
+        }
+      }
     }
   ]
 }
 EOF
+  lifecycle {
+    prevent_destroy = false
+  }
 }
 
 resource "aws_iam_role" "efs_csi_driver" {
@@ -56,24 +69,40 @@ resource "aws_iam_role" "efs_csi_driver" {
   "Statement": [
     {
       "Effect": "Allow",
-      "Action": [
-        "sts:AssumeRole"
-      ],
       "Principal": {
-        "Service": [
-          "ec2.amazonaws.com"
-        ]
+        "Federated": "arn:aws:iam::${data.aws_caller_identity.this.id}:oidc-provider/${aws_s3_bucket.oidc.bucket}.s3.${var.region}.amazonaws.com"
+      },
+      "Action": "sts:AssumeRoleWithWebIdentity",
+      "Condition": {
+        "StringEquals": {
+          "${aws_s3_bucket.oidc.bucket}.s3.${var.region}.amazonaws.com:sub": "system:serviceaccount:kube-system:efs-csi-controller-sa"
+        }
       }
     }
   ]
 }
 EOF
+  lifecycle {
+    prevent_destroy = false
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "efs_csi_driver" {
   count      = var.efs_csi ? 1 : 0
   policy_arn = aws_iam_policy.efs_csi_driver[0].arn
   role       = aws_iam_role.efs_csi_driver[0].name
+  lifecycle {
+    prevent_destroy = false
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "nodes_efs_csi_driver" {
+  count      = var.efs_csi ? 1 : 0
+  policy_arn = aws_iam_policy.efs_csi_driver[0].arn
+  role       = data.aws_iam_role.nodes.name
+  lifecycle {
+    prevent_destroy = false
+  }
 }
 
 resource "aws_efs_file_system" "this" {
@@ -113,22 +142,25 @@ controller:
     create: true
     name: efs-csi-controller-sa
     annotations:
-      eks.amazonaws.com/role-arn: arn:aws:iam::${data.aws_caller_identity.this.id}:role/efs-csi-${local.cluster_name}
+      # eks.amazonaws.com/role-arn: arn:aws:iam::${data.aws_caller_identity.this.id}:role/efs-csi-${local.cluster_name}
 node:
   logLevel: 2
   serviceAccount:
     create: true
     name: efs-csi-node-sa
     annotations:
-      eks.amazonaws.com/role-arn: arn:aws:iam::${data.aws_caller_identity.this.id}:role/efs-csi-${local.cluster_name}
+      # eks.amazonaws.com/role-arn: arn:aws:iam::${data.aws_caller_identity.this.id}:role/efs-csi-${local.cluster_name}
 storageClasses:
   - name: aws-efs
     mountOptions:
       - tls
     parameters:
-      provisioningMode: efs-ap
+      basePath: /dynamic_provisioning
+      directoryPerms: '700'
       fileSystemId: ${aws_efs_file_system.this[0].id}
-      basePath: '/'
+      gidRangeEnd: '2000'
+      gidRangeStart: '1000'
+      provisioningMode: efs-ap
     reclaimPolicy: Delete
     volumeBindingMode: Immediate
 EOF

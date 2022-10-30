@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:12:06
  * Author: Clay Risser
  * -----
- * Last Modified: 28-10-2022 12:06:50
+ * Last Modified: 30-10-2022 07:38:36
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -61,6 +61,10 @@ variable "flux_known_hosts" {
 }
 
 variable "main_bucket" {
+  default = ""
+}
+
+variable "oidc_bucket" {
   default = ""
 }
 

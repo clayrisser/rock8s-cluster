@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 30-10-2022 05:07:55
+ * Last Modified: 30-10-2022 07:42:47
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -66,8 +66,8 @@ resource "kops_cluster" "this" {
     }
   }
   service_account_issuer_discovery {
-    discovery_store          = "s3://${local.cluster_name}/service-account-discovery-store"
     enable_aws_oidc_provider = true
+    discovery_store          = "s3://${local.cluster_name}"
   }
   networking {
     calico {}

@@ -4,11 +4,25 @@
  * File Created: 14-04-2022 08:09:15
  * Author: Clay Risser
  * -----
- * Last Modified: 28-10-2022 14:09:10
+ * Last Modified: 30-10-2022 08:15:15
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
+
+data "aws_iam_role" "nodes" {
+  name = "nodes.${local.cluster_name}"
+  depends_on = [
+    kops_cluster_updater.updater
+  ]
+}
+
+data "aws_iam_role" "masters" {
+  name = "masters.${local.cluster_name}"
+  depends_on = [
+    kops_cluster_updater.updater
+  ]
+}
 
 data "aws_caller_identity" "this" {}
 

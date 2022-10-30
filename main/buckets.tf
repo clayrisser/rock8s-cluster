@@ -4,7 +4,7 @@
  * File Created: 18-09-2022 08:43:29
  * Author: Clay Risser
  * -----
- * Last Modified: 07-10-2022 09:16:48
+ * Last Modified: 30-10-2022 08:17:18
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -12,6 +12,15 @@
 
 resource "aws_s3_bucket" "main" {
   bucket        = var.main_bucket == "" ? local.cluster_name : var.main_bucket
+  force_destroy = true
+  lifecycle {
+    prevent_destroy = false
+  }
+}
+
+resource "aws_s3_bucket" "oidc" {
+  bucket        = var.oidc_bucket == "" ? "oidc.${local.cluster_name}" : var.main_bucket
+  acl           = "public-read"
   force_destroy = true
   lifecycle {
     prevent_destroy = false
