@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 30-10-2022 03:25:30
+ * Last Modified: 30-10-2022 03:45:25
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -56,16 +56,17 @@ resource "kops_cluster" "this" {
   }
   iam {
     allow_container_registry                 = true
-    use_service_account_external_permissions = false
+    use_service_account_external_permissions = true
     service_account_external_permissions {
-      name      = "my-sa"
-      namespace = "kube-system"
+      name      = "pod-identity-webhook-test"
+      namespace = "default"
       aws {
-        policy_ar_ns = [aws_iam_policy.efs_csi_driver[0].arn]
+        policy_ar_ns = ["arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess"]
       }
     }
   }
   service_account_issuer_discovery {
+    discovery_store          = "s3://${local.cluster_name}/service-account-discovery-store"
     enable_aws_oidc_provider = true
   }
   networking {
