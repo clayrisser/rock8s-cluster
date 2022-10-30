@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 30-10-2022 03:45:25
+ * Last Modified: 30-10-2022 05:07:55
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -56,7 +56,7 @@ resource "kops_cluster" "this" {
   }
   iam {
     allow_container_registry                 = true
-    use_service_account_external_permissions = true
+    use_service_account_external_permissions = false
     service_account_external_permissions {
       name      = "pod-identity-webhook-test"
       namespace = "default"
