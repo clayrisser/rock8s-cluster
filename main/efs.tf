@@ -4,7 +4,7 @@
  * File Created: 28-10-2022 11:25:10
  * Author: Clay Risser
  * -----
- * Last Modified: 30-10-2022 08:20:36
+ * Last Modified: 31-10-2022 14:28:11
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -151,16 +151,18 @@ node:
     annotations:
       # eks.amazonaws.com/role-arn: arn:aws:iam::${data.aws_caller_identity.this.id}:role/efs-csi-${local.cluster_name}
 storageClasses:
-  - name: aws-efs
+  - name: efs-sc
     mountOptions:
       - tls
     parameters:
       basePath: /dynamic_provisioning
       directoryPerms: '700'
       fileSystemId: ${aws_efs_file_system.this[0].id}
+      gid: '1000'
       gidRangeEnd: '2000'
       gidRangeStart: '1000'
       provisioningMode: efs-ap
+      uid: '1000'
     reclaimPolicy: Delete
     volumeBindingMode: Immediate
 EOF
