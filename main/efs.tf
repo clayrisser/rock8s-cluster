@@ -4,7 +4,7 @@
  * File Created: 28-10-2022 11:25:10
  * Author: Clay Risser
  * -----
- * Last Modified: 31-10-2022 14:28:11
+ * Last Modified: 31-10-2022 14:30:10
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -38,7 +38,7 @@ resource "aws_iam_policy" "efs_csi_driver" {
       "Resource": "*",
       "Condition": {
         "StringLike": {
-          "aws:RequestTag/efs.csi.aws.com/cluster": "true"
+          "aws:RequestTag/Name": "${local.cluster_name}"
         }
       }
     },
@@ -48,7 +48,7 @@ resource "aws_iam_policy" "efs_csi_driver" {
       "Resource": "*",
       "Condition": {
         "StringEquals": {
-          "aws:ResourceTag/efs.csi.aws.com/cluster": "true"
+          "aws:RequestTag/Name": "${local.cluster_name}"
         }
       }
     }
