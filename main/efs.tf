@@ -4,7 +4,7 @@
  * File Created: 28-10-2022 11:25:10
  * Author: Clay Risser
  * -----
- * Last Modified: 31-10-2022 14:30:10
+ * Last Modified: 01-11-2022 12:30:21
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -23,34 +23,10 @@ resource "aws_iam_policy" "efs_csi_driver" {
     {
       "Effect": "Allow",
       "Action": [
-        "elasticfilesystem:DescribeAccessPoints",
-        "elasticfilesystem:DescribeFileSystems",
-        "elasticfilesystem:DescribeMountTargets",
+        "elasticfilesystem:*",
         "ec2:DescribeAvailabilityZones"
       ],
       "Resource": "*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "elasticfilesystem:CreateAccessPoint"
-      ],
-      "Resource": "*",
-      "Condition": {
-        "StringLike": {
-          "aws:RequestTag/Name": "${local.cluster_name}"
-        }
-      }
-    },
-    {
-      "Effect": "Allow",
-      "Action": "elasticfilesystem:DeleteAccessPoint",
-      "Resource": "*",
-      "Condition": {
-        "StringEquals": {
-          "aws:RequestTag/Name": "${local.cluster_name}"
-        }
-      }
     }
   ]
 }
