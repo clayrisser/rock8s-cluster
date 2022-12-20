@@ -4,7 +4,7 @@
  * File Created: 18-09-2022 07:59:35
  * Author: Clay Risser
  * -----
- * Last Modified: 14-10-2022 10:16:32
+ * Last Modified: 20-12-2022 12:36:36
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -42,7 +42,7 @@ gateway:
   basicAuth:
     enabled: false
 read:
-  replicas: 1
+  replicas: 2
   persistence:
     size: 1Gi
   resources:
@@ -53,7 +53,7 @@ read:
       cpu: 500m
       memory: 500Mi
 write:
-  replicas: 1
+  replicas: 2
   persistence:
     size: 1Gi
   resources:
