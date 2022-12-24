@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 30-10-2022 08:22:23
+ * Last Modified: 24-12-2022 10:34:00
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -245,6 +245,30 @@ resource "kops_instance_group" "master-0" {
 #
 #   }
 # }
+
+resource "kops_instance_group" "t3-xlarge-a" {
+  cluster_name               = kops_cluster.this.id
+  name                       = "t3-xlarge-a"
+  autoscale                  = true
+  role                       = "Node"
+  min_size                   = 1
+  max_size                   = 3
+  machine_type               = "t3.xlarge"
+  subnets                    = [data.aws_subnet.public[0].id]
+  additional_security_groups = [aws_security_group.nodes.id]
+  root_volume_size           = 32
+  dynamic "additional_user_data" {
+    for_each = local.node_additional_user_data
+    content {
+      name    = additional_user_data.value["name"]
+      type    = additional_user_data.value["type"]
+      content = additional_user_data.value["content"]
+    }
+  }
+  lifecycle {
+    prevent_destroy = false
+  }
+}
 
 resource "kops_instance_group" "t3-medium-a" {
   cluster_name               = kops_cluster.this.id
