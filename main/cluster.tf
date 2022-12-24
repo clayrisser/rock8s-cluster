@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 24-12-2022 10:34:00
+ * Last Modified: 24-12-2022 10:47:13
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -349,6 +349,7 @@ resource "kops_cluster_updater" "updater" {
     master-0 = kops_instance_group.master-0.revision
     # master-1 = kops_instance_group.master-1.revision
     # master-2 = kops_instance_group.master-2.revision
+    t3-xlarge-a = kops_instance_group.t3-xlarge-a.revision
     t3-medium-a = kops_instance_group.t3-medium-a.revision
     t3-medium-b = kops_instance_group.t3-medium-b.revision
     t3-medium-c = kops_instance_group.t3-medium-c.revision
