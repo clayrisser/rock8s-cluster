@@ -3,7 +3,7 @@
 # File Created: 15-04-2022 09:14:48
 # Author: Clay Risser
 # -----
-# Last Modified: 28-10-2022 12:07:09
+# Last Modified: 26-12-2022 04:51:52
 # Modified By: Clay Risser
 # -----
 # Risser Labs LLC (c) Copyright 2022
@@ -47,6 +47,7 @@ export TF_VAR_rancher_admin_password ?= $(RANCHER_ADMIN_PASSWORD)
 export TF_VAR_rancher_istio ?= $(RANCHER_ISTIO)
 export TF_VAR_rancher_monitoring ?= $(RANCHER_MONITORING)
 export TF_VAR_region ?= $(AWS_REGION)
+export TF_VAR_reloader ?= $(RELOADER)
 export TF_VAR_retention_hours ?= $(RETENTION_HOURS)
 export TF_VAR_s3 ?= $(S3)
 export TF_VAR_tempo ?= $(TEMPO)

@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:12:06
  * Author: Clay Risser
  * -----
- * Last Modified: 30-10-2022 07:38:36
+ * Last Modified: 26-12-2022 04:46:01
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -223,6 +223,11 @@ variable "longhorn" {
 }
 
 variable "autoscaler" {
+  type    = bool
+  default = true
+}
+
+variable "reloader" {
   type    = bool
   default = true
 }
