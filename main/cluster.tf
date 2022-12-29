@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 24-12-2022 10:47:13
+ * Last Modified: 29-12-2022 04:50:49
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -246,14 +246,14 @@ resource "kops_instance_group" "master-0" {
 #   }
 # }
 
-resource "kops_instance_group" "t3-xlarge-a" {
+resource "kops_instance_group" "t3-2xlarge-a" {
   cluster_name               = kops_cluster.this.id
-  name                       = "t3-xlarge-a"
+  name                       = "t3-2xlarge-a"
   autoscale                  = true
   role                       = "Node"
   min_size                   = 1
   max_size                   = 3
-  machine_type               = "t3.xlarge"
+  machine_type               = "t3.2xlarge"
   subnets                    = [data.aws_subnet.public[0].id]
   additional_security_groups = [aws_security_group.nodes.id]
   root_volume_size           = 32
@@ -349,10 +349,10 @@ resource "kops_cluster_updater" "updater" {
     master-0 = kops_instance_group.master-0.revision
     # master-1 = kops_instance_group.master-1.revision
     # master-2 = kops_instance_group.master-2.revision
-    t3-xlarge-a = kops_instance_group.t3-xlarge-a.revision
-    t3-medium-a = kops_instance_group.t3-medium-a.revision
-    t3-medium-b = kops_instance_group.t3-medium-b.revision
-    t3-medium-c = kops_instance_group.t3-medium-c.revision
+    t3-2xlarge-a = kops_instance_group.t3-2xlarge-a.revision
+    t3-medium-a  = kops_instance_group.t3-medium-a.revision
+    t3-medium-b  = kops_instance_group.t3-medium-b.revision
+    t3-medium-c  = kops_instance_group.t3-medium-c.revision
   }
   rolling_update {
     skip                = false
