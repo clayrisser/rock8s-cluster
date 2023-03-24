@@ -4,7 +4,7 @@
  * File Created: 21-04-2022 08:46:03
  * Author: Clay Risser
  * -----
- * Last Modified: 16-10-2022 02:11:59
+ * Last Modified: 24-03-2023 08:37:54
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -35,5 +35,12 @@ module "fairwinds_repo" {
   source             = "../modules/helm_repo"
   name               = "fairwinds"
   url                = "https://charts.fairwinds.com/stable"
+  rancher_cluster_id = local.rancher_cluster_id
+}
+
+module "crypto_outlaws_repo" {
+  source             = "../modules/helm_repo"
+  url                = "https://crypto-outlaws.gitlab.io/charts"
+  name               = "crypto-outlaws"
   rancher_cluster_id = local.rancher_cluster_id
 }
