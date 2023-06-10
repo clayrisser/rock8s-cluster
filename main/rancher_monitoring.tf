@@ -4,7 +4,7 @@
  * File Created: 20-04-2022 13:40:49
  * Author: Clay Risser
  * -----
- * Last Modified: 14-10-2022 10:16:32
+ * Last Modified: 10-06-2023 13:28:23
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -14,7 +14,7 @@ module "rancher_monitoring" {
   source             = "../modules/helm_release"
   enabled            = local.rancher_monitoring
   chart_name         = "rancher-monitoring"
-  chart_version      = "100.1.2+up19.0.3"
+  chart_version      = "102.0.0+up40.1.2"
   name               = "rancher-monitoring"
   repo               = "rancher-charts"
   namespace          = length(rancher2_namespace.cattle_monitoring_system) > 0 ? rancher2_namespace.cattle_monitoring_system[0].name : null

@@ -4,7 +4,7 @@
  * File Created: 18-09-2022 07:59:35
  * Author: Clay Risser
  * -----
- * Last Modified: 20-12-2022 12:36:36
+ * Last Modified: 10-06-2023 13:33:31
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -14,7 +14,7 @@ module "rancher_logging" {
   source             = "../modules/helm_release"
   enabled            = var.logging
   chart_name         = "rancher-logging"
-  chart_version      = "100.1.3+up3.17.7"
+  chart_version      = "102.0.0+up3.17.10"
   name               = "rancher-logging"
   repo               = "rancher-charts"
   namespace          = "cattle-logging-system"
@@ -30,7 +30,7 @@ module "loki" {
   source             = "../modules/helm_release"
   enabled            = var.logging
   chart_name         = "loki"
-  chart_version      = "3.0.7"
+  chart_version      = "5.6.4"
   name               = "loki"
   repo               = module.grafana_repo.repo
   namespace          = "loki"
