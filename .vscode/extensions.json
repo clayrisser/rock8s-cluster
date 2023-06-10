@@ -3,8 +3,8 @@
     "bbenoist.nix",
     "editorconfig.editorconfig",
     "hashicorp.terraform",
+    "mkhl.direnv",
     "psioniq.psi-header",
-    "rubymaniac.vscode-direnv",
     "streetsidesoftware.code-spell-checker"
   ]
 }
