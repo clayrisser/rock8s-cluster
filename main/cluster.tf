@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 29-12-2022 04:50:49
+ * Last Modified: 10-06-2023 14:18:25
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -149,6 +149,9 @@ resource "kops_cluster" "this" {
     scale_down_utilization_threshold = 0.5
     skip_nodes_with_local_storage    = true
     skip_nodes_with_system_pods      = true
+  }
+  metrics_server {
+    enabled = true
   }
   cert_manager {
     enabled = true
