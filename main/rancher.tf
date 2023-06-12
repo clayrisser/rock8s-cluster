@@ -4,7 +4,7 @@
  * File Created: 09-02-2022 11:24:10
  * Author: Clay Risser
  * -----
- * Last Modified: 10-06-2023 13:07:10
+ * Last Modified: 12-06-2023 10:18:20
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -188,4 +188,50 @@ data "rancher2_project" "system" {
   depends_on = [
     rancher2_token.this[0]
   ]
+}
+
+resource "kubectl_manifest" "rancher_cluster_role" {
+  count     = local.rancher ? 1 : 0
+  yaml_body = <<EOF
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cluster-admin
+rules:
+- apiGroups: ["*"]
+  resources: ["*"]
+  verbs: ["*"]
+- nonResourceURLs: ["*"]
+  verbs: ["*"]
+EOF
+  depends_on = [
+    null_resource.wait_for_rancher[0]
+  ]
+  lifecycle {
+    prevent_destroy = false
+  }
+}
+
+resource "kubectl_manifest" "rancher_cluster_role_binding" {
+  count     = local.rancher ? 1 : 0
+  yaml_body = <<EOF
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: rancher-cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: rancher
+  namespace: cattle-system
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+EOF
+  depends_on = [
+    kubectl_manifest.rancher_cluster_role
+  ]
+  lifecycle {
+    prevent_destroy = false
+  }
 }
