@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 13-06-2023 07:27:51
+ * Last Modified: 13-06-2023 07:50:00
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -52,7 +52,6 @@ resource "kops_cluster" "this" {
     }
   }
   authorization {
-    # always_allow {}
     rbac {}
   }
   iam {
