@@ -8,3 +8,11 @@ gitops:
 ci_access:
   groups:
     - id: risserlabs
+    - id: crypto-outlaws
+
+user_access:
+  access_as:
+    agent: {}
+  groups:
+    - id: risserlabs
+    - id: crypto-outlaws
