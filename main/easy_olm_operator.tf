@@ -4,7 +4,7 @@
  * File Created: 21-04-2022 09:05:39
  * Author: Clay Risser
  * -----
- * Last Modified: 25-06-2023 07:23:06
+ * Last Modified: 25-06-2023 09:37:41
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -20,6 +20,7 @@ module "easy_olm_operator" {
   repo               = module.bitspur_repo.repo
   rancher_cluster_id = local.rancher_cluster_id
   depends_on = [
-    kubernetes_secret.registry
+    kubernetes_secret.registry,
+    module.olm
   ]
 }
