@@ -38,10 +38,10 @@ deploy:
     paths:
       - artifacts
 
-destroy:
-  stage: cleanup
-  script:
-    - make -s +destroy
-  needs:
-    - plan
-  when: manual
+# destroy:
+#  stage: cleanup
+#  script:
+#    - make -s +destroy
+#  needs:
+#    - plan
+#  when: manual
