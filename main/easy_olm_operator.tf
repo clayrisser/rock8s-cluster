@@ -4,7 +4,7 @@
  * File Created: 21-04-2022 09:05:39
  * Author: Clay Risser
  * -----
- * Last Modified: 25-06-2023 09:37:41
+ * Last Modified: 26-06-2023 07:20:09
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -17,7 +17,7 @@ module "easy_olm_operator" {
   chart_version      = "0.0.1"
   name               = "easy-olm-operator"
   namespace          = "kube-system"
-  repo               = module.bitspur_repo.repo
+  repo               = module.rock8s_repo.repo
   rancher_cluster_id = local.rancher_cluster_id
   depends_on = [
     kubernetes_secret.registry,

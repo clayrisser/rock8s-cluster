@@ -4,7 +4,7 @@
  * File Created: 09-02-2022 11:24:10
  * Author: Clay Risser
  * -----
- * Last Modified: 12-06-2023 10:18:20
+ * Last Modified: 26-06-2023 07:21:28
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -67,7 +67,7 @@ EOF
 resource "kubectl_manifest" "rancher_patch" {
   count     = (var.logging && local.rancher) ? 1 : 0
   yaml_body = <<EOF
-apiVersion: patch.risserlabs.com/v1alpha1
+apiVersion: patch.rock8s.com/v1alpha1
 kind: Patch
 metadata:
   name: rancher

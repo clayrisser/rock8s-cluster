@@ -4,7 +4,7 @@
  * File Created: 17-04-2022 06:13:18
  * Author: Clay Risser
  * -----
- * Last Modified: 17-06-2023 10:37:09
+ * Last Modified: 26-06-2023 07:20:39
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -16,7 +16,7 @@ module "olm-crds" {
   chart_name         = "olm-crds"
   chart_version      = "0.25.0"
   name               = "olm-crds"
-  repo               = module.risserlabs_repo.repo
+  repo               = module.rock8s_repo.repo
   namespace          = "olm"
   create_namespace   = true
   rancher_project_id = local.rancher_project_id
@@ -32,7 +32,7 @@ module "olm" {
   chart_name         = "olm"
   chart_version      = "0.25.0"
   name               = "olm"
-  repo               = module.risserlabs_repo.repo
+  repo               = module.rock8s_repo.repo
   namespace          = "olm"
   rancher_project_id = local.rancher_project_id
   rancher_cluster_id = local.rancher_cluster_id

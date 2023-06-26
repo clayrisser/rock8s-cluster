@@ -4,23 +4,16 @@
  * File Created: 21-04-2022 08:46:03
  * Author: Clay Risser
  * -----
- * Last Modified: 25-06-2023 08:25:47
+ * Last Modified: 26-06-2023 07:19:51
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
 
-module "bitspur_repo" {
+module "rock8s_repo" {
   source             = "../modules/helm_repo"
-  url                = "https://bitspur.gitlab.io/community/charts"
-  name               = "bitspur"
-  rancher_cluster_id = local.rancher_cluster_id
-}
-
-module "risserlabs_repo" {
-  source             = "../modules/helm_repo"
-  url                = "https://bitspur.gitlab.io/community/charts"
-  name               = "risserlabs"
+  url                = "https://charts.rock8s.com"
+  name               = "rock8s"
   rancher_cluster_id = local.rancher_cluster_id
 }
 

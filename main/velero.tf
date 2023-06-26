@@ -4,7 +4,7 @@
  * File Created: 21-04-2022 08:53:47
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 11:12:54
+ * Last Modified: 26-06-2023 07:20:39
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -16,7 +16,7 @@ module "velero" {
   chart_name         = "velero"
   chart_version      = "2.14.1"
   name               = "velero"
-  repo               = module.risserlabs_repo.repo
+  repo               = module.rock8s_repo.repo
   namespace          = "velero"
   create_namespace   = true
   rancher_project_id = local.rancher_project_id

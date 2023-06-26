@@ -4,7 +4,7 @@
  * File Created: 07-05-2022 03:17:43
  * Author: Clay Risser
  * -----
- * Last Modified: 14-10-2022 10:16:32
+ * Last Modified: 26-06-2023 07:21:21
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -17,7 +17,7 @@ module "cluster_issuer" {
   chart_version      = "1.1.0"
   name               = "cluster-issuer"
   namespace          = "kube-system"
-  repo               = module.risserlabs_repo.repo
+  repo               = module.rock8s_repo.repo
   rancher_cluster_id = local.rancher_cluster_id
   values             = <<EOF
 config:
@@ -33,7 +33,7 @@ EOF
 resource "kubectl_manifest" "cert_manager_default_issuer" {
   count     = (var.cluster_issuer && var.patch_operator) ? 1 : 0
   yaml_body = <<EOF
-apiVersion: patch.risserlabs.com/v1alpha1
+apiVersion: patch.rock8s.com/v1alpha1
 kind: Patch
 metadata:
   name: cert-manager-default-issuer

@@ -1,6 +1,6 @@
-# eks
+# rock8s-cluster
 
-> terraform deployment for eks clusters
+> terraform deployment for rock8s clusters
 
 ## Usage
 
@@ -55,5 +55,5 @@ GNU Make 4 is recommended over other versions of make. If you are
 on OSX it can be installed using the following command.
 
 ```sh
-brew install gmake
+brew install remake
 ```

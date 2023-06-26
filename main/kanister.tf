@@ -4,7 +4,7 @@
  * File Created: 21-04-2022 08:39:20
  * Author: Clay Risser
  * -----
- * Last Modified: 29-09-2022 11:11:54
+ * Last Modified: 26-06-2023 07:20:39
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -16,7 +16,7 @@ module "kanister-operator" {
   chart_name         = "kanister-operator"
   chart_version      = "0.71.0"
   name               = "kanister-operator"
-  repo               = module.risserlabs_repo.repo
+  repo               = module.rock8s_repo.repo
   create_namespace   = true
   namespace          = "kanister"
   rancher_project_id = local.rancher_project_id
@@ -33,7 +33,7 @@ module "kanister" {
   chart_name         = "kanister"
   chart_version      = "0.71.0"
   name               = "kanister"
-  repo               = module.risserlabs_repo.repo
+  repo               = module.rock8s_repo.repo
   namespace          = "kanister"
   rancher_project_id = local.rancher_project_id
   rancher_cluster_id = local.rancher_cluster_id
