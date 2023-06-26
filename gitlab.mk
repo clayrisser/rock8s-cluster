@@ -1,12 +1,12 @@
 # File: /gitlab.mk
 # Project: kops
-# File Created: 15-04-2022 09:01:44
+# File Created: 26-06-2023 07:11:51
 # Author: Clay Risser
 # -----
-# Last Modified: 17-09-2022 06:55:28
+# Last Modified: 26-06-2023 13:16:29
 # Modified By: Clay Risser
 # -----
-# Risser Labs LLC (c) Copyright 2022
+# Risser Labs LLC (c) Copyright 2022 - 2023
 
 export BASE64 ?= openssl base64
 
@@ -24,15 +24,17 @@ $(shell $(CAT) $(HOME)/.docker/config.json 2>$(NULL) | \
 	$(CUT) -d: -f2 2>$(NULL))
 endef
 
-TF_USERNAME ?= $(call gitlab_username)
-TF_PASSWORD ?= $(call gitlab_token)
-
-ifeq (,$(TF_USERNAME))
-	TF_USERNAME := $(GITLAB_USER_LOGIN)
-endif
-ifeq (,$(TF_PASSWORD))
+ifneq (,$(CI_JOB_TOKEN))
 	TF_USERNAME := gitlab-ci-token
 	TF_PASSWORD := $(CI_JOB_TOKEN)
+else
+ifneq (,$(GITLAB_REGISTRY_TOKEN))
+	TF_USERNAME ?= $(GITLAB_REGISTRY_USERNAME)
+	TF_PASSWORD ?= $(GITLAB_REGISTRY_TOKEN)
+else
+	TF_USERNAME ?= $(call gitlab_username)
+	TF_PASSWORD ?= $(call gitlab_token)
+endif
 endif
 
 ifeq (,$(TF_ADDRESS))
@@ -46,6 +48,9 @@ endif
 	TF_ADDRESS := $(CI_API_V4_URL)/projects/$(GITLAB_PROJECT_ID)/terraform/state/$(TF_STATE_NAME)
 endif
 endif
+
+$(info TF_USERNAME $(TF_USERNAME))
+$(info TF_PASSWORD $(TF_PASSWORD))
 
 export TF_HTTP_ADDRESS ?= $(TF_ADDRESS)
 export TF_HTTP_LOCK_ADDRESS ?= $(TF_ADDRESS)/lock
