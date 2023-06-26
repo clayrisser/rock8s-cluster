@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 13:36:29
  * Author: Clay Risser
  * -----
- * Last Modified: 14-10-2022 02:18:30
+ * Last Modified: 26-06-2023 14:44:57
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -60,7 +60,7 @@ locals {
       }
     }]
   })
-  external_dns         = var.external_dns && var.helm_operator
+  external_dns         = var.external_dns && var.flux
   integration_operator = var.integration_operator && var.patch_operator
   kanister             = var.kanister && local.integration_operator
   longhorn             = var.longhorn && local.rancher
