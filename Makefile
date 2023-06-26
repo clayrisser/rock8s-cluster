@@ -3,7 +3,7 @@
 # File Created: 27-01-2022 11:41:37
 # Author: Clay Risser
 # -----
-# Last Modified: 26-06-2023 15:13:36
+# Last Modified: 26-06-2023 15:21:37
 # Modified By: Clay Risser
 # -----
 # Risser Labs LLC (c) Copyright 2022
@@ -115,7 +115,9 @@ prepare-aws:
 	-@$(AWS) iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonVPCFullAccess --group-name $(GROUP_NAME)
 	-@$(AWS) iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonSQSFullAccess --group-name $(GROUP_NAME)
 	-@$(AWS) iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonEventBridgeFullAccess --group-name $(GROUP_NAME)
-	-@$(AWS) route53 create-hosted-zone --name $(DNS_ZONE) --caller-reference $(shell date '+%s%N')
+	-@$(AWS) iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly --group-name $(GROUP_NAME)
+	-@( $(AWS) route53 list-hosted-zones | grep -q $(DNS_ZONE) && $(TRUE) ) || \
+		$(AWS) route53 create-hosted-zone --name $(DNS_ZONE) --caller-reference $(shell date '+%s%N')
 	@$(AWS) iam create-user --user-name $(USER_NAME)
 	@$(AWS) iam add-user-to-group --user-name $(USER_NAME) --group-name $(GROUP_NAME)
 	@$(AWS) iam create-access-key --user-name $(USER_NAME)
