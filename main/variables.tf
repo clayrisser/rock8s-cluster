@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:12:06
  * Author: Clay Risser
  * -----
- * Last Modified: 26-12-2022 04:46:01
+ * Last Modified: 26-06-2023 11:05:29
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -138,16 +138,6 @@ variable "flux" {
 }
 
 variable "goldilocks" {
-  type    = bool
-  default = true
-}
-
-variable "helm_controller" {
-  type    = bool
-  default = true
-}
-
-variable "helm_operator" {
   type    = bool
   default = true
 }

@@ -3,7 +3,7 @@
 # File Created: 15-04-2022 09:14:48
 # Author: Clay Risser
 # -----
-# Last Modified: 26-12-2022 04:51:52
+# Last Modified: 26-06-2023 11:05:24
 # Modified By: Clay Risser
 # -----
 # Risser Labs LLC (c) Copyright 2022
@@ -29,8 +29,6 @@ export TF_VAR_gitlab_project_id ?= $(GITLAB_PROJECT_ID)
 export TF_VAR_gitlab_registry_token ?= $(GITLAB_REGISTRY_TOKEN)
 export TF_VAR_gitlab_registry_username ?= $(GITLAB_REGISTRY_USERNAME)
 export TF_VAR_goldilocks ?= $(GOLDILOCKS)
-export TF_VAR_helm_controller ?= $(HELM_CONTROLLER)
-export TF_VAR_helm_operator ?= $(HELM_OPERATOR)
 export TF_VAR_ingress_nginx ?= $(INGRESS_NGINX)
 export TF_VAR_integration_operator ?= $(INTEGRATION_OPERATOR)
 export TF_VAR_iteration ?= $(ITERATION)
