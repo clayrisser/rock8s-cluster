@@ -4,7 +4,7 @@
  * File Created: 18-09-2022 08:43:29
  * Author: Clay Risser
  * -----
- * Last Modified: 26-06-2023 17:45:35
+ * Last Modified: 26-06-2023 17:57:17
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -29,6 +29,17 @@ resource "aws_s3_bucket" "oidc" {
 resource "aws_s3_bucket_acl" "oidc" {
   bucket = aws_s3_bucket.oidc.id
   acl    = "public-read"
+  lifecycle {
+    prevent_destroy = false
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "access_block" {
+  bucket                  = aws_s3_bucket.oidc.id
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
   lifecycle {
     prevent_destroy = false
   }
