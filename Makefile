@@ -3,7 +3,7 @@
 # File Created: 27-01-2022 11:41:37
 # Author: Clay Risser
 # -----
-# Last Modified: 30-09-2022 04:47:45
+# Last Modified: 26-06-2023 12:31:00
 # Modified By: Clay Risser
 # -----
 # Risser Labs LLC (c) Copyright 2022
@@ -102,6 +102,22 @@ kubeconfig: ## authenticate local environment with the kube cluster
 			($(SED) -i "s|\(KUBE_CONTEXT=\).*|\1$$KUBE_CONTEXT|g" default.env) || \
 			$(ECHO) KUBE_CONTEXT=$$KUBE_CONTEXT >> default.env) && \
 		$(KUBECTX) $(KUBE_CONTEXT)
+
+GROUP_NAME ?= rock8s
+USER_NAME ?= $(KUBE_CONTEXT)
+.PHONY: create-aws-user
+create-aws-user:
+	-@$(AWS) iam create-group --group-name $(GROUP_NAME)
+	-@$(AWS) iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonEC2FullAccess --group-name $(GROUP_NAME)
+	-@$(AWS) iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonRoute53FullAccess --group-name $(GROUP_NAME)
+	-@$(AWS) iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess --group-name $(GROUP_NAME)
+	-@$(AWS) iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/IAMFullAccess --group-name $(GROUP_NAME)
+	-@$(AWS) iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonVPCFullAccess --group-name $(GROUP_NAME)
+	-@$(AWS) iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonSQSFullAccess --group-name $(GROUP_NAME)
+	-@$(AWS) iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonEventBridgeFullAccess --group-name $(GROUP_NAME)
+	@$(AWS) iam create-user --user-name $(USER_NAME)
+	@$(AWS) iam add-user-to-group --user-name $(USER_NAME) --group-name $(GROUP_NAME)
+	@$(AWS) iam create-access-key --user-name $(USER_NAME)
 
 .PHONY: clean
 clean: ## clean repo
