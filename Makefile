@@ -3,7 +3,7 @@
 # File Created: 27-01-2022 11:41:37
 # Author: Clay Risser
 # -----
-# Last Modified: 26-06-2023 12:31:00
+# Last Modified: 26-06-2023 13:24:28
 # Modified By: Clay Risser
 # -----
 # Risser Labs LLC (c) Copyright 2022
@@ -118,6 +118,10 @@ create-aws-user:
 	@$(AWS) iam create-user --user-name $(USER_NAME)
 	@$(AWS) iam add-user-to-group --user-name $(USER_NAME) --group-name $(GROUP_NAME)
 	@$(AWS) iam create-access-key --user-name $(USER_NAME)
+
+.PHONY: upgrade
+upgrade: ## upgrades terraform packages
+	@$(CD) $(TF_ROOT) && $(TERRAFORM) init -upgrade $(ARGS)
 
 .PHONY: clean
 clean: ## clean repo
