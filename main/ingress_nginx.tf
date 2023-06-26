@@ -4,14 +4,14 @@
  * File Created: 27-09-2022 12:47:58
  * Author: Clay Risser
  * -----
- * Last Modified: 14-10-2022 10:16:32
+ * Last Modified: 26-06-2023 11:17:22
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
  */
 
 resource "helm_release" "ingress_nginx" {
-  version          = "4.0.17"
+  version          = "4.7.0"
   count            = var.ingress_nginx ? 1 : 0
   name             = "ingress-nginx"
   repository       = "https://kubernetes.github.io/ingress-nginx"

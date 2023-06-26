@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:04:44
  * Author: Clay Risser
  * -----
- * Last Modified: 26-06-2023 11:01:18
+ * Last Modified: 26-06-2023 11:13:06
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -14,11 +14,11 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "4.31.0"
+      version = "5.5.0"
     }
     helm = {
       source  = "hashicorp/helm"
-      version = "2.6.0"
+      version = "2.10.1"
     }
     kubectl = {
       source  = "gavinbunney/kubectl"
@@ -26,19 +26,19 @@ terraform {
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = "2.13.1"
+      version = "2.21.1"
     }
     local = {
       source  = "hashicorp/local"
-      version = "2.2.3"
+      version = "2.4.0"
     }
     null = {
       source  = "hashicorp/null"
-      version = "3.1.1"
+      version = "3.2.1"
     }
     random = {
       source  = "hashicorp/random"
-      version = "3.4.3"
+      version = "3.5.1"
     }
     template = {
       source  = "hashicorp/template"
@@ -46,15 +46,15 @@ terraform {
     }
     time = {
       source  = "hashicorp/time"
-      version = "0.8.0"
+      version = "0.9.1"
     }
     rancher2 = {
       source  = "rancher/rancher2"
-      version = "1.24.1"
+      version = "3.0.1"
     }
     flux = {
       source  = "fluxcd/flux"
-      version = "0.18.0"
+      version = "0.25.3"
     }
     kops = {
       source  = "eddycharly/kops"
@@ -62,7 +62,7 @@ terraform {
     }
     tls = {
       source  = "hashicorp/tls"
-      version = "4.0.2"
+      version = "4.0.4"
     }
   }
 }

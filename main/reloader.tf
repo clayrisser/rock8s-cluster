@@ -4,7 +4,7 @@
  * File Created: 21-04-2022 08:39:20
  * Author: Clay Risser
  * -----
- * Last Modified: 26-12-2022 04:51:15
+ * Last Modified: 26-06-2023 11:15:19
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -14,7 +14,7 @@ module "reloader" {
   source           = "../modules/helm_release"
   enabled          = var.reloader
   chart_name       = "reloader"
-  chart_version    = "0.0.126"
+  chart_version    = "1.0.27"
   name             = "reloader"
   repo             = "https://stakater.github.io/stakater-charts"
   create_namespace = true

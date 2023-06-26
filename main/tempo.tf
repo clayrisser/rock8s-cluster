@@ -4,7 +4,7 @@
  * File Created: 23-09-2022 10:17:08
  * Author: Clay Risser
  * -----
- * Last Modified: 10-06-2023 13:32:29
+ * Last Modified: 26-06-2023 11:09:43
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -26,7 +26,7 @@ replicas: 1
 tempo:
   retention: ${tostring(var.retention_hours)}h
   repository: grafana/tempo
-  tag: 1.5.0
+  tag: 2.1.1
   resources:
     requests:
       cpu: 50m
