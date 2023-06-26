@@ -4,7 +4,7 @@
  * File Created: 18-09-2022 08:43:29
  * Author: Clay Risser
  * -----
- * Last Modified: 30-10-2022 08:27:31
+ * Last Modified: 26-06-2023 17:45:35
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -19,7 +19,7 @@ resource "aws_s3_bucket" "main" {
 }
 
 resource "aws_s3_bucket" "oidc" {
-  bucket        = var.oidc_bucket == "" ? "oidc.${local.cluster_name}" : var.main_bucket
+  bucket        = var.oidc_bucket == "" ? replace("oidc-${local.cluster_name}", ".", "-") : var.main_bucket
   force_destroy = true
   lifecycle {
     prevent_destroy = false
