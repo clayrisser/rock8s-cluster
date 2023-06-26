@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 13:36:29
  * Author: Clay Risser
  * -----
- * Last Modified: 26-06-2023 14:44:57
+ * Last Modified: 26-06-2023 14:50:44
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -62,12 +62,12 @@ locals {
   })
   external_dns         = var.external_dns && var.flux
   integration_operator = var.integration_operator && var.patch_operator
-  kanister             = var.kanister && local.integration_operator
+  kanister             = var.kanister && local.integration_operator && var.flux
   longhorn             = var.longhorn && local.rancher
   olm                  = var.olm && var.patch_operator
   rancher              = var.rancher && var.ingress_nginx
   rancher_istio        = var.rancher_istio && local.rancher_monitoring
   rancher_monitoring   = var.rancher_monitoring && local.rancher
   s3                   = var.s3 && local.integration_operator
-  velero               = var.velero && local.s3 && local.integration_operator
+  velero               = var.velero && local.s3 && local.integration_operator && var.flux
 }
