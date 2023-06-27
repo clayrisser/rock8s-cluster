@@ -9,9 +9,9 @@
 # Risser Labs LLC (c) Copyright 2022
 
 export MKPM_PACKAGES_DEFAULT := \
-	mkchain=0.1.0 \
+	dotenv=0.0.12 \
 	gnu=0.0.3 \
-	dotenv=0.0.9
+	mkchain=0.1.1
 
 export MKPM_REPO_DEFAULT := \
 	https://gitlab.com/risserlabs/community/mkpm-stable.git
