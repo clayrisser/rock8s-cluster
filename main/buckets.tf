@@ -4,7 +4,7 @@
  * File Created: 18-09-2022 08:43:29
  * Author: Clay Risser
  * -----
- * Last Modified: 27-06-2023 07:52:49
+ * Last Modified: 27-06-2023 11:39:32
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -26,20 +26,34 @@ resource "aws_s3_bucket" "oidc" {
   }
 }
 
-resource "aws_s3_bucket_acl" "oidc" {
+resource "aws_s3_bucket_ownership_controls" "oidc" {
   bucket = aws_s3_bucket.oidc.id
-  acl    = "public-read"
+  rule {
+    object_ownership = "ObjectWriter"
+  }
   lifecycle {
     prevent_destroy = false
   }
 }
 
-resource "aws_s3_bucket_public_access_block" "access_block" {
+resource "aws_s3_bucket_public_access_block" "oidc" {
   bucket                  = aws_s3_bucket.oidc.id
   block_public_acls       = false
   block_public_policy     = false
   ignore_public_acls      = false
   restrict_public_buckets = false
+  lifecycle {
+    prevent_destroy = false
+  }
+}
+
+resource "aws_s3_bucket_acl" "oidc" {
+  bucket = aws_s3_bucket.oidc.id
+  acl    = "public-read"
+  depends_on = [
+    aws_s3_bucket_ownership_controls.oidc,
+    aws_s3_bucket_public_access_block.oidc,
+  ]
   lifecycle {
     prevent_destroy = false
   }
