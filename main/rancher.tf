@@ -4,7 +4,7 @@
  * File Created: 09-02-2022 11:24:10
  * Author: Clay Risser
  * -----
- * Last Modified: 26-06-2023 07:21:28
+ * Last Modified: 27-06-2023 13:27:58
  * Modified By: Clay Risser
  * -----
  * Risser Labs LLC (c) Copyright 2022
@@ -121,7 +121,7 @@ resource "null_resource" "wait_for_rancher" {
   count = local.rancher ? 1 : 0
   provisioner "local-exec" {
     command     = <<EOF
-while [ ! "$(kubectl --kubeconfig <(echo $KUBECONFIG) get patches.patch.risserlabs.com -n cattle-system rancher -o json | jq -r '.status.phase')" = "Succeeded" ]; do
+while [ ! "$(kubectl --kubeconfig <(echo $KUBECONFIG) get patches.patch.rock8s.com -n cattle-system rancher -o json | jq -r '.status.phase')" = "Succeeded" ]; do
   sleep 10
 done
 while [ "$${subject}" != "*  subject: CN=$RANCHER_HOSTNAME" ]; do
