@@ -4,10 +4,10 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 27-06-2023 15:39:42
+ * Last Modified: 27-06-2023 15:55:05
  * Modified By: Clay Risser
  * -----
- * BitSpur (c) Copyright 2022
+ * Risser Labs LLC (c) Copyright 2022
  */
 
 locals {
@@ -61,6 +61,14 @@ resource "kops_cluster" "this" {
   iam {
     allow_container_registry                 = true
     use_service_account_external_permissions = false
+  }
+  external_policies {
+    key   = "master"
+    value = local.external_policies
+  }
+  external_policies {
+    key   = "node"
+    value = local.external_policies
   }
   service_account_issuer_discovery {
     enable_aws_oidc_provider = true
