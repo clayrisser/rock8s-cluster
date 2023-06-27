@@ -4,10 +4,10 @@
  * File Created: 30-04-2022 16:46:19
  * Author: Clay Risser
  * -----
- * Last Modified: 14-10-2022 10:16:32
+ * Last Modified: 27-06-2023 15:39:42
  * Modified By: Clay Risser
  * -----
- * Risser Labs LLC (c) Copyright 2022
+ * BitSpur (c) Copyright 2022
  */
 
 resource "aws_route53_record" "cluster" {

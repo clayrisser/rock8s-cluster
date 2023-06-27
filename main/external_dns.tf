@@ -4,10 +4,10 @@
  * File Created: 21-04-2022 09:03:40
  * Author: Clay Risser
  * -----
- * Last Modified: 26-06-2023 14:44:19
+ * Last Modified: 27-06-2023 15:39:42
  * Modified By: Clay Risser
  * -----
- * Risser Labs LLC (c) Copyright 2022
+ * BitSpur (c) Copyright 2022
  */
 
 module "external_dns" {

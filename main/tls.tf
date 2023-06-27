@@ -4,10 +4,10 @@
  * File Created: 27-04-2022 12:01:36
  * Author: Clay Risser
  * -----
- * Last Modified: 17-09-2022 06:55:25
+ * Last Modified: 27-06-2023 15:39:42
  * Modified By: Clay Risser
  * -----
- * Risser Labs LLC (c) Copyright 2022
+ * BitSpur (c) Copyright 2022
  */
 
 resource "tls_private_key" "ca" {

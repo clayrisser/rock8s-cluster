@@ -4,10 +4,10 @@
  * File Created: 20-04-2022 10:21:22
  * Author: Clay Risser
  * -----
- * Last Modified: 10-06-2023 13:31:25
+ * Last Modified: 27-06-2023 15:39:42
  * Modified By: Clay Risser
  * -----
- * Risser Labs LLC (c) Copyright 2022
+ * BitSpur (c) Copyright 2022
  */
 
 module "goldilocks" {

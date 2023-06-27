@@ -3,10 +3,10 @@
 # File Created: 19-04-2022 08:50:29
 # Author: Clay Risser
 # -----
-# Last Modified: 23-09-2022 13:28:14
+# Last Modified: 27-06-2023 15:39:42
 # Modified By: Clay Risser
 # -----
-# Risser Labs LLC (c) Copyright 2022
+# BitSpur (c) Copyright 2022
 
 define aws_access_key_id
 $(shell $(ECHO) $(shell $(CAT) $(HOME)/.aws/credentials 2>$(NULL)) 2>$(NULL) | \

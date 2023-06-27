@@ -4,10 +4,10 @@
  * File Created: 14-04-2022 08:17:04
  * Author: Clay Risser
  * -----
- * Last Modified: 28-10-2022 22:19:35
+ * Last Modified: 27-06-2023 15:39:42
  * Modified By: Clay Risser
  * -----
- * Risser Labs LLC (c) Copyright 2022
+ * BitSpur (c) Copyright 2022
  */
 
 output "cluster_entrypoint" {

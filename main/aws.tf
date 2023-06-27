@@ -4,10 +4,10 @@
  * File Created: 29-04-2022 14:41:49
  * Author: Clay Risser
  * -----
- * Last Modified: 28-10-2022 11:25:17
+ * Last Modified: 27-06-2023 15:39:42
  * Modified By: Clay Risser
  * -----
- * Risser Labs LLC (c) Copyright 2022
+ * BitSpur (c) Copyright 2022
  */
 
 resource "aws_iam_role" "admin" {

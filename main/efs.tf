@@ -1,85 +1,14 @@
 /**
  * File: /main/efs.tf
  * Project: kops
- * File Created: 28-10-2022 11:25:10
+ * File Created: 26-06-2023 07:11:51
  * Author: Clay Risser
  * -----
- * Last Modified: 01-11-2022 12:30:21
+ * Last Modified: 27-06-2023 15:39:42
  * Modified By: Clay Risser
  * -----
- * Risser Labs LLC (c) Copyright 2022
+ * BitSpur (c) Copyright 2022 - 2023
  */
-
-# https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html
-# https://medium.com/codex/irsa-implementation-in-kops-managed-kubernetes-cluster-18cef84960b6
-
-resource "aws_iam_policy" "efs_csi_driver" {
-  count  = var.efs_csi ? 1 : 0
-  name   = "efs-csi-${local.cluster_name}"
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "elasticfilesystem:*",
-        "ec2:DescribeAvailabilityZones"
-      ],
-      "Resource": "*"
-    }
-  ]
-}
-EOF
-  lifecycle {
-    prevent_destroy = false
-  }
-}
-
-resource "aws_iam_role" "efs_csi_driver" {
-  count              = var.efs_csi ? 1 : 0
-  name               = "efs-csi-${local.cluster_name}"
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "Federated": "arn:aws:iam::${data.aws_caller_identity.this.id}:oidc-provider/${aws_s3_bucket.oidc.bucket}.s3.${var.region}.amazonaws.com"
-      },
-      "Action": "sts:AssumeRoleWithWebIdentity",
-      "Condition": {
-        "StringEquals": {
-          "${aws_s3_bucket.oidc.bucket}.s3.${var.region}.amazonaws.com:sub": "system:serviceaccount:kube-system:efs-csi-controller-sa"
-        }
-      }
-    }
-  ]
-}
-EOF
-  lifecycle {
-    prevent_destroy = false
-  }
-}
-
-resource "aws_iam_role_policy_attachment" "efs_csi_driver" {
-  count      = var.efs_csi ? 1 : 0
-  policy_arn = aws_iam_policy.efs_csi_driver[0].arn
-  role       = aws_iam_role.efs_csi_driver[0].name
-  lifecycle {
-    prevent_destroy = false
-  }
-}
-
-resource "aws_iam_role_policy_attachment" "nodes_efs_csi_driver" {
-  count      = var.efs_csi ? 1 : 0
-  policy_arn = aws_iam_policy.efs_csi_driver[0].arn
-  role       = data.aws_iam_role.nodes.name
-  lifecycle {
-    prevent_destroy = false
-  }
-}
 
 resource "aws_efs_file_system" "this" {
   count = var.efs_csi ? 1 : 0
@@ -117,15 +46,11 @@ controller:
   serviceAccount:
     create: true
     name: efs-csi-controller-sa
-    annotations:
-      # eks.amazonaws.com/role-arn: arn:aws:iam::${data.aws_caller_identity.this.id}:role/efs-csi-${local.cluster_name}
 node:
   logLevel: 2
   serviceAccount:
     create: true
     name: efs-csi-node-sa
-    annotations:
-      # eks.amazonaws.com/role-arn: arn:aws:iam::${data.aws_caller_identity.this.id}:role/efs-csi-${local.cluster_name}
 storageClasses:
   - name: efs-sc
     mountOptions:
@@ -146,7 +71,6 @@ EOF
   depends_on = [
     null_resource.wait_for_nodes,
     aws_efs_mount_target.this,
-    aws_iam_role.efs_csi_driver
   ]
   lifecycle {
     prevent_destroy = false

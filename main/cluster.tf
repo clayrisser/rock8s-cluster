@@ -4,10 +4,10 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 26-06-2023 11:03:05
+ * Last Modified: 27-06-2023 15:39:42
  * Modified By: Clay Risser
  * -----
- * Risser Labs LLC (c) Copyright 2022
+ * BitSpur (c) Copyright 2022
  */
 
 locals {
@@ -22,6 +22,10 @@ sudo apt-get install -y \
   nfs-common
 EOF
     }
+  ]
+  external_policies = [
+    "arn:aws:iam::aws:policy/AmazonElasticFileSystemFullAccess",
+    "arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess",
   ]
 }
 
@@ -189,6 +193,10 @@ resource "kops_cluster" "this" {
   secrets {
     cluster_ca_cert = tls_self_signed_cert.ca.cert_pem
     cluster_ca_key  = tls_private_key.ca.private_key_pem
+  }
+  external_policies = {
+    node   = local.external_policies
+    master = local.external_policies
   }
   depends_on = [
     local_file.admin_rsa,

@@ -3,10 +3,10 @@
 # File Created: 15-04-2022 09:14:48
 # Author: Clay Risser
 # -----
-# Last Modified: 26-06-2023 11:05:24
+# Last Modified: 27-06-2023 15:39:42
 # Modified By: Clay Risser
 # -----
-# Risser Labs LLC (c) Copyright 2022
+# BitSpur (c) Copyright 2022
 
 export TF_VAR_api_strategy ?= $(API_STRATEGY)
 export TF_VAR_autoscaler ?= $(AUTOSCALER)

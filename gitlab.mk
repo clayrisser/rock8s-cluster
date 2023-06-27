@@ -3,10 +3,10 @@
 # File Created: 26-06-2023 07:11:51
 # Author: Clay Risser
 # -----
-# Last Modified: 26-06-2023 13:19:15
+# Last Modified: 27-06-2023 15:39:42
 # Modified By: Clay Risser
 # -----
-# Risser Labs LLC (c) Copyright 2022 - 2023
+# BitSpur (c) Copyright 2022 - 2023
 
 export BASE64 ?= openssl base64
 

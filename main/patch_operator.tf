@@ -4,10 +4,10 @@
  * File Created: 21-04-2022 08:58:02
  * Author: Clay Risser
  * -----
- * Last Modified: 27-06-2023 13:26:52
+ * Last Modified: 27-06-2023 15:39:42
  * Modified By: Clay Risser
  * -----
- * Risser Labs LLC (c) Copyright 2022
+ * BitSpur (c) Copyright 2022
  */
 
 resource "helm_release" "patch_operator" {

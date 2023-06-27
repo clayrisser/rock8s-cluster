@@ -3,10 +3,10 @@
 # File Created: 27-01-2022 11:45:11
 # Author: Clay Risser
 # -----
-# Last Modified: 17-09-2022 06:55:28
+# Last Modified: 27-06-2023 15:39:42
 # Modified By: Clay Risser
 # -----
-# Risser Labs LLC (c) Copyright 2022
+# BitSpur (c) Copyright 2022
 
 export MKPM_PACKAGES_DEFAULT := \
 	dotenv=0.0.12 \
