@@ -4,7 +4,7 @@
  * File Created: 23-02-2022 11:40:50
  * Author: Clay Risser
  * -----
- * Last Modified: 27-06-2023 15:39:42
+ * Last Modified: 10-07-2023 15:05:48
  * Modified By: Clay Risser
  * -----
  * BitSpur (c) Copyright 2022
@@ -20,13 +20,13 @@ data "flux_install" "this" {
   ]
 }
 
-resource "kubernetes_namespace" "flux_system" {
+resource "kubernetes_namespace" "flux-system" {
   count = var.flux ? 1 : 0
   metadata {
     name = "flux-system"
   }
   depends_on = [
-    null_resource.wait_for_nodes
+    null_resource.wait-for-nodes
   ]
   lifecycle {
     prevent_destroy = false
@@ -37,24 +37,24 @@ resource "kubernetes_namespace" "flux_system" {
   }
 }
 
-data "kubectl_file_documents" "flux_install" {
+data "kubectl_file_documents" "flux-install" {
   count   = var.flux ? 1 : 0
   content = data.flux_install.this[0].content
 }
 
 locals {
-  flux_install = [for v in(length(data.kubectl_file_documents.flux_install) > 0 ? data.kubectl_file_documents.flux_install[0].documents : []) : {
+  flux_install = [for v in(length(data.kubectl_file_documents.flux-install) > 0 ? data.kubectl_file_documents.flux-install[0].documents : []) : {
     data : yamldecode(v)
     content : v
     }
   ]
 }
 
-resource "kubectl_manifest" "flux_install" {
+resource "kubectl_manifest" "flux-install" {
   for_each  = { for v in local.flux_install : lower(join("/", compact([v.data.apiVersion, v.data.kind, lookup(v.data.metadata, "namespace", ""), v.data.metadata.name]))) => v.content }
   yaml_body = each.value
   depends_on = [
-    kubernetes_namespace.flux_system
+    kubernetes_namespace.flux-system
   ]
   lifecycle {
     prevent_destroy = false

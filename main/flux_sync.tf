@@ -4,7 +4,7 @@
  * File Created: 23-02-2022 11:40:50
  * Author: Clay Risser
  * -----
- * Last Modified: 27-06-2023 15:39:42
+ * Last Modified: 10-07-2023 15:05:44
  * Modified By: Clay Risser
  * -----
  * BitSpur (c) Copyright 2022
@@ -16,7 +16,7 @@ data "flux_sync" "this" {
   url         = "ssh://${var.flux_git_repository == "" ? "localhost" : var.flux_git_repository}"
   branch      = var.flux_git_branch
   depends_on = [
-    kubectl_manifest.flux_install
+    kubectl_manifest.flux-install
   ]
 }
 
@@ -26,13 +26,13 @@ resource "tls_private_key" "flux" {
   ecdsa_curve = "P256"
 }
 
-data "kubectl_file_documents" "flux_sync" {
+data "kubectl_file_documents" "flux-sync" {
   count   = var.flux ? 1 : 0
   content = data.flux_sync.this[0].content
 }
 
 locals {
-  flux_sync_documents = (var.flux_git_repository != "" && length(data.kubectl_file_documents.flux_sync) > 0) ? data.kubectl_file_documents.flux_sync[0].documents : []
+  flux_sync_documents = (var.flux_git_repository != "" && length(data.kubectl_file_documents.flux-sync) > 0) ? data.kubectl_file_documents.flux-sync[0].documents : []
   flux_sync = [for v in local.flux_sync_documents : {
     data : yamldecode(v)
     content : v
@@ -40,15 +40,15 @@ locals {
   ]
 }
 
-resource "kubectl_manifest" "flux_sync" {
+resource "kubectl_manifest" "flux-sync" {
   for_each  = { for v in local.flux_sync : lower(join("/", compact([v.data.apiVersion, v.data.kind, lookup(v.data.metadata, "namespace", ""), v.data.metadata.name]))) => v.content }
   yaml_body = each.value
   depends_on = [
-    kubectl_manifest.flux_install
+    kubectl_manifest.flux-install
   ]
 }
 
-resource "kubernetes_secret" "flux_sync" {
+resource "kubernetes_secret" "flux-sync" {
   count = (!var.flux || var.flux_git_repository == "") ? 0 : 1
   metadata {
     name      = data.flux_sync.this[0].secret
@@ -63,6 +63,6 @@ resource "kubernetes_secret" "flux_sync" {
     command = "echo '${tls_private_key.flux[0].public_key_openssh}' > ../flux_ecdsa.pub"
   }
   depends_on = [
-    kubectl_manifest.flux_sync
+    kubectl_manifest.flux-sync
   ]
 }

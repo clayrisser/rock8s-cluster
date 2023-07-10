@@ -4,7 +4,7 @@
  * File Created: 27-04-2022 12:01:36
  * Author: Clay Risser
  * -----
- * Last Modified: 27-06-2023 15:39:42
+ * Last Modified: 10-07-2023 15:08:41
  * Modified By: Clay Risser
  * -----
  * BitSpur (c) Copyright 2022
@@ -35,22 +35,22 @@ resource "tls_private_key" "admin" {
   rsa_bits  = 4096
 }
 
-resource "local_file" "admin_rsa" {
+resource "local_file" "admin-rsa" {
   content  = tls_private_key.admin.private_key_openssh
   filename = "${path.module}/../artifacts/admin_rsa"
 }
 
-resource "local_file" "admin_rsa_pub" {
+resource "local_file" "admin-rsa-pub" {
   content  = tls_private_key.admin.public_key_openssh
   filename = "${path.module}/../artifacts/admin_rsa.pub"
 }
 
-resource "local_file" "node_rsa" {
+resource "local_file" "node-rsa" {
   content  = tls_private_key.node.private_key_openssh
   filename = "${path.module}/../artifacts/node_rsa"
 }
 
-resource "local_file" "node_rsa_pub" {
+resource "local_file" "node-rsa-pub" {
   content  = tls_private_key.node.public_key_openssh
   filename = "${path.module}/../artifacts/node_rsa.pub"
 }

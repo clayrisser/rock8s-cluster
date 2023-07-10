@@ -4,7 +4,7 @@
  * File Created: 27-09-2022 10:24:31
  * Author: Clay Risser
  * -----
- * Last Modified: 27-06-2023 15:39:42
+ * Last Modified: 10-07-2023 15:08:37
  * Modified By: Clay Risser
  * -----
  * BitSpur (c) Copyright 2022
@@ -38,11 +38,6 @@ variable "values" {
 variable "enabled" {
   type    = bool
   default = true
-}
-
-variable "create_namespace" {
-  type    = bool
-  default = false
 }
 
 variable "rancher_project_id" {

@@ -4,7 +4,7 @@
  * File Created: 30-04-2022 16:46:19
  * Author: Clay Risser
  * -----
- * Last Modified: 27-06-2023 15:39:42
+ * Last Modified: 10-07-2023 15:05:17
  * Modified By: Clay Risser
  * -----
  * BitSpur (c) Copyright 2022
@@ -16,7 +16,7 @@ resource "aws_route53_record" "cluster" {
   name    = local.cluster_entrypoint
   type    = "CNAME"
   ttl     = "300"
-  records = [data.kubernetes_service.ingress_nginx_controller[0].status[0].load_balancer[0].ingress[0].hostname]
+  records = [data.kubernetes_service.ingress-nginx-controller[0].status[0].load_balancer[0].ingress[0].hostname]
   lifecycle {
     prevent_destroy = false
   }

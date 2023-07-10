@@ -4,21 +4,20 @@
  * File Created: 21-04-2022 09:03:40
  * Author: Clay Risser
  * -----
- * Last Modified: 27-06-2023 15:39:42
+ * Last Modified: 10-07-2023 15:05:35
  * Modified By: Clay Risser
  * -----
  * BitSpur (c) Copyright 2022
  */
 
-module "external_dns" {
+module "external-dns" {
   source             = "../modules/helm_release"
   enabled            = local.external_dns
   name               = "external-dns"
-  repo               = module.rock8s_repo.repo
+  repo               = module.rock8s-repo.repo
   chart_name         = "external-dns"
-  chart_version      = "0.0.1"
+  chart_version      = "6.20.4"
   namespace          = "external-dns"
-  create_namespace   = true
   rancher_project_id = local.rancher_project_id
   rancher_cluster_id = local.rancher_cluster_id
   values             = <<EOF
@@ -36,7 +35,7 @@ resources:
     memory: 25Mi
 EOF
   depends_on = [
-    module.integration_operator,
-    kubectl_manifest.flux_install
+    module.integration-operator,
+    kubectl_manifest.flux-install
   ]
 }

@@ -4,7 +4,7 @@
  * File Created: 24-02-2022 16:17:10
  * Author: Clay Risser
  * -----
- * Last Modified: 27-06-2023 15:39:42
+ * Last Modified: 10-07-2023 15:05:21
  * Modified By: Clay Risser
  * -----
  * BitSpur (c) Copyright 2022
@@ -38,7 +38,7 @@ resource "kubernetes_secret" "registry" {
   }
   type = "kubernetes.io/dockerconfigjson"
   depends_on = [
-    module.kubed
+    helm_release.kubed
   ]
   lifecycle {
     prevent_destroy = false

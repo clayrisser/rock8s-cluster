@@ -4,25 +4,25 @@
  * File Created: 26-06-2023 07:11:51
  * Author: Clay Risser
  * -----
- * Last Modified: 27-06-2023 15:39:42
+ * Last Modified: 10-07-2023 15:04:24
  * Modified By: Clay Risser
  * -----
- * BitSpur (c) Copyright 2022 - 2023
+ * BitSpur (c) Copyright 2022
  */
 
-resource "aws_efs_file_system" "this" {
+resource "aws_efs_file_system" "elevated" {
   count = var.efs_csi ? 1 : 0
   tags = {
-    Name = local.cluster_name
+    Name = "elevated.${local.cluster_name}"
   }
   lifecycle {
     prevent_destroy = false
   }
 }
 
-resource "aws_efs_mount_target" "this" {
+resource "aws_efs_mount_target" "elevated" {
   count           = var.efs_csi ? length(data.aws_subnet.public) : 0
-  file_system_id  = aws_efs_file_system.this[0].id
+  file_system_id  = aws_efs_file_system.elevated[0].id
   subnet_id       = data.aws_subnet.public[count.index].id
   security_groups = [data.aws_security_group.nodes.id]
   lifecycle {
@@ -58,7 +58,7 @@ storageClasses:
     parameters:
       basePath: /dynamic_provisioning
       directoryPerms: '700'
-      fileSystemId: ${aws_efs_file_system.this[0].id}
+      fileSystemId: ${aws_efs_file_system.elevated[0].id}
       gid: '1000'
       gidRangeEnd: '2000'
       gidRangeStart: '1000'
@@ -69,8 +69,8 @@ storageClasses:
 EOF
   ]
   depends_on = [
-    null_resource.wait_for_nodes,
-    aws_efs_mount_target.this,
+    null_resource.wait-for-nodes,
+    aws_efs_mount_target.elevated,
   ]
   lifecycle {
     prevent_destroy = false

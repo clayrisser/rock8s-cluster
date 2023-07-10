@@ -4,21 +4,21 @@
  * File Created: 12-02-2022 12:16:54
  * Author: Clay Risser
  * -----
- * Last Modified: 27-06-2023 15:39:42
+ * Last Modified: 10-07-2023 15:04:51
  * Modified By: Clay Risser
  * -----
  * BitSpur (c) Copyright 2022
  */
 
-module "cleanup_operator" {
-  source        = "../modules/helm_release"
-  enabled       = var.cleanup_operator
-  chart_version = "1.0.4"
-  name          = "cleanup-operator"
-  repo          = "https://charts.lwolf.org"
-  chart_name    = "kube-cleanup-operator"
-  namespace     = "kube-system"
-  values        = <<EOF
+resource "helm_release" "cleanup-operator" {
+  count            = var.cleanup_operator ? 1 : 0
+  version          = "1.0.4"
+  name             = "cleanup-operator"
+  repository       = "https://charts.lwolf.org"
+  chart            = "kube-cleanup-operator"
+  namespace        = "kube-system"
+  create_namespace = false
+  values = [<<EOF
 args:
   - --delete-successful-after=5m
   - --delete-failed-after=120m
@@ -34,7 +34,11 @@ resources:
    cpu: 10m
    memory: 32Mi
 EOF
-  depends_on = [
-    null_resource.wait_for_nodes
   ]
+  depends_on = [
+    null_resource.wait-for-nodes
+  ]
+  lifecycle {
+    prevent_destroy = false
+  }
 }

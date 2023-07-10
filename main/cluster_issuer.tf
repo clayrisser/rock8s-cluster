@@ -4,20 +4,21 @@
  * File Created: 07-05-2022 03:17:43
  * Author: Clay Risser
  * -----
- * Last Modified: 27-06-2023 15:39:42
+ * Last Modified: 10-07-2023 15:04:56
  * Modified By: Clay Risser
  * -----
  * BitSpur (c) Copyright 2022
  */
 
-module "cluster_issuer" {
+module "cluster-issuer" {
   source             = "../modules/helm_release"
   enabled            = var.cluster_issuer
   chart_name         = "cluster-issuer"
   chart_version      = "1.1.0"
   name               = "cluster-issuer"
   namespace          = "kube-system"
-  repo               = module.rock8s_repo.repo
+  repo               = module.rock8s-repo.repo
+  rancher_project_id = local.rancher_project_id
   rancher_cluster_id = local.rancher_cluster_id
   values             = <<EOF
 config:
@@ -26,11 +27,11 @@ config:
   email: ${var.cloudflare_email}
 EOF
   depends_on = [
-    module.integration_operator
+    module.integration-operator
   ]
 }
 
-resource "kubectl_manifest" "cert_manager_default_issuer" {
+resource "kubectl_manifest" "cert-manager-default-issuer" {
   count     = (var.cluster_issuer && var.patch_operator) ? 1 : 0
   yaml_body = <<EOF
 apiVersion: patch.rock8s.com/v1alpha1
@@ -60,7 +61,7 @@ spec:
             - --default-issuer-group=cert-manager.io
 EOF
   depends_on = [
-    module.cluster_issuer
+    module.cluster-issuer
   ]
   lifecycle {
     prevent_destroy = false

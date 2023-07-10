@@ -3,15 +3,15 @@
 # File Created: 27-01-2022 11:45:11
 # Author: Clay Risser
 # -----
-# Last Modified: 27-06-2023 15:39:42
+# Last Modified: 10-07-2023 15:07:45
 # Modified By: Clay Risser
 # -----
 # BitSpur (c) Copyright 2022
 
 export MKPM_PACKAGES_DEFAULT := \
-	dotenv=0.0.12 \
+	mkchain=0.1.1 \
 	gnu=0.0.3 \
-	mkchain=0.1.1
+	dotenv=0.0.12
 
 export MKPM_REPO_DEFAULT := \
 	https://gitlab.com/risserlabs/community/mkpm-stable.git

@@ -4,7 +4,7 @@
  * File Created: 09-02-2022 11:24:10
  * Author: Clay Risser
  * -----
- * Last Modified: 27-06-2023 15:39:42
+ * Last Modified: 10-07-2023 15:09:01
  * Modified By: Clay Risser
  * -----
  * BitSpur (c) Copyright 2022
@@ -53,6 +53,10 @@ resources:
   requests:
     cpu: 1.5
     memory: 1.5Gi
+global:
+  cattle:
+    psp:
+      enabled: false
 EOF
   ]
   set {
@@ -60,11 +64,69 @@ EOF
     value = "v3"
   }
   depends_on = [
-    null_resource.wait_for_ingress_nginx
+    null_resource.wait-for-ingress-nginx
   ]
 }
 
-resource "kubectl_manifest" "rancher_patch" {
+resource "kubectl_manifest" "rancher-patch-sa" {
+  count     = (var.logging && local.rancher) ? 1 : 0
+  yaml_body = <<EOF
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: rancher-patch-sa
+  namespace: cattle-system
+EOF
+  depends_on = [
+    helm_release.rancher,
+    helm_release.patch-operator,
+  ]
+}
+
+resource "kubectl_manifest" "rancher-patch-role" {
+  count     = (var.logging && local.rancher) ? 1 : 0
+  yaml_body = <<EOF
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: rancher-patch-sa
+  namespace: cattle-system
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+EOF
+  depends_on = [
+    kubectl_manifest.rancher-patch-sa
+  ]
+}
+
+resource "kubectl_manifest" "rancher-patch-role-binding" {
+  count     = (var.logging && local.rancher) ? 1 : 0
+  yaml_body = <<EOF
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: rancher-patch-sa
+  namespace: cattle-system
+subjects:
+  - kind: ServiceAccount
+    name: rancher-patch-sa
+    namespace: cattle-system
+roleRef:
+  kind: Role
+  name: rancher-patch-sa
+  apiGroup: rbac.authorization.k8s.io
+EOF
+  depends_on = [
+    kubectl_manifest.rancher-patch-role
+  ]
+}
+
+resource "kubectl_manifest" "rancher-patch" {
   count     = (var.logging && local.rancher) ? 1 : 0
   yaml_body = <<EOF
 apiVersion: patch.rock8s.com/v1alpha1
@@ -73,6 +135,7 @@ metadata:
   name: rancher
   namespace: cattle-system
 spec:
+  serviceAccountName: rancher-patch-sa
   patches:
     - id: rancher
       target:
@@ -91,7 +154,7 @@ spec:
               value: linux
               effect: NoSchedule
               operator: Equal
-            - key: node-role.kubernetes.io/master
+            - key: node-role.kubernetes.io/control-plane
               effect: NoSchedule
               operator: Exists
         - op: add
@@ -100,7 +163,7 @@ spec:
             requiredDuringSchedulingIgnoredDuringExecution:
               nodeSelectorTerms:
                 - matchExpressions:
-                    - key: node-role.kubernetes.io/master
+                    - key: node-role.kubernetes.io/control-plane
                       operator: Exists
         - op: remove
           path: /spec/strategy/rollingUpdate
@@ -109,21 +172,21 @@ spec:
           value: Recreate
 EOF
   depends_on = [
-    helm_release.rancher,
-    helm_release.patch_operator,
+    kubectl_manifest.rancher-patch-role-binding
   ]
   lifecycle {
     prevent_destroy = false
   }
 }
 
-resource "null_resource" "wait_for_rancher" {
+resource "null_resource" "wait-for-rancher" {
   count = local.rancher ? 1 : 0
   provisioner "local-exec" {
     command     = <<EOF
 while [ ! "$(kubectl --kubeconfig <(echo $KUBECONFIG) get patches.patch.rock8s.com -n cattle-system rancher -o json | jq -r '.status.phase')" = "Succeeded" ]; do
   sleep 10
 done
+sleep 15
 while [ "$${subject}" != "*  subject: CN=$RANCHER_HOSTNAME" ]; do
     subject=$(curl -vk -m 2 "https://$RANCHER_HOSTNAME/ping" 2>&1 | grep "subject:")
     echo "Cert Subject Response: $${subject}"
@@ -138,6 +201,7 @@ while [ "$${resp}" != "pong" ]; do
       sleep 10
     fi
 done
+sleep 15
 EOF
     interpreter = ["sh", "-c"]
     environment = {
@@ -146,7 +210,7 @@ EOF
     }
   }
   depends_on = [
-    kubectl_manifest.rancher_patch
+    kubectl_manifest.rancher-patch
   ]
 }
 
@@ -157,7 +221,7 @@ resource "rancher2_bootstrap" "admin" {
   password         = var.rancher_admin_password
   telemetry        = true
   depends_on = [
-    null_resource.wait_for_rancher[0]
+    null_resource.wait-for-rancher
   ]
 }
 
@@ -172,7 +236,7 @@ resource "rancher2_token" "this" {
   provider    = rancher2.admin
   description = "terraform"
   depends_on = [
-    null_resource.wait_for_rancher[0]
+    null_resource.wait-for-rancher
   ]
 }
 
@@ -190,7 +254,7 @@ data "rancher2_project" "system" {
   ]
 }
 
-resource "kubectl_manifest" "rancher_cluster_role" {
+resource "kubectl_manifest" "rancher-cluster-role" {
   count     = local.rancher ? 1 : 0
   yaml_body = <<EOF
 apiVersion: rbac.authorization.k8s.io/v1
@@ -205,14 +269,14 @@ rules:
   verbs: ["*"]
 EOF
   depends_on = [
-    null_resource.wait_for_rancher[0]
+    null_resource.wait-for-rancher
   ]
   lifecycle {
     prevent_destroy = false
   }
 }
 
-resource "kubectl_manifest" "rancher_cluster_role_binding" {
+resource "kubectl_manifest" "rancher-cluster-role-binding" {
   count     = local.rancher ? 1 : 0
   yaml_body = <<EOF
 apiVersion: rbac.authorization.k8s.io/v1
@@ -229,7 +293,7 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 EOF
   depends_on = [
-    kubectl_manifest.rancher_cluster_role
+    kubectl_manifest.rancher-cluster-role
   ]
   lifecycle {
     prevent_destroy = false

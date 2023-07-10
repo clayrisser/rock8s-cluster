@@ -4,10 +4,10 @@
  * File Created: 14-04-2022 08:13:23
  * Author: Clay Risser
  * -----
- * Last Modified: 27-06-2023 15:55:05
+ * Last Modified: 10-07-2023 15:05:08
  * Modified By: Clay Risser
  * -----
- * Risser Labs LLC (c) Copyright 2022
+ * BitSpur (c) Copyright 2022
  */
 
 locals {
@@ -29,7 +29,7 @@ EOF
   ]
 }
 
-resource "local_file" "iam_kubeconfig" {
+resource "local_file" "iam-kubeconfig" {
   content  = yamlencode(local.kubeconfig)
   filename = "${path.module}/../artifacts/iam_kubeconfig"
 }
@@ -59,8 +59,27 @@ resource "kops_cluster" "this" {
     rbac {}
   }
   iam {
+    legacy                                   = false
     allow_container_registry                 = true
-    use_service_account_external_permissions = false
+    use_service_account_external_permissions = true
+    dynamic "service_account_external_permissions" {
+      for_each = [for namespace in local.elevated_namespaces : { ns = namespace, policies = local.elevated_policies }]
+      content {
+        name      = element(split(":", service_account_external_permissions.value.ns), 1)
+        namespace = element(split(":", service_account_external_permissions.value.ns), 0)
+        aws {
+          policy_ar_ns = service_account_external_permissions.value.policies
+        }
+      }
+    }
+  }
+  external_policies {
+    key   = "master"
+    value = local.external_policies
+  }
+  external_policies {
+    key   = "node"
+    value = local.external_policies
   }
   external_policies {
     key   = "master"
@@ -207,15 +226,16 @@ resource "kops_cluster" "this" {
     master = local.external_policies
   }
   depends_on = [
-    local_file.admin_rsa,
-    local_file.admin_rsa_pub,
-    local_file.iam_kubeconfig,
-    local_file.node_rsa,
-    local_file.node_rsa_pub,
+    local_file.admin-rsa,
+    local_file.admin-rsa-pub,
+    local_file.iam-kubeconfig,
+    local_file.node-rsa,
+    local_file.node-rsa-pub,
   ]
   lifecycle {
     prevent_destroy = false
     ignore_changes = [
+      admin_ssh_key,
       secrets,
     ]
   }
@@ -405,7 +425,7 @@ EOF
   ]
 }
 
-resource "null_resource" "wait_for_nodes" {
+resource "null_resource" "wait-for-nodes" {
   provisioner "local-exec" {
     command     = <<EOF
 while [ "$(kubectl --kubeconfig <(echo $KUBECONFIG) get nodes | \

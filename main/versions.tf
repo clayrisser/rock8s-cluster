@@ -4,10 +4,10 @@
  * File Created: 26-06-2023 07:11:51
  * Author: Clay Risser
  * -----
- * Last Modified: 27-06-2023 15:39:42
+ * Last Modified: 10-07-2023 15:06:51
  * Modified By: Clay Risser
  * -----
- * BitSpur (c) Copyright 2022 - 2023
+ * BitSpur (c) Copyright 2022
  */
 
 terraform {
@@ -50,7 +50,7 @@ terraform {
     }
     rancher2 = {
       source  = "rancher/rancher2"
-      version = "1.24.1"
+      version = "3.0.2"
     }
     flux = {
       source  = "fluxcd/flux"

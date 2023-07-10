@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:09:15
  * Author: Clay Risser
  * -----
- * Last Modified: 27-06-2023 15:39:42
+ * Last Modified: 10-07-2023 15:05:13
  * Modified By: Clay Risser
  * -----
  * BitSpur (c) Copyright 2022
@@ -38,14 +38,14 @@ data "aws_subnet" "private" {
   vpc_id = module.vpc.vpc_id
 }
 
-data "kubernetes_service" "ingress_nginx_controller" {
+data "kubernetes_service" "ingress-nginx-controller" {
   count = var.ingress_nginx ? 1 : 0
   metadata {
     name      = "ingress-nginx-controller"
     namespace = "ingress-nginx"
   }
   depends_on = [
-    helm_release.ingress_nginx,
+    helm_release.ingress-nginx,
   ]
 }
 

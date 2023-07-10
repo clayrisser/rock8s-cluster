@@ -4,7 +4,7 @@
  * File Created: 13-10-2022 02:34:15
  * Author: Clay Risser
  * -----
- * Last Modified: 27-06-2023 15:39:42
+ * Last Modified: 10-07-2023 15:09:12
  * Modified By: Clay Risser
  * -----
  * BitSpur (c) Copyright 2022
@@ -18,8 +18,11 @@ module "longhorn" {
   name               = "longhorn"
   repo               = "rancher-charts"
   namespace          = "longhorn-system"
-  create_namespace   = true
+  rancher_project_id = local.rancher_project_id
   rancher_cluster_id = local.rancher_cluster_id
   values             = <<EOF
 EOF
+  depends_on = [
+    null_resource.wait-for-nodes
+  ]
 }

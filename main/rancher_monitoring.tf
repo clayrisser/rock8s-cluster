@@ -4,20 +4,21 @@
  * File Created: 20-04-2022 13:40:49
  * Author: Clay Risser
  * -----
- * Last Modified: 27-06-2023 15:39:42
+ * Last Modified: 10-07-2023 15:09:34
  * Modified By: Clay Risser
  * -----
  * BitSpur (c) Copyright 2022
  */
 
-module "rancher_monitoring" {
+module "rancher-monitoring" {
   source             = "../modules/helm_release"
   enabled            = local.rancher_monitoring
   chart_name         = "rancher-monitoring"
   chart_version      = "102.0.0+up40.1.2"
   name               = "rancher-monitoring"
   repo               = "rancher-charts"
-  namespace          = length(rancher2_namespace.cattle_monitoring_system) > 0 ? rancher2_namespace.cattle_monitoring_system[0].name : null
+  namespace          = rancher2_namespace.cattle-monitoring-system[0].name
+  rancher_project_id = local.rancher_project_id
   rancher_cluster_id = local.rancher_cluster_id
   values             = <<EOF
 grafana:
@@ -103,20 +104,21 @@ kube-state-metrics:
                   - amd64
 EOF
   depends_on = [
-    kubectl_manifest.loki_datasource,
-    kubectl_manifest.tempo_datasource
+    kubectl_manifest.loki-datasource,
+    kubectl_manifest.tempo-datasource,
+    null_resource.wait-for-nodes
   ]
 }
 
-resource "time_sleep" "rancher_monitoring_ready" {
+resource "time_sleep" "rancher-monitoring-ready" {
   count = local.rancher_monitoring ? 1 : 0
   depends_on = [
-    module.rancher_monitoring
+    module.rancher-monitoring
   ]
   create_duration = "15s"
 }
 
-resource "rancher2_namespace" "cattle_monitoring_system" {
+resource "rancher2_namespace" "cattle-monitoring-system" {
   count      = local.rancher_monitoring ? 1 : 0
   name       = "cattle-monitoring-system"
   project_id = local.rancher_project_id

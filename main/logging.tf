@@ -4,13 +4,13 @@
  * File Created: 18-09-2022 07:59:35
  * Author: Clay Risser
  * -----
- * Last Modified: 27-06-2023 15:39:42
+ * Last Modified: 10-07-2023 15:09:25
  * Modified By: Clay Risser
  * -----
  * BitSpur (c) Copyright 2022
  */
 
-module "rancher_logging" {
+module "rancher-logging" {
   source             = "../modules/helm_release"
   enabled            = var.logging
   chart_name         = "rancher-logging"
@@ -18,12 +18,13 @@ module "rancher_logging" {
   name               = "rancher-logging"
   repo               = "rancher-charts"
   namespace          = "cattle-logging-system"
-  create_namespace   = true
   rancher_project_id = local.rancher_project_id
   rancher_cluster_id = local.rancher_cluster_id
   values             = <<EOF
 EOF
-  depends_on         = []
+  depends_on = [
+    null_resource.wait-for-nodes
+  ]
 }
 
 module "loki" {
@@ -32,9 +33,8 @@ module "loki" {
   chart_name         = "loki"
   chart_version      = "5.6.4"
   name               = "loki"
-  repo               = module.grafana_repo.repo
+  repo               = module.grafana-repo.repo
   namespace          = "loki"
-  create_namespace   = true
   rancher_project_id = local.rancher_project_id
   rancher_cluster_id = local.rancher_cluster_id
   values             = <<EOF
@@ -84,10 +84,12 @@ loki:
       chunks: '${aws_s3_bucket.loki.bucket}'
       ruler: '${aws_s3_bucket.loki.bucket}'
 EOF
-  depends_on         = []
+  depends_on = [
+    null_resource.wait-for-nodes
+  ]
 }
 
-resource "kubectl_manifest" "loki_output" {
+resource "kubectl_manifest" "loki-output" {
   count     = (var.logging && local.rancher) ? 1 : 0
   yaml_body = <<EOF
 apiVersion: logging.banzaicloud.io/v1beta1
@@ -105,14 +107,14 @@ spec:
       timekey_wait: 30s
 EOF
   depends_on = [
-    module.rancher_logging
+    module.rancher-logging
   ]
   lifecycle {
     prevent_destroy = false
   }
 }
 
-resource "kubectl_manifest" "cluster_flow" {
+resource "kubectl_manifest" "cluster-flow" {
   count     = (var.logging && local.rancher) ? 1 : 0
   yaml_body = <<EOF
 apiVersion: logging.banzaicloud.io/v1beta1
@@ -127,21 +129,21 @@ spec:
     - select: {}
 EOF
   depends_on = [
-    module.rancher_logging
+    module.rancher-logging
   ]
   lifecycle {
     prevent_destroy = false
   }
 }
 
-resource "kubectl_manifest" "loki_datasource" {
-  count      = (var.logging && local.rancher_monitoring) ? 1 : 0
-  yaml_body  = <<EOF
+resource "kubectl_manifest" "loki-datasource" {
+  count     = (var.logging && local.rancher_monitoring) ? 1 : 0
+  yaml_body = <<EOF
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: loki-datasource
-  namespace: ${rancher2_namespace.cattle_monitoring_system[0].name}
+  namespace: ${rancher2_namespace.cattle-monitoring-system[0].name}
   labels:
     grafana_datasource: '1'
 data:
@@ -154,13 +156,15 @@ data:
         access: proxy
         version: 1
 EOF
-  depends_on = []
+  depends_on = [
+    null_resource.wait-for-nodes
+  ]
   lifecycle {
     prevent_destroy = false
   }
 }
 
-resource "kubectl_manifest" "logs_dashboard" {
+resource "kubectl_manifest" "logs-dashboard" {
   count     = (var.logging && local.rancher_monitoring) ? 1 : 0
   yaml_body = <<EOF
 apiVersion: v1
@@ -473,8 +477,8 @@ data:
     }
 EOF
   depends_on = [
-    module.rancher_logging,
-    time_sleep.rancher_monitoring_ready[0]
+    module.rancher-logging,
+    time_sleep.rancher-monitoring-ready
   ]
   lifecycle {
     prevent_destroy = false

@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 13:36:29
  * Author: Clay Risser
  * -----
- * Last Modified: 27-06-2023 15:39:42
+ * Last Modified: 10-07-2023 15:07:07
  * Modified By: Clay Risser
  * -----
  * BitSpur (c) Copyright 2022
@@ -68,6 +68,5 @@ locals {
   rancher              = var.rancher && var.ingress_nginx
   rancher_istio        = var.rancher_istio && local.rancher_monitoring
   rancher_monitoring   = var.rancher_monitoring && local.rancher
-  s3                   = var.s3 && local.integration_operator
-  velero               = var.velero && local.s3 && local.integration_operator && var.flux
+  velero               = var.velero && local.integration_operator && var.flux
 }

@@ -4,16 +4,16 @@
  * File Created: 27-09-2022 12:47:58
  * Author: Clay Risser
  * -----
- * Last Modified: 27-06-2023 15:39:42
+ * Last Modified: 10-07-2023 15:06:05
  * Modified By: Clay Risser
  * -----
  * BitSpur (c) Copyright 2022
  */
 
-resource "helm_release" "ingress_nginx" {
-  version          = "4.0.17"
+resource "helm_release" "ingress-nginx" {
   count            = var.ingress_nginx ? 1 : 0
   name             = "ingress-nginx"
+  version          = "4.7.0"
   repository       = "https://kubernetes.github.io/ingress-nginx"
   chart            = "ingress-nginx"
   namespace        = "ingress-nginx"
@@ -45,14 +45,14 @@ controller:
 EOF
   ]
   depends_on = [
-    null_resource.wait_for_nodes
+    null_resource.wait-for-nodes
   ]
   lifecycle {
     prevent_destroy = false
   }
 }
 
-resource "null_resource" "wait_for_ingress_nginx" {
+resource "null_resource" "wait-for-ingress-nginx" {
   count = var.ingress_nginx ? 1 : 0
   provisioner "local-exec" {
     command     = <<EOF
@@ -73,7 +73,7 @@ EOF
     }
   }
   depends_on = [
-    helm_release.ingress_nginx,
+    helm_release.ingress-nginx,
     aws_route53_record.cluster
   ]
 }

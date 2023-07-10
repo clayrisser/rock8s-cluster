@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:12:06
  * Author: Clay Risser
  * -----
- * Last Modified: 27-06-2023 15:39:42
+ * Last Modified: 10-07-2023 15:06:33
  * Modified By: Clay Risser
  * -----
  * BitSpur (c) Copyright 2022
@@ -187,11 +187,6 @@ variable "rancher_monitoring" {
   default = true
 }
 
-variable "s3" {
-  type    = bool
-  default = true
-}
-
 variable "tempo" {
   type    = bool
   default = true
@@ -225,4 +220,8 @@ variable "reloader" {
 variable "retention_hours" {
   type    = number
   default = 168
+}
+
+variable "ack_services" {
+  default = "s3"
 }

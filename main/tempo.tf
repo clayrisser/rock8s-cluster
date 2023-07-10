@@ -4,7 +4,7 @@
  * File Created: 23-09-2022 10:17:08
  * Author: Clay Risser
  * -----
- * Last Modified: 27-06-2023 15:39:42
+ * Last Modified: 10-07-2023 15:06:22
  * Modified By: Clay Risser
  * -----
  * BitSpur (c) Copyright 2022
@@ -16,9 +16,8 @@ module "tempo" {
   chart_name         = "tempo"
   chart_version      = "1.3.1"
   name               = "tempo"
-  repo               = module.grafana_repo.repo
+  repo               = module.grafana-repo.repo
   namespace          = "tempo"
-  create_namespace   = true
   rancher_project_id = local.rancher_project_id
   rancher_cluster_id = local.rancher_cluster_id
   values             = <<EOF
@@ -62,17 +61,19 @@ tempo:
         http:
           endpoint: "0.0.0.0:4318"
 EOF
-  depends_on         = []
+  depends_on = [
+    null_resource.wait-for-nodes
+  ]
 }
 
-resource "kubectl_manifest" "tempo_datasource" {
-  count      = (var.tempo && local.rancher_monitoring) ? 1 : 0
-  yaml_body  = <<EOF
+resource "kubectl_manifest" "tempo-datasource" {
+  count     = (var.tempo && local.rancher_monitoring) ? 1 : 0
+  yaml_body = <<EOF
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: tempo-datasource
-  namespace: ${rancher2_namespace.cattle_monitoring_system[0].name}
+  namespace: ${rancher2_namespace.cattle-monitoring-system[0].name}
   labels:
     grafana_datasource: '1'
 data:
@@ -85,7 +86,9 @@ data:
         access: proxy
         version: 1
 EOF
-  depends_on = []
+  depends_on = [
+    null_resource.wait-for-nodes
+  ]
   lifecycle {
     prevent_destroy = false
   }

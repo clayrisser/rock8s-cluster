@@ -3,7 +3,7 @@
 # File Created: 27-01-2022 11:41:37
 # Author: Clay Risser
 # -----
-# Last Modified: 27-06-2023 15:39:42
+# Last Modified: 10-07-2023 15:07:40
 # Modified By: Clay Risser
 # -----
 # BitSpur (c) Copyright 2022
@@ -66,14 +66,35 @@ $(ACTION)/apply: $(call git_deps,\.((tf)|(hcl))$$)
 		$$([ -f tfplan.cache ] && $(ECHO) tfplan.cache || $(TRUE)) $(ARGS)
 	@$(call done,apply)
 
+IGNORE_DESTROY := \
+	data\\. \
+	helm_ \
+	kubectl_ \
+	kubernetes_ \
+	module\\..*\\.helm_release \
+	module\\..*\\.rancher2_ \
+	null_resource\\. \
+	rancher2_ \
+	time_sleep\\.
 ACTIONS += destroy~format ## destroys terraform infrastructure
 $(ACTION)/destroy: $(call git_deps,\.((tf)|(hcl))$$)
 	@$(CD) $(TF_ROOT) && \
 		RM_RECORDS=$$($(TERRAFORM) state list | \
-		$(GREP) '^\(kubernetes_\|rancher2_\|helm_\|null_resource\.\|kubectl_\|data\.\|time_sleep\.\|module\.\)' | \
-		$(GREP) -v '^\(module\.vpc\.\)' $(NOFAIL)) && \
+		$(GREP) '^\($(shell $(ECHO) $(IGNORE_DESTROY) | sed "s/ /\\\|/g")\)' $(NOFAIL)) && \
 		[ "$$RM_RECORDS" = "" ] && $(TRUE) || $(TERRAFORM) state rm $$RM_RECORDS && \
 		$(TERRAFORM) destroy $(TERRAFORM_INPUT_FLAG) $(TERRAFORM_AUTO_APPROVE_FLAG) $(ARGS)
+	@for b in $$($(AWS) s3api list-buckets --query 'Buckets[].Name' --output text | $(TR) '\t' '\n' | $(GREP) $(shell $(ECHO) $(KUBE_CONTEXT) | $(SED) 's|\.|-|g')); do \
+			$(AWS) s3 rb s3://$$b --force; \
+		done
+		for u in $$($(AWS) iam list-users --query 'Users[].UserName' --output text | $(TR) '\t' '\n' | $(GREP) $(KUBE_CONTEXT)); do \
+			for k in $$($(AWS) iam list-access-keys --user-name $$u --query 'AccessKeyMetadata[].AccessKeyId' --output text); do \
+				$(AWS) iam delete-access-key --user-name $$u --access-key-id $$k; \
+			done; \
+			for p in $$($(AWS) iam list-user-policies --user-name $$u --query 'PolicyNames[]' --output text); do \
+				$(AWS) iam delete-user-policy --user-name $$u --policy-name $$p; \
+			done; \
+			$(AWS) iam delete-user --user-name $$u; \
+		done
 	@$(call done,destroy)
 
 ACTIONS += refresh~format ## refreshes terraform state to match physical resources
@@ -89,10 +110,11 @@ allow-destroy: ## allow resource to be destroyed
 prevent-destroy: ## prevent resources from being destroyed
 	@$(call prevent_destroy,true)
 
+MAIN_BUCKET ?= $(shell $(ECHO) $(CLUSTER_NAME) | $(SED) 's|\.|-|g')
 .PHONY: kubeconfig
 kubeconfig: ## authenticate local environment with the kube cluster
 	@$(KOPS) export kubeconfig '$(CLUSTER_NAME)' \
-		--state s3://$(CLUSTER_NAME)/kops \
+		--state s3://$(MAIN_BUCKET)/kops \
 		--admin \
 		--kubeconfig $(HOME)/.kube/config
 	@export KUBE_CONTEXT=$(CLUSTER_NAME) && \
@@ -102,26 +124,6 @@ kubeconfig: ## authenticate local environment with the kube cluster
 			($(SED) -i "s|\(KUBE_CONTEXT=\).*|\1$$KUBE_CONTEXT|g" default.env) || \
 			$(ECHO) KUBE_CONTEXT=$$KUBE_CONTEXT >> default.env) && \
 		$(KUBECTX) $(KUBE_CONTEXT)
-
-GROUP_NAME ?= rock8s
-USER_NAME ?= $(KUBE_CONTEXT)
-.PHONY: prepare-aws
-prepare-aws:
-	-@$(AWS) iam create-group --group-name $(GROUP_NAME)
-	-@$(AWS) iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonEC2FullAccess --group-name $(GROUP_NAME)
-	-@$(AWS) iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonRoute53FullAccess --group-name $(GROUP_NAME)
-	-@$(AWS) iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess --group-name $(GROUP_NAME)
-	-@$(AWS) iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/IAMFullAccess --group-name $(GROUP_NAME)
-	-@$(AWS) iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonVPCFullAccess --group-name $(GROUP_NAME)
-	-@$(AWS) iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonSQSFullAccess --group-name $(GROUP_NAME)
-	-@$(AWS) iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonEventBridgeFullAccess --group-name $(GROUP_NAME)
-	-@$(AWS) iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly --group-name $(GROUP_NAME)
-	-@$(AWS) iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonElasticFileSystemFullAccess --group-name $(GROUP_NAME)
-	-@( $(AWS) route53 list-hosted-zones | grep -q $(DNS_ZONE) && $(TRUE) ) || \
-		$(AWS) route53 create-hosted-zone --name $(DNS_ZONE) --caller-reference $(shell date '+%s%N')
-	@$(AWS) iam create-user --user-name $(USER_NAME)
-	@$(AWS) iam add-user-to-group --user-name $(USER_NAME) --group-name $(GROUP_NAME)
-	@$(AWS) iam create-access-key --user-name $(USER_NAME)
 
 .PHONY: upgrade
 upgrade: ## upgrades terraform packages
@@ -146,6 +148,26 @@ count:
 .PHONY: terraform
 terraform:
 	@$(CD) $(TF_ROOT) && $(TERRAFORM) $(ARGS)
+
+GROUP_NAME ?= rock8s
+USER_NAME ?= $(CLUSTER_PREFIX).$(DNS_ZONE)
+.PHONY: prepare-aws
+prepare-aws:
+	-@$(AWS) iam create-group --group-name $(GROUP_NAME)
+	-@$(AWS) iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonEC2FullAccess --group-name $(GROUP_NAME)
+	-@$(AWS) iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonRoute53FullAccess --group-name $(GROUP_NAME)
+	-@$(AWS) iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess --group-name $(GROUP_NAME)
+	-@$(AWS) iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/IAMFullAccess --group-name $(GROUP_NAME)
+	-@$(AWS) iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonVPCFullAccess --group-name $(GROUP_NAME)
+	-@$(AWS) iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonSQSFullAccess --group-name $(GROUP_NAME)
+	-@$(AWS) iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonEventBridgeFullAccess --group-name $(GROUP_NAME)
+	-@$(AWS) iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly --group-name $(GROUP_NAME)
+	-@$(AWS) iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonElasticFileSystemFullAccess --group-name $(GROUP_NAME)
+	-@( $(AWS) route53 list-hosted-zones | grep -q $(DNS_ZONE) && $(TRUE) ) || \
+		$(AWS) route53 create-hosted-zone --name $(DNS_ZONE) --caller-reference $(shell date '+%s%N')
+	@$(AWS) iam create-user --user-name $(USER_NAME)
+	@$(AWS) iam add-user-to-group --user-name $(USER_NAME) --group-name $(GROUP_NAME)
+	@$(AWS) iam create-access-key --user-name $(USER_NAME)
 
 define JQ_PLAN
 ( \

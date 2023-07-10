@@ -4,7 +4,7 @@
  * File Created: 14-04-2022 08:04:44
  * Author: Clay Risser
  * -----
- * Last Modified: 27-06-2023 15:39:42
+ * Last Modified: 10-07-2023 15:08:52
  * Modified By: Clay Risser
  * -----
  * BitSpur (c) Copyright 2022
@@ -14,11 +14,11 @@ terraform {
   required_providers {
     helm = {
       source  = "hashicorp/helm"
-      version = "2.6.0"
+      version = "2.10.1"
     }
     rancher2 = {
       source  = "rancher/rancher2"
-      version = "1.24.1"
+      version = "3.0.2"
     }
   }
 }

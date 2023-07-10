@@ -4,7 +4,7 @@
  * File Created: 20-04-2022 10:21:22
  * Author: Clay Risser
  * -----
- * Last Modified: 27-06-2023 15:39:42
+ * Last Modified: 10-07-2023 15:05:52
  * Modified By: Clay Risser
  * -----
  * BitSpur (c) Copyright 2022
@@ -15,10 +15,9 @@ module "goldilocks" {
   enabled            = var.goldilocks
   chart_version      = "6.7.0"
   name               = "goldilocks"
-  repo               = module.fairwinds_repo.repo
+  repo               = module.fairwinds-repo.repo
   chart_name         = "goldilocks"
   namespace          = "goldilocks"
-  create_namespace   = true
   rancher_project_id = local.rancher_project_id
   rancher_cluster_id = local.rancher_cluster_id
   values             = <<EOF
@@ -30,6 +29,6 @@ dashboard:
   excludeContainers: 'linkerd-proxy,istio-proxy'
 EOF
   depends_on = [
-    null_resource.wait_for_nodes
+    null_resource.wait-for-nodes
   ]
 }
