@@ -1,5 +1,5 @@
-# File: /Makefile
-# Project: rock8s-cluster2
+# File: /Mkpmfile
+# Project: rock8s-cluster
 # File Created: 27-09-2023 05:26:34
 # Author: Clay Risser
 # -----
@@ -17,7 +17,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-include chain.mk
+include $(MKPM)/mkpm
+include $(MKPM)/gnu
+include $(MKPM)/dotenv
+include $(MKPM)/envcache
 
 .DEFAULT_GOAL := plan
 
@@ -76,5 +79,3 @@ prepare-aws:
 .PHONY: main/%
 main/%:
 	@$(MAKE) -sC main $*
-
--include $(call chain)

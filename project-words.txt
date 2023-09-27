@@ -9,6 +9,7 @@ coreutils
 crds
 deploykf
 elif
+envcache
 fluxcd
 gnumake
 gnused

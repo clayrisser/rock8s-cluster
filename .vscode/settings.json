@@ -1,5 +1,10 @@
 {
-  "psi-header.variables": [["projectCreationYear", "2021"]],
+  "psi-header.variables": [
+    [
+      "projectCreationYear",
+      "2021"
+    ]
+  ],
   "psi-header.config": {
     "blankLinesAfter": 1,
     "company": "BitSpur",
@@ -49,7 +54,9 @@
       "modDate": "Last Modified:",
       "modDateFormat": "dd-MM-yyyy HH:mm:ss",
       "prefix": " *",
-      "replace": ["File:"],
+      "replace": [
+        "File:"
+      ],
       "rootDirFileName": "LICENSE",
       "suffix": ""
     },
@@ -64,7 +71,9 @@
       "modDate": "Last Modified:",
       "modDateFormat": "dd-MM-yyyy HH:mm:ss",
       "prefix": "#",
-      "replace": ["File:"],
+      "replace": [
+        "File:"
+      ],
       "rootDirFileName": "LICENSE",
       "suffix": ""
     }
@@ -72,12 +81,17 @@
   "psi-header.changes-tracking": {
     "autoHeader": "autoSave",
     "enforceHeader": true,
-    "include": ["makefile", "terraform"],
+    "include": [
+      "makefile",
+      "terraform"
+    ],
     "isActive": true,
     "modAuthor": "Modified By:",
     "modDate": "Last Modified:",
     "modDateFormat": "dd-MM-yyyy hh:nn:ss",
-    "replace": ["Filename:"],
+    "replace": [
+      "Filename:"
+    ],
     "updateLicenseVariables": true
   },
   "psi-header.license-reference": {

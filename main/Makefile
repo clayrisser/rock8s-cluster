@@ -18,8 +18,10 @@
 # limitations under the License.
 
 include $(MKPM)/mkpm
+include $(MKPM)/gnu
+include $(MKPM)/dotenv
+include $(MKPM)/envcache
 include $(MKPM)/chain
-
 
 include $(PROJECT_ROOT)/gitlab.mk
 include $(PROJECT_ROOT)/aws.mk
