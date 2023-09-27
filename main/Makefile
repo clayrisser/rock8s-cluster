@@ -1,0 +1,107 @@
+include ../chain.mk
+
+export TF_STATE_NAME ?= $(CLUSTER_PREFIX)-$(ITERATION)
+export CLUSTER_NAME ?= $(CLUSTER_PREFIX)-$(ITERATION).$(DNS_ZONE)
+
+include $(ROOTDIR)/terraform.mk
+include $(ROOTDIR)/shared.mk
+
+export CLUSTER_ENDPOINT := \
+	$(shell $(AWS) eks describe-cluster --region $(AWS_REGION) --name $(CLUSTER_NAME) --query cluster.endpoint --output text 2>/dev/null)
+export KUBECONFIG_JSON := $(CURDIR)/artifacts/kubeconfig.json
+_ := $(shell mkdir -p $(CURDIR)/artifacts && \
+[ "$(CLUSTER_ENDPOINT)" != "" ] && cat $(CURDIR)/kubeconfig.json | \
+sed 's|<CLUSTER_NAME>|$(CLUSTER_NAME)|g' | \
+sed 's|<CLUSTER_ENDPOINT>|$(CLUSTER_ENDPOINT)|g' > $(KUBECONFIG_JSON))
+
+include modules.mk
+
+.PHONY: terraform
+terraform:
+	@$(TERRAFORM) $(TERRAFORM_ARGS)
+
+ACTIONS += init ## initialize terraform
+INIT_TARGETS := $(ARTIFACTS)
+$(ACTION)/init: versions.tf backend.tf
+	@$(TERRAFORM) init $(TERRAFORM_INPUT_FLAG) -reconfigure $(INIT_ARGS) \
+		-backend-config="region=${AWS_REGION}" \
+		-backend-config="bucket=${BACKEND_S3_BUCKET}" \
+		-backend-config="key=${CLUSTER_NAME}/terraform.tfstate" \
+		-backend-config="dynamodb_table=${BACKEND_DYNAMODB_TABLE}"
+	@$(call done,$@)
+
+ACTIONS += format~init ## format terraform files
+$(ACTION)/format: $(call git_deps,\.((tf))$$)
+	@$(TERRAFORM) fmt $(FORMAT_ARGS)
+	@$(call done,$@)
+
+ACTIONS += lint~format ## lint terraform files
+$(ACTION)/lint: $(call git_deps,\.((tf))$$)
+	@$(TERRAFORM) fmt -check $(LINT_ARGS)
+	@$(call done,$@)
+
+ACTIONS += plan~format ## create terraform plan
+$(ACTION)/plan: $(call git_deps,\.((tf))$$)
+	@$(TERRAFORM) plan $(TERRAFORM_INPUT_FLAG) -out=tfplan.cache $(PLAN_ARGS) && \
+		$(TERRAFORM) show -json tfplan.cache | $(JQ) -r '$(JQ_PLAN)'
+	@$(call done,$@)
+
+ACTIONS += apply~plan ## apply terraform infrastructure
+$(ACTION)/apply: $(call git_deps,\.((tf))$$)
+	@$(TERRAFORM) apply $(TERRAFORM_INPUT_FLAG) $(TERRAFORM_AUTO_APPROVE_FLAG) \
+			$$([ -f tfplan.cache ] && echo tfplan.cache || true) $(APPLY_ARGS)
+	@$(call done,$@)
+
+ACTIONS += refresh~init ## refresh terraform state to match physical resources
+$(ACTION)/refresh: $(call git_deps,\.((tf))$$)
+	@$(TERRAFORM) refresh $(REFRESH_ARGS)
+	@$(call done,$@)
+
+IGNORE_DESTROY := \
+	argocd_ \
+	data\\. \
+	helm_ \
+	kubectl_ \
+	kubernetes_ \
+	kustomization_ \
+	module\\..*\\.helm_ \
+	module\\..*\\.helm_release \
+	module\\..*\\.kubectl_ \
+	module\\..*\\.kubernetes_ \
+	module\\..*\\.kustomization_ \
+	module\\..*\\.rancher2_ \
+	module\\.csi-drivers\\.module\\..* \
+	module\\.eks-blueprints-addons\\.module\\..* \
+	module\\.karpenter\\.module\\..* \
+	null_resource\\. \
+	rancher2_ \
+	time_sleep\\.
+ACTIONS += destroy~format ## destroy terraform resources
+$(ACTION)/destroy: $(call git_deps,\.((tf))$$)
+ifneq ($(TERRAFORM_AUTO_APPROVE_FLAG),-auto-approve)
+	@printf "Are you sure you want to destroy? [y/N] " && read ans && [ $${ans:-N} = y ]
+endif
+	-@$(KUBECTL) --context $(KUBE_CONTEXT) delete ns karpenter 2>/dev/null &
+	@export AWSWEEPER_FILE=$$(mktemp) && \
+		cat $(ROOTDIR)/awsweeper.yml | sed 's|<CLUSTER_NAME>|$(CLUSTER_NAME)|g' > $$AWSWEEPER_FILE && \
+		$(AWSWEEPER) --force $$AWSWEEPER_FILE && \
+		rm -f $$AWSWEEPER_FILE
+	@RM_RECORDS=$$($(TERRAFORM) state list | \
+		$(GREP) '^\($(shell $(ECHO) $(IGNORE_DESTROY) | sed "s/ /\\\|/g")\)' $(NOFAIL)) && \
+		[ "$$RM_RECORDS" = "" ] && $(TRUE) || $(TERRAFORM) state rm $$RM_RECORDS && \
+		$(TERRAFORM) destroy $(TERRAFORM_INPUT_FLAG) -auto-approve $(ARGS)
+	@$(call done,$@)
+
+MAIN_BUCKET ?= $(shell $(ECHO) $(CLUSTER_NAME) | $(SED) 's|\.|-|g')
+.PHONY: kubeconfig
+kubeconfig: ## authenticate local environment with the kube cluster
+	@$(KOPS) export kubeconfig '$(CLUSTER_NAME)' \
+		--state s3://$(MAIN_BUCKET)/kops \
+		--admin \
+		--kubeconfig $(HOME)/.kube/config
+	@export KUBE_CONTEXT=$(CLUSTER_NAME) && \
+		$(call set_kube_context,$(ROOTDIR)/default.env) && \
+		$(call set_kube_context,$(ROOTDIR)/.env)
+	@$(KUBECTX) $(KUBE_CONTEXT)
+
+-include $(call chain)

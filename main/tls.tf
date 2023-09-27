@@ -1,15 +1,3 @@
-/**
- * File: /main/tls.tf
- * Project: kops
- * File Created: 27-04-2022 12:01:36
- * Author: Clay Risser
- * -----
- * Last Modified: 10-07-2023 15:08:41
- * Modified By: Clay Risser
- * -----
- * BitSpur (c) Copyright 2022
- */
-
 resource "tls_private_key" "ca" {
   algorithm = "RSA"
   rsa_bits  = 4096
@@ -33,26 +21,6 @@ resource "tls_self_signed_cert" "ca" {
 resource "tls_private_key" "admin" {
   algorithm = "RSA"
   rsa_bits  = 4096
-}
-
-resource "local_file" "admin-rsa" {
-  content  = tls_private_key.admin.private_key_openssh
-  filename = "${path.module}/../artifacts/admin_rsa"
-}
-
-resource "local_file" "admin-rsa-pub" {
-  content  = tls_private_key.admin.public_key_openssh
-  filename = "${path.module}/../artifacts/admin_rsa.pub"
-}
-
-resource "local_file" "node-rsa" {
-  content  = tls_private_key.node.private_key_openssh
-  filename = "${path.module}/../artifacts/node_rsa"
-}
-
-resource "local_file" "node-rsa-pub" {
-  content  = tls_private_key.node.public_key_openssh
-  filename = "${path.module}/../artifacts/node_rsa.pub"
 }
 
 resource "tls_private_key" "node" {

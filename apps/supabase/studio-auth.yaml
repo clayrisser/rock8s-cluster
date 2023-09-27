@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: studio-auth
+type: Opaque
+stringData:
+  auth: admin:$1$t3AEhjGa$bevZcQg3VRlp3oA0rsUGm1

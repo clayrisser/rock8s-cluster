@@ -1,15 +1,3 @@
-/**
- * File: /main/cluster.tf
- * Project: kops
- * File Created: 14-04-2022 08:13:23
- * Author: Clay Risser
- * -----
- * Last Modified: 10-07-2023 15:05:08
- * Modified By: Clay Risser
- * -----
- * BitSpur (c) Copyright 2022
- */
-
 locals {
   node_additional_user_data = [
     {
@@ -23,22 +11,13 @@ sudo apt-get install -y \
 EOF
     }
   ]
-  external_policies = [
-    "arn:aws:iam::aws:policy/AmazonElasticFileSystemFullAccess",
-    "arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess",
-  ]
-}
-
-resource "local_file" "iam-kubeconfig" {
-  content  = yamlencode(local.kubeconfig)
-  filename = "${path.module}/../artifacts/iam_kubeconfig"
 }
 
 resource "kops_cluster" "this" {
   name               = local.cluster_name
   admin_ssh_key      = tls_private_key.admin.public_key_openssh
   ssh_key_name       = aws_key_pair.node.key_name
-  kubernetes_version = "v1.25.11"
+  kubernetes_version = "v1.26.8"
   dns_zone           = var.dns_zone
   network_id         = module.vpc.vpc_id
   cloud_provider {
@@ -61,7 +40,7 @@ resource "kops_cluster" "this" {
   iam {
     legacy                                   = false
     allow_container_registry                 = true
-    use_service_account_external_permissions = true
+    use_service_account_external_permissions = false
     dynamic "service_account_external_permissions" {
       for_each = [for namespace in local.elevated_namespaces : { ns = namespace, policies = local.elevated_policies }]
       content {
@@ -72,14 +51,6 @@ resource "kops_cluster" "this" {
         }
       }
     }
-  }
-  external_policies {
-    key   = "master"
-    value = local.external_policies
-  }
-  external_policies {
-    key   = "node"
-    value = local.external_policies
   }
   external_policies {
     key   = "master"
@@ -123,14 +94,6 @@ resource "kops_cluster" "this" {
       name           = "master-0"
       instance_group = "master-0"
     }
-    # member {
-    #   name           = "master-1"
-    #   instance_group = "master-1"
-    # }
-    # member {
-    #   name           = "master-2"
-    #   instance_group = "master-2"
-    # }
   }
   etcd_cluster {
     name = "events"
@@ -138,14 +101,6 @@ resource "kops_cluster" "this" {
       name           = "master-0"
       instance_group = "master-0"
     }
-    # member {
-    #   name           = "master-1"
-    #   instance_group = "master-1"
-    # }
-    # member {
-    #   name           = "master-2"
-    #   instance_group = "master-2"
-    # }
   }
   dynamic "subnet" {
     for_each = data.aws_subnet.private
@@ -171,9 +126,9 @@ resource "kops_cluster" "this" {
     enabled = true
   }
   cluster_autoscaler {
+    enabled                          = var.autoscaler
     aws_use_static_instance_list     = false
     balance_similar_node_groups      = false
-    enabled                          = var.autoscaler
     expander                         = "least-waste"
     new_pod_scale_up_delay           = "0s"
     scale_down_delay_after_add       = "10m0s"
@@ -221,17 +176,7 @@ resource "kops_cluster" "this" {
     cluster_ca_cert = tls_self_signed_cert.ca.cert_pem
     cluster_ca_key  = tls_private_key.ca.private_key_pem
   }
-  external_policies = {
-    node   = local.external_policies
-    master = local.external_policies
-  }
-  depends_on = [
-    local_file.admin-rsa,
-    local_file.admin-rsa-pub,
-    local_file.iam-kubeconfig,
-    local_file.node-rsa,
-    local_file.node-rsa-pub,
-  ]
+  cloud_labels = local.tags
   lifecycle {
     prevent_destroy = false
     ignore_changes = [
@@ -247,7 +192,7 @@ resource "kops_instance_group" "master-0" {
   role                       = "Master"
   min_size                   = 1
   max_size                   = 1
-  machine_type               = "t3.xlarge"
+  machine_type               = "c5.xlarge"
   subnets                    = [data.aws_subnet.public[0].id]
   additional_security_groups = [aws_security_group.api.id]
   root_volume_size           = 32
@@ -256,117 +201,15 @@ resource "kops_instance_group" "master-0" {
   }
 }
 
-# resource "kops_instance_group" "master-1" {
-#   cluster_name               = kops_cluster.this.id
-#   name                       = "master-1"
-#   role                       = "Master"
-#   min_size                   = 1
-#   max_size                   = 1
-#   machine_type               = "t3.medium"
-#   subnets                    = [data.aws_subnet.public[1].id]
-#   additional_security_groups = [aws_security_group.api.id]
-#   lifecycle {
-#     prevent_destroy = false
-#
-#   }
-# }
-
-# resource "kops_instance_group" "master-2" {
-#   cluster_name               = kops_cluster.this.id
-#   name                       = "master-2"
-#   role                       = "Master"
-#   min_size                   = 1
-#   max_size                   = 1
-#   machine_type               = "t3.medium"
-#   subnets                    = [data.aws_subnet.public[2].id]
-#   additional_security_groups = [aws_security_group.api.id]
-#   lifecycle {
-#     prevent_destroy = false
-#
-#   }
-# }
-
-resource "kops_instance_group" "t3-2xlarge-a" {
+resource "kops_instance_group" "core-0" {
   cluster_name               = kops_cluster.this.id
-  name                       = "t3-2xlarge-a"
+  name                       = "core-0"
   autoscale                  = true
   role                       = "Node"
-  min_size                   = 1
+  min_size                   = 3
   max_size                   = 3
-  machine_type               = "t3.2xlarge"
-  subnets                    = [data.aws_subnet.public[0].id]
-  additional_security_groups = [aws_security_group.nodes.id]
-  root_volume_size           = 32
-  dynamic "additional_user_data" {
-    for_each = local.node_additional_user_data
-    content {
-      name    = additional_user_data.value["name"]
-      type    = additional_user_data.value["type"]
-      content = additional_user_data.value["content"]
-    }
-  }
-  lifecycle {
-    prevent_destroy = false
-  }
-}
-
-resource "kops_instance_group" "t3-medium-a" {
-  cluster_name               = kops_cluster.this.id
-  name                       = "t3-medium-a"
-  autoscale                  = true
-  role                       = "Node"
-  min_size                   = 2
-  max_size                   = 4
   machine_type               = "t3.medium"
   subnets                    = [data.aws_subnet.public[0].id]
-  additional_security_groups = [aws_security_group.nodes.id]
-  root_volume_size           = 32
-  dynamic "additional_user_data" {
-    for_each = local.node_additional_user_data
-    content {
-      name    = additional_user_data.value["name"]
-      type    = additional_user_data.value["type"]
-      content = additional_user_data.value["content"]
-    }
-  }
-  lifecycle {
-    prevent_destroy = false
-  }
-}
-
-resource "kops_instance_group" "t3-medium-b" {
-  cluster_name               = kops_cluster.this.id
-  name                       = "t3-medium-b"
-  autoscale                  = true
-  role                       = "Node"
-  min_size                   = 2
-  max_size                   = 4
-  machine_type               = "t3.medium"
-  subnets                    = [data.aws_subnet.public[1].id]
-  additional_security_groups = [aws_security_group.nodes.id]
-  root_volume_size           = 32
-  dynamic "additional_user_data" {
-    for_each = local.node_additional_user_data
-    content {
-      name    = additional_user_data.value["name"]
-      type    = additional_user_data.value["type"]
-      content = additional_user_data.value["content"]
-    }
-  }
-  lifecycle {
-    prevent_destroy = false
-  }
-}
-
-resource "kops_instance_group" "t3-medium-c" {
-  cluster_name               = kops_cluster.this.id
-  name                       = "t3-medium-c"
-  autoscale                  = true
-  role                       = "Node"
-  min_size                   = 2
-  max_size                   = 4
-  machine_type               = "t3.medium"
-  subnets                    = [data.aws_subnet.public[2].id]
   additional_security_groups = [aws_security_group.nodes.id]
   root_volume_size           = 32
   dynamic "additional_user_data" {
@@ -387,15 +230,10 @@ resource "kops_cluster_updater" "updater" {
   keepers = {
     cluster  = kops_cluster.this.revision
     master-0 = kops_instance_group.master-0.revision
-    # master-1 = kops_instance_group.master-1.revision
-    # master-2 = kops_instance_group.master-2.revision
-    t3-2xlarge-a = kops_instance_group.t3-2xlarge-a.revision
-    t3-medium-a  = kops_instance_group.t3-medium-a.revision
-    t3-medium-b  = kops_instance_group.t3-medium-b.revision
-    t3-medium-c  = kops_instance_group.t3-medium-c.revision
+    core-0   = kops_instance_group.core-0.revision
   }
   rolling_update {
-    skip                = false
+    skip                = true
     fail_on_drain_error = true
     fail_on_validate    = false
     validate_count      = 1
@@ -408,24 +246,7 @@ resource "kops_cluster_updater" "updater" {
   }
 }
 
-resource "null_resource" "kubeconfig" {
-  provisioner "local-exec" {
-    command     = <<EOF
-mkdir -p ../artifacts
-kops export kubeconfig '${local.cluster_name}' \
-  --state '${local.kops_state_store}' \
-  --admin \
-  --kubeconfig ../artifacts/kubeconfig
-EOF
-    interpreter = ["sh", "-c"]
-    environment = {}
-  }
-  depends_on = [
-    kops_cluster_updater.updater
-  ]
-}
-
-resource "null_resource" "wait-for-nodes" {
+resource "null_resource" "wait-for-cluster" {
   provisioner "local-exec" {
     command     = <<EOF
 while [ "$(kubectl --kubeconfig <(echo $KUBECONFIG) get nodes | \

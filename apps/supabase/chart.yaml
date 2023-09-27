@@ -1,0 +1,53 @@
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: HelmRepository
+metadata:
+  name: supabase
+spec:
+  interval: 5m
+  url: https://charts.bitnami.com/bitnami
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: supabase
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: supabase
+      version: 0.3.14
+      sourceRef:
+        apiVersion: source.toolkit.fluxcd.io/v1beta1
+        kind: HelmRepository
+        name: supabase
+  values:
+    publicURL: https://staging.api.supabase.rock8s.com
+    jwt:
+      autoGenerate:
+        annotations: null
+    auth:
+      image:
+        repository: supabase/gotrue
+        tag: v2.91.0
+    kong:
+      service:
+        type: ClusterIP
+      ingress:
+        enabled: true
+        hostname: staging.api.supabase.rock8s.com
+        annotations:
+          kubernetes.io/ingress.class: nginx
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+        tls: true
+    studio:
+      publicURL: https://staging.supabase.rock8s.com
+      ingress:
+        enabled: true
+        hostname: staging.supabase.rock8s.com
+        annotations:
+          kubernetes.io/ingress.class: nginx
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+          nginx.ingress.kubernetes.io/auth-type: basic
+          nginx.ingress.kubernetes.io/auth-secret: studio-auth
+          nginx.ingress.kubernetes.io/auth-realm: "Authentication Required"
+        tls: true

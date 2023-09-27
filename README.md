@@ -1,6 +1,6 @@
 # rock8s-cluster
 
-> terraform deployment for rock8s clusters
+> terraform deployment for the rock8s staging cluster
 
 ## Usage
 
@@ -32,6 +32,8 @@ If you are using Windows, please use the
 [Windows Subsystem for Linux (WSL)](https://docs.microsoft.com/en-us/windows/wsl/install)
 with [Debian](https://www.microsoft.com/en-in/p/debian/9msvkqc78pk6).
 
+#### [GNU Make](https://www.gnu.org/software/make)
+
 #### [Terraform](https://www.terraform.io/downloads)
 
 #### [AWS CLI](https://aws.amazon.com/cli)
@@ -47,13 +49,4 @@ Make sure you configure the aws cli after it is installed.
 
 ```sh
 aws configure
-```
-
-#### [GNU Make](https://www.gnu.org/software/make)
-
-GNU Make 4 is recommended over other versions of make. If you are
-on OSX it can be installed using the following command.
-
-```sh
-brew install remake
 ```

@@ -1,15 +1,3 @@
-/**
- * File: /main/variables.tf
- * Project: kops
- * File Created: 14-04-2022 08:12:06
- * Author: Clay Risser
- * -----
- * Last Modified: 10-07-2023 15:06:33
- * Modified By: Clay Risser
- * -----
- * BitSpur (c) Copyright 2022
- */
-
 variable "public_api_ports" {
   default = "22,443"
 }
@@ -26,38 +14,12 @@ variable "cluster_prefix" {
   default = "kops"
 }
 
-variable "cloudflare_email" {
-  type    = string
-  default = null
-}
-
-variable "cloudflare_api_key" {
-  type    = string
-  default = null
-}
-
 variable "iteration" {
   default = 0
 }
 
-variable "gitlab_hostname" {
-  default = "gitlab.com"
-}
-
 variable "rancher_admin_password" {
   default = "rancherP@ssw0rd"
-}
-
-variable "flux_git_repository" {
-  default = ""
-}
-
-variable "flux_git_branch" {
-  default = "main"
-}
-
-variable "flux_known_hosts" {
-  default = ""
 }
 
 variable "main_bucket" {
@@ -92,24 +54,17 @@ variable "dns_zone" {
   type = string
 }
 
-variable "gitlab_registry_token" {
-  type = string
-}
-
-variable "gitlab_registry_username" {
-  type = string
-}
-
-variable "gitlab_project_id" {
-  type = string
-}
-
 variable "aws_access_key_id" {
   type = string
 }
 
 variable "aws_secret_access_key" {
   type = string
+}
+
+variable "letsencrypt_email" {
+  type    = string
+  default = "email@example.com"
 }
 
 variable "rancher" {
@@ -137,12 +92,7 @@ variable "flux" {
   default = true
 }
 
-variable "goldilocks" {
-  type    = bool
-  default = true
-}
-
-variable "integration_operator" {
+variable "argo" {
   type    = bool
   default = true
 }
@@ -172,11 +122,6 @@ variable "olm" {
   default = true
 }
 
-variable "patch_operator" {
-  type    = bool
-  default = true
-}
-
 variable "rancher_istio" {
   type    = bool
   default = true
@@ -188,11 +133,6 @@ variable "rancher_monitoring" {
 }
 
 variable "tempo" {
-  type    = bool
-  default = true
-}
-
-variable "velero" {
   type    = bool
   default = true
 }
@@ -223,5 +163,9 @@ variable "retention_hours" {
 }
 
 variable "ack_services" {
-  default = "s3"
+  default = "s3,iam,rds"
+}
+
+variable "ingress_ports" {
+  default = "80,443"
 }

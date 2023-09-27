@@ -1,15 +1,3 @@
-/**
- * File: /main/aws.tf
- * Project: kops
- * File Created: 29-04-2022 14:41:49
- * Author: Clay Risser
- * -----
- * Last Modified: 10-07-2023 15:04:33
- * Modified By: Clay Risser
- * -----
- * BitSpur (c) Copyright 2022
- */
-
 resource "aws_iam_role" "admin" {
   name = local.cluster_name
   assume_role_policy = jsonencode({
@@ -19,7 +7,7 @@ resource "aws_iam_role" "admin" {
         Action = "sts:AssumeRole"
         Effect = "Allow"
         Principal = {
-          AWS = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:root"
+          AWS = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:user/${local.user_name}"
         },
         Condition = {}
       },

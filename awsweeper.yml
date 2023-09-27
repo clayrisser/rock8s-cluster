@@ -1,0 +1,27 @@
+aws_iam_policy:
+  - tags:
+      Cluster: <CLUSTER_NAME>
+aws_iam_role:
+  - tags:
+      Cluster: <CLUSTER_NAME>
+aws_instance:
+  - tags:
+      Cluster: <CLUSTER_NAME>
+aws_s3_bucket:
+  - tags:
+      Cluster: <CLUSTER_NAME>
+aws_elb:
+  - tags:
+      Cluster: <CLUSTER_NAME>
+aws_lb:
+  - tags:
+      Cluster: <CLUSTER_NAME>
+aws_lb_target_group:
+  - tags:
+      Cluster: <CLUSTER_NAME>
+aws_autoscaling_group:
+  - tags:
+      Cluster: <CLUSTER_NAME>
+aws_launch_configuration:
+  - tags:
+      Cluster: <CLUSTER_NAME>

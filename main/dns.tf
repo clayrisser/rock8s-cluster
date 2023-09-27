@@ -1,15 +1,3 @@
-/**
- * File: /main/dns.tf
- * Project: kops
- * File Created: 30-04-2022 16:46:19
- * Author: Clay Risser
- * -----
- * Last Modified: 10-07-2023 15:05:17
- * Modified By: Clay Risser
- * -----
- * BitSpur (c) Copyright 2022
- */
-
 resource "aws_route53_record" "cluster" {
   count   = var.ingress_nginx ? 1 : 0
   zone_id = data.aws_route53_zone.this.zone_id

@@ -10,15 +10,9 @@ override.tf.json
 
 # app
 /.env
-/artifacts
+artifacts/
 /id_*.pub
 /mwc-rancher.cattle.io.yaml
 /vwc-rancher.cattle.io.yaml
 tfplan.cache
 tfplan.json
-
-# mkpm
-.mkpm/*
-**/.mkpm/*
-!/.mkpm/.cache.tar.gz
-!/.mkpm/.bootstrap.mk

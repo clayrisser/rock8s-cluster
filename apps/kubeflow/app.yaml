@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: deploykf
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: deploykf-app-of-apps
+    app.kubernetes.io/part-of: deploykf
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/deployKF/deployKF.git
+    targetRevision: v0.1.1
+    path: .
+    plugin:
+      name: deploykf
+      parameters:
+        - name: source_version
+          string: 0.1.1
+        - name: values_files
+          array:
+            - ./sample-values.yaml
+        - name: "values"
+          string: |
+            deploykf_core:
+              deploykf_istio_gateway:
+                gateway:
+                  hostname: deploykf.example.com
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
