@@ -20,13 +20,12 @@
 include $(MKPM)/mkpm
 include $(MKPM)/gnu
 include $(MKPM)/dotenv
-include $(MKPM)/envcache
 
 .DEFAULT_GOAL := plan
 
 export TF_STATE_NAME ?= $(CLUSTER_PREFIX)-$(ITERATION)
 
-include $(ROOTDIR)/shared.mk
+include $(PROJECT_ROOT)/shared.mk
 
 PROXY_TARGETS := \
 	apply \
@@ -39,7 +38,7 @@ PROXY_TARGETS := \
 	refresh \
 	terraform
 $(PROXY_TARGETS):
-	@$(MAKE) -s main/$(@F)
+	@$(MAKE) -f Mkpmfile -s main/$(@F)
 
 GROUP_NAME ?= k8s
 USER_NAME ?= $(CLUSTER_PREFIX).$(DNS_ZONE)

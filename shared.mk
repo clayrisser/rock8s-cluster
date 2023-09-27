@@ -1,27 +1,32 @@
+# File: /shared.mk
+# Project: rock8s-cluster
+# File Created: 27-09-2023 05:26:34
+# Author: Clay Risser
+# -----
+# BitSpur (c) Copyright 2021 - 2023
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 AWS ?= aws
 AWSWEEPER ?= awsweeper
-CAT ?= cat
-CD ?= cd
 CLOC ?= cloc
 CURL ?= curl
-CUT ?= cut
 DOCKER_COMPOSE ?= docker-compose
-ECHO ?= echo
-GIT ?= git
-GREP ?= grep
 JQ ?= jq
 KOPS ?= kops
-SED ?= sed
-SORT ?= sort
 SSH ?= ssh
 SSH_KEYGEN ?= ssh-keygen
 TERRAFORM ?= terraform
-TRUE ?= true
-UNIQ ?= uniq
-WHICH ?= command -v
-NULL := /dev/null
-NOOUT := >$(NULL) 2>&1
-NOFAIL := 2>$(NULL) || true
 DOWNLOAD := $(shell $(WHICH) curl $(NOOUT) && echo curl -L || echo wget -O-)
 
 define git_deps
@@ -65,4 +70,4 @@ true || \
 	echo KUBE_CONTEXT=$$KUBE_CONTEXT >> $1)
 endef
 
-MODULES := $(ROOTDIR)/modules
+MODULES := $(PROJECT_ROOT)/modules

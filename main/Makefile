@@ -30,8 +30,8 @@ include $(PROJECT_ROOT)/terraform.mk
 export TF_STATE_NAME ?= $(CLUSTER_PREFIX)-$(ITERATION)
 export CLUSTER_NAME ?= $(CLUSTER_PREFIX)-$(ITERATION).$(DNS_ZONE)
 
-include $(ROOTDIR)/terraform.mk
-include $(ROOTDIR)/shared.mk
+include $(PROJECT_ROOT)/terraform.mk
+include $(PROJECT_ROOT)/shared.mk
 
 export CLUSTER_ENDPOINT := \
 	$(shell $(AWS) eks describe-cluster --region $(AWS_REGION) --name $(CLUSTER_NAME) --query cluster.endpoint --output text 2>/dev/null)
@@ -50,15 +50,12 @@ terraform:
 ACTIONS += init ## initialize terraform
 INIT_TARGETS := $(ARTIFACTS)
 $(ACTION)/init: versions.tf backend.tf
-	@$(TERRAFORM) init $(TERRAFORM_INPUT_FLAG) -reconfigure $(INIT_ARGS) \
-		-backend-config="region=${AWS_REGION}" \
-		-backend-config="bucket=${BACKEND_S3_BUCKET}" \
-		-backend-config="key=${CLUSTER_NAME}/terraform.tfstate" \
-		-backend-config="dynamodb_table=${BACKEND_DYNAMODB_TABLE}"
+	@$(TERRAFORM) init $(TERRAFORM_INPUT_FLAG) -reconfigure $(INIT_ARGS)
 	@$(call done,$@)
 
 ACTIONS += format~init ## format terraform files
 $(ACTION)/format: $(call git_deps,\.((tf))$$)
+	@echo $(TERRAFORM) fmt $(FORMAT_ARGS)
 	@$(TERRAFORM) fmt $(FORMAT_ARGS)
 	@$(call done,$@)
 
@@ -110,7 +107,7 @@ ifneq ($(TERRAFORM_AUTO_APPROVE_FLAG),-auto-approve)
 endif
 	-@$(KUBECTL) --context $(KUBE_CONTEXT) delete ns karpenter 2>/dev/null &
 	@export AWSWEEPER_FILE=$$(mktemp) && \
-		cat $(ROOTDIR)/awsweeper.yml | sed 's|<CLUSTER_NAME>|$(CLUSTER_NAME)|g' > $$AWSWEEPER_FILE && \
+		cat $(PROJECT_ROOT)/awsweeper.yml | sed 's|<CLUSTER_NAME>|$(CLUSTER_NAME)|g' > $$AWSWEEPER_FILE && \
 		$(AWSWEEPER) --force $$AWSWEEPER_FILE && \
 		rm -f $$AWSWEEPER_FILE
 	@RM_RECORDS=$$($(TERRAFORM) state list | \
@@ -127,8 +124,8 @@ kubeconfig: ## authenticate local environment with the kube cluster
 		--admin \
 		--kubeconfig $(HOME)/.kube/config
 	@export KUBE_CONTEXT=$(CLUSTER_NAME) && \
-		$(call set_kube_context,$(ROOTDIR)/default.env) && \
-		$(call set_kube_context,$(ROOTDIR)/.env)
+		$(call set_kube_context,$(PROJECT_ROOT)/default.env) && \
+		$(call set_kube_context,$(PROJECT_ROOT)/.env)
 	@$(KUBECTX) $(KUBE_CONTEXT)
 
 -include $(call chain)

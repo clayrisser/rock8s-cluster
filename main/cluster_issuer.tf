@@ -1,7 +1,7 @@
 /**
- * File: /variables.tf
- * Project: cluster_issuer
- * File Created: 27-09-2023 05:26:35
+ * File: /cluster_issuer.tf
+ * Project: main
+ * File Created: 27-09-2023 07:02:03
  * Author: Clay Risser
  * -----
  * BitSpur (c) Copyright 2021 - 2023
@@ -19,23 +19,18 @@
  * limitations under the License.
  */
 
-variable "enabled" {
-  default = true
-}
-
-variable "namespace" {
-  default = "cert-manager"
-}
-
-variable "issuers" {
-  default = {
-    cloudflare  = null
-    letsencrypt = true
-    route53     = null
-    selfsigned  = true
+module "cluster-issuer" {
+  source            = "../modules/cluster_issuer"
+  enabled           = var.cluster_issuer
+  letsencrypt_email = var.cloudflare_email
+  issuers = {
+    letsencrypt_prod = true
+    # route53_prod = {
+    #   region = var.region
+    #   zone   = var.dns_zone
+    # }
   }
-}
-
-variable "letsencrypt_email" {
-  type = string
+  depends_on = [
+    module.ingress-nginx
+  ]
 }

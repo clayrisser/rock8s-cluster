@@ -1,7 +1,7 @@
 /**
- * File: /variables.tf
- * Project: cluster_issuer
- * File Created: 27-09-2023 05:26:35
+ * File: /external_dns.tf
+ * Project: main
+ * File Created: 27-09-2023 05:26:34
  * Author: Clay Risser
  * -----
  * BitSpur (c) Copyright 2021 - 2023
@@ -19,23 +19,12 @@
  * limitations under the License.
  */
 
-variable "enabled" {
-  default = true
-}
-
-variable "namespace" {
-  default = "cert-manager"
-}
-
-variable "issuers" {
-  default = {
-    cloudflare  = null
-    letsencrypt = true
-    route53     = null
-    selfsigned  = true
-  }
-}
-
-variable "letsencrypt_email" {
-  type = string
+module "external-dns" {
+  source             = "../modules/external_dns"
+  enabled            = var.external_dns
+  cloudflare_api_key = var.cloudflare_api_key
+  cloudflare_email   = var.cloudflare_email
+  depends_on = [
+    null_resource.wait-for-cluster
+  ]
 }

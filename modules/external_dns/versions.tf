@@ -1,6 +1,6 @@
 /**
- * File: /variables.tf
- * Project: cluster_issuer
+ * File: /versions.tf
+ * Project: ingress_nginx
  * File Created: 27-09-2023 05:26:35
  * Author: Clay Risser
  * -----
@@ -19,23 +19,12 @@
  * limitations under the License.
  */
 
-variable "enabled" {
-  default = true
-}
-
-variable "namespace" {
-  default = "cert-manager"
-}
-
-variable "issuers" {
-  default = {
-    cloudflare  = null
-    letsencrypt = true
-    route53     = null
-    selfsigned  = true
+terraform {
+  required_version = ">= 1.0"
+  required_providers {
+    helm = {
+      source  = "hashicorp/helm"
+      version = ">= 2.10.1"
+    }
   }
-}
-
-variable "letsencrypt_email" {
-  type = string
 }

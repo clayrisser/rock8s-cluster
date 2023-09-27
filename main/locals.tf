@@ -74,7 +74,6 @@ locals {
   tags = {
     Cluster = local.cluster_name
   }
-  external_dns       = var.external_dns && var.flux
   kanister           = var.kanister && var.flux
   longhorn           = var.longhorn && local.rancher
   rancher            = var.rancher && var.ingress_nginx

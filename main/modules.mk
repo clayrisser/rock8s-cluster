@@ -1,6 +1,6 @@
 # File: /modules.mk
-# Project: rock8s-cluster2
-# File Created: 27-09-2023 05:26:34
+# Project: main
+# File Created: 27-09-2023 05:26:35
 # Author: Clay Risser
 # -----
 # BitSpur (c) Copyright 2021 - 2023
@@ -16,6 +16,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-# include $(MODULES)/argocd/module.mk
-# include $(MODULES)/olm/module.mk

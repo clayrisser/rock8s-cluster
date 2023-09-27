@@ -83,11 +83,6 @@ variable "aws_secret_access_key" {
   type = string
 }
 
-variable "letsencrypt_email" {
-  type    = string
-  default = "email@example.com"
-}
-
 variable "rancher" {
   type    = bool
   default = true
@@ -189,4 +184,12 @@ variable "ack_services" {
 
 variable "ingress_ports" {
   default = "80,443"
+}
+
+variable "cloudflare_api_key" {
+  type = string
+}
+
+variable "cloudflare_email" {
+  type = string
 }

@@ -1,7 +1,7 @@
 /**
- * File: /variables.tf
- * Project: cluster_issuer
- * File Created: 27-09-2023 05:26:35
+ * File: /main.tf
+ * Project: external_dns
+ * File Created: 27-09-2023 06:47:50
  * Author: Clay Risser
  * -----
  * BitSpur (c) Copyright 2021 - 2023
@@ -19,23 +19,24 @@
  * limitations under the License.
  */
 
-variable "enabled" {
-  default = true
-}
-
-variable "namespace" {
-  default = "cert-manager"
-}
-
-variable "issuers" {
-  default = {
-    cloudflare  = null
-    letsencrypt = true
-    route53     = null
-    selfsigned  = true
-  }
-}
-
-variable "letsencrypt_email" {
-  type = string
+resource "helm_release" "this" {
+  count            = var.enabled ? 1 : 0
+  name             = "external-dns"
+  version          = var.chart_version
+  repository       = "https://kubernetes-sigs.github.io/external-dns"
+  chart            = "external-dns"
+  namespace        = var.namespace
+  create_namespace = true
+  values = [<<EOF
+provider: cloudflare
+cloudflare:
+  apiKey: ${var.cloudflare_api_key}
+  email: ${var.cloudflare_email}
+  proxied: false
+  sources:
+    - ingress
+EOF
+    ,
+    var.values
+  ]
 }

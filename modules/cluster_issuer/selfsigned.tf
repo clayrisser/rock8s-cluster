@@ -1,7 +1,7 @@
 /**
- * File: /variables.tf
+ * File: /selfsigned.tf
  * Project: cluster_issuer
- * File Created: 27-09-2023 05:26:35
+ * File Created: 27-09-2023 07:10:54
  * Author: Clay Risser
  * -----
  * BitSpur (c) Copyright 2021 - 2023
@@ -19,23 +19,14 @@
  * limitations under the License.
  */
 
-variable "enabled" {
-  default = true
-}
-
-variable "namespace" {
-  default = "cert-manager"
-}
-
-variable "issuers" {
-  default = {
-    cloudflare  = null
-    letsencrypt = true
-    route53     = null
-    selfsigned  = true
-  }
-}
-
-variable "letsencrypt_email" {
-  type = string
+resource "kubectl_manifest" "selfsigned" {
+  count     = (var.issuers.selfsigned != null && var.enabled) ? 1 : 0
+  yaml_body = <<EOF
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: selfsigned
+  ca:
+    secretName: selfsigned-ca
+EOF
 }
