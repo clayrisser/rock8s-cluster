@@ -20,12 +20,12 @@
  */
 
 data "aws_route53_zone" "this" {
-  count = (var.issuers.route53 != null && var.enabled) ? 1 : 0
-  name  = (var.issuers.route53 != null && var.enabled) ? var.issuers.route53.zone : null
+  count = (lookup(var.issuers, "route53", null) != null && var.enabled) ? 1 : 0
+  name  = (lookup(var.issuers, "route53", null) != null && var.enabled) ? var.issuers.route53.zone : null
 }
 
 resource "kubectl_manifest" "route53-prod" {
-  count = (var.issuers.route53 != null && var.enabled) ? 1 : 0
+  count = (lookup(var.issuers, "route53", null) != null && var.enabled) ? 1 : 0
   yaml_body = <<EOF
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
@@ -40,19 +40,19 @@ spec:
     solvers:
       - selector:
           dnsZones:
-          - '${(var.issuers.route53 != null && var.enabled) ?
+          - '${(lookup(var.issuers, "route53", null) != null && var.enabled) ?
   data.aws_route53_zone.this[0].name : ""}'
         dns01:
           route53:
-            hostedZoneID: '${(var.issuers.route53 != null && var.enabled) ?
+            hostedZoneID: '${(lookup(var.issuers, "route53", null) != null && var.enabled) ?
   data.aws_route53_zone.this[0].zone_id : ""}'
-            region: ${(var.issuers.route53 != null && var.enabled) ?
-(var.issuers.route53.region != null ? var.issuers.route53.region : "us-east-1") : ""}
+            region: ${(lookup(var.issuers, "route53", null) != null && var.enabled) ?
+lookup(var.issuers.route53, "region", "us-east-1") : ""}
 EOF
 }
 
 resource "kubectl_manifest" "route53-staging" {
-  count = (var.issuers.route53 != null && var.enabled) ? 1 : 0
+  count = (lookup(var.issuers, "route53", null) != null && var.enabled) ? 1 : 0
   yaml_body = <<EOF
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
@@ -67,13 +67,13 @@ spec:
     solvers:
       - selector:
           dnsZones:
-          - '${(var.issuers.route53 != null && var.enabled) ?
+          - '${(lookup(var.issuers, "route53", null) != null && var.enabled) ?
   data.aws_route53_zone.this[0].name : ""}'
         dns01:
           route53:
-            hostedZoneID: '${(var.issuers.route53 != null && var.enabled) ?
+            hostedZoneID: '${(lookup(var.issuers, "route53", null) != null && var.enabled) ?
   data.aws_route53_zone.this[0].zone_id : ""}'
-            region: ${(var.issuers.route53 != null && var.enabled) ?
-(var.issuers.route53.region != null ? var.issuers.route53.region : "us-east-1") : ""}
+            region: ${(lookup(var.issuers, "route53", null) != null && var.enabled) ?
+lookup(var.issuers.route53, "region", "us-east-1") : ""}
 EOF
 }

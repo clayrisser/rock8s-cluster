@@ -20,6 +20,7 @@
  */
 
 resource "helm_release" "karpenter" {
+  count            = var.karpenter ? 1 : 0
   name             = "karpenter"
   version          = "v0.30.0"
   repository       = "oci://public.ecr.aws/karpenter"
@@ -35,6 +36,7 @@ EOF
 }
 
 resource "time_sleep" "karpenter" {
+  count           = var.karpenter ? 1 : 0
   create_duration = "30s"
   depends_on = [
     helm_release.karpenter

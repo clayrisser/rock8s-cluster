@@ -20,7 +20,7 @@
  */
 
 resource "kubectl_manifest" "letsencrypt-prod" {
-  count     = (var.issuers.letsencrypt != null && var.enabled) ? 1 : 0
+  count     = (lookup(var.issuers, "letsencrypt", null) != null && var.enabled) ? 1 : 0
   yaml_body = <<EOF
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
@@ -45,7 +45,7 @@ EOF
 }
 
 resource "kubectl_manifest" "letsencrypt-staging" {
-  count     = (var.issuers.letsencrypt != null && var.enabled) ? 1 : 0
+  count     = (lookup(var.issuers, "letsencrypt", null) != null && var.enabled) ? 1 : 0
   yaml_body = <<EOF
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer

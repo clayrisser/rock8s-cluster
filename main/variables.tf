@@ -173,6 +173,11 @@ variable "reloader" {
   default = true
 }
 
+variable "karpenter" {
+  type    = bool
+  default = true
+}
+
 variable "retention_hours" {
   type    = number
   default = 168

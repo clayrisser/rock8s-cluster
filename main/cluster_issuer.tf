@@ -25,8 +25,10 @@ module "cluster-issuer" {
   letsencrypt_email = var.cloudflare_email
   issuers = {
     letsencrypt = true
-    cloudflare  = {}
     selfsigned  = true
+    cloudflare = {
+      api_key = var.cloudflare_api_key
+    }
   }
   depends_on = [
     module.ingress-nginx

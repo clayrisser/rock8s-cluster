@@ -20,7 +20,7 @@
  */
 
 resource "kubectl_manifest" "selfsigned" {
-  count     = (var.issuers.selfsigned != null && var.enabled) ? 1 : 0
+  count     = (lookup(var.issuers, "selfsigned", null) != null && var.enabled) ? 1 : 0
   yaml_body = <<EOF
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
