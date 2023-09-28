@@ -24,11 +24,9 @@ module "cluster-issuer" {
   enabled           = var.cluster_issuer
   letsencrypt_email = var.cloudflare_email
   issuers = {
-    letsencrypt_prod = true
-    # route53_prod = {
-    #   region = var.region
-    #   zone   = var.dns_zone
-    # }
+    letsencrypt = true
+    cloudflare  = {}
+    selfsigned  = true
   }
   depends_on = [
     module.ingress-nginx
