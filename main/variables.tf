@@ -24,7 +24,7 @@ variable "public_api_ports" {
 }
 
 variable "public_nodes_ports" {
-  default = "22,80,443"
+  default = "22,80,443,30000-32768"
 }
 
 variable "region" {

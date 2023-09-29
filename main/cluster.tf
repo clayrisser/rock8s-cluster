@@ -66,7 +66,7 @@ resource "kops_cluster" "this" {
   name               = local.cluster_name
   admin_ssh_key      = tls_private_key.admin.public_key_openssh
   ssh_key_name       = aws_key_pair.node.key_name
-  kubernetes_version = "v1.26.8"
+  kubernetes_version = "v1.26.2"
   dns_zone           = var.dns_zone
   network_id         = module.vpc.vpc_id
   cloud_provider {
@@ -282,9 +282,9 @@ resource "kops_cluster_updater" "updater" {
     core-0   = kops_instance_group.core-0.revision
   }
   rolling_update {
-    skip                = true
+    skip                = false
     fail_on_drain_error = true
-    fail_on_validate    = false
+    fail_on_validate    = true
     validate_count      = 1
   }
   validate {

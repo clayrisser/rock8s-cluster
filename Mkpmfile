@@ -32,6 +32,7 @@ PROXY_TARGETS := \
 	destroy \
 	format \
 	init \
+	kops \
 	kubeconfig \
 	lint \
 	plan \
@@ -40,22 +41,10 @@ PROXY_TARGETS := \
 $(PROXY_TARGETS):
 	@$(MAKE) -f Mkpmfile -s main/$(@F)
 
-GROUP_NAME ?= k8s
+GROUP_NAME ?= rock8s
 USER_NAME ?= $(CLUSTER_PREFIX).$(DNS_ZONE)
 .PHONY: prepare-aws
 prepare-aws:
-	@$(AWS) s3api create-bucket \
-		--bucket $(BACKEND_S3_BUCKET) \
-		--region $(AWS_REGION)
-	@$(AWS) s3api put-bucket-versioning \
-		--bucket $(BACKEND_S3_BUCKET) \
-		--versioning-configuration Status=Enabled
-	@$(AWS) dynamodb create-table \
-		--table-name $(BACKEND_DYNAMODB_TABLE) \
-		--attribute-definitions AttributeName=LockID,AttributeType=S \
-		--key-schema AttributeName=LockID,KeyType=HASH \
-		--provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 \
-		--region $(AWS_REGION)
 	@$(AWS) iam create-group --group-name $(GROUP_NAME)
 	@$(AWS) iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AWSKeyManagementServicePowerUser --user-name $(GROUP_NAME)
 	@$(AWS) iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess --group-name $(GROUP_NAME)

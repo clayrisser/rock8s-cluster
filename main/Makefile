@@ -55,7 +55,6 @@ $(ACTION)/init: versions.tf backend.tf
 
 ACTIONS += format~init ## format terraform files
 $(ACTION)/format: $(call git_deps,\.((tf))$$)
-	@echo $(TERRAFORM) fmt $(FORMAT_ARGS)
 	@$(TERRAFORM) fmt $(FORMAT_ARGS)
 	@$(call done,$@)
 
@@ -127,5 +126,11 @@ kubeconfig: ## authenticate local environment with the kube cluster
 		$(call set_kube_context,$(PROJECT_ROOT)/default.env) && \
 		$(call set_kube_context,$(PROJECT_ROOT)/.env)
 	@$(KUBECTX) $(KUBE_CONTEXT)
+
+.PHONY: kops
+kops:
+	@$(KOPS) --state s3://$(MAIN_BUCKET)/kops \
+		--name '$(CLUSTER_NAME)' \
+		$(KOPS_ARGS)
 
 -include $(call chain)

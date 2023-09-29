@@ -48,3 +48,23 @@ resource "tls_private_key" "node" {
   algorithm = "RSA"
   rsa_bits  = 4096
 }
+
+resource "local_file" "admin-rsa" {
+  content  = tls_private_key.admin.private_key_openssh
+  filename = "${path.module}/artifacts/admin_rsa"
+}
+
+resource "local_file" "admin-rsa-pub" {
+  content  = tls_private_key.admin.public_key_openssh
+  filename = "${path.module}/artifacts/admin_rsa.pub"
+}
+
+resource "local_file" "node-rsa" {
+  content  = tls_private_key.node.private_key_openssh
+  filename = "${path.module}/artifacts/node_rsa"
+}
+
+resource "local_file" "node-rsa-pub" {
+  content  = tls_private_key.node.public_key_openssh
+  filename = "${path.module}/artifacts/node_rsa.pub"
+}
