@@ -23,7 +23,7 @@ resource "helm_release" "this" {
   count            = var.enabled ? 1 : 0
   name             = "external-dns"
   version          = var.chart_version
-  repository       = "https://kubernetes-sigs.github.io/external-dns"
+  repository       = "https://charts.bitnami.com/bitnami"
   chart            = "external-dns"
   namespace        = var.namespace
   create_namespace = true

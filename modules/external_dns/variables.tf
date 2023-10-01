@@ -28,7 +28,7 @@ variable "namespace" {
 }
 
 variable "chart_version" {
-  default = "1.13.1"
+  default = "6.26.1"
 }
 
 variable "values" {

@@ -105,14 +105,14 @@ ifneq ($(TERRAFORM_AUTO_APPROVE_FLAG),-auto-approve)
 	@printf "Are you sure you want to destroy? [y/N] " && read ans && [ $${ans:-N} = y ]
 endif
 	-@$(KUBECTL) --context $(KUBE_CONTEXT) delete ns karpenter 2>/dev/null &
-	@export AWSWEEPER_FILE=$$(mktemp) && \
-		cat $(PROJECT_ROOT)/awsweeper.yml | sed 's|<CLUSTER_NAME>|$(CLUSTER_NAME)|g' > $$AWSWEEPER_FILE && \
-		$(AWSWEEPER) --force $$AWSWEEPER_FILE && \
-		rm -f $$AWSWEEPER_FILE
 	@RM_RECORDS=$$($(TERRAFORM) state list | \
 		$(GREP) '^\($(shell $(ECHO) $(IGNORE_DESTROY) | sed "s/ /\\\|/g")\)' $(NOFAIL)) && \
 		[ "$$RM_RECORDS" = "" ] && $(TRUE) || $(TERRAFORM) state rm $$RM_RECORDS && \
 		$(TERRAFORM) destroy $(TERRAFORM_INPUT_FLAG) -auto-approve $(ARGS)
+	@export AWSWEEPER_FILE=$$(mktemp) && \
+		cat $(PROJECT_ROOT)/awsweeper.yml | sed 's|<CLUSTER_NAME>|$(CLUSTER_NAME)|g' > $$AWSWEEPER_FILE && \
+		$(AWSWEEPER) --force $$AWSWEEPER_FILE && \
+		rm -f $$AWSWEEPER_FILE
 	@$(call done,$@)
 
 MAIN_BUCKET ?= $(shell $(ECHO) $(CLUSTER_NAME) | $(SED) 's|\.|-|g')

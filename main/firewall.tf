@@ -33,7 +33,7 @@ resource "aws_security_group" "api" {
     }
   }
   tags = merge(local.tags, {
-    Name = "api.${local.cluster_name}"
+    Name = "api-additional.${local.cluster_name}"
   })
   lifecycle {
     prevent_destroy = false
@@ -54,7 +54,7 @@ resource "aws_security_group" "nodes" {
     }
   }
   tags = merge(local.tags, {
-    Name                     = "nodes.${local.cluster_name}"
+    Name                     = "nodes-additional.${local.cluster_name}"
     "karpenter.sh/discovery" = local.cluster_name
   })
   lifecycle {

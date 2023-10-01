@@ -25,3 +25,6 @@ aws_autoscaling_group:
 aws_launch_configuration:
   - tags:
       Cluster: <CLUSTER_NAME>
+aws_vpc:
+  - tags:
+      Cluster: <CLUSTER_NAME>
