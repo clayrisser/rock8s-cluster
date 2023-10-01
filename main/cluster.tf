@@ -304,7 +304,7 @@ while [ "$(kubectl --kubeconfig <(echo $KUBECONFIG) get nodes | \
     sleep 10
 done
 EOF
-    interpreter = ["sh", "-c"]
+    interpreter = ["bash", "-c"]
     environment = {
       KUBECONFIG = local.kubeconfig
     }

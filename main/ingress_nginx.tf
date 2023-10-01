@@ -20,12 +20,38 @@
  */
 
 module "ingress-nginx" {
-  source             = "../modules/ingress_nginx"
-  enabled            = var.ingress_nginx
-  cluster_entrypoint = local.cluster_entrypoint
-  replicas           = 2
-  security_group     = aws_security_group.ingress.id
+  source        = "../modules/ingress_nginx"
+  enabled       = var.ingress_nginx
+  replicas      = 0
+  ingress_ports = local.ingress_ports
+  load_balancer = true
   depends_on = [
     null_resource.wait-for-cluster
+  ]
+}
+
+resource "null_resource" "wait-for-ingress-nginx" {
+  count = var.ingress_nginx ? 1 : 0
+  provisioner "local-exec" {
+    command     = <<EOF
+s=5
+while [ "$s" -ge "5" ]; do
+  _s=$(echo $(curl -v $CLUSTER_ENTRYPOINT 2>&1 | grep -E '^< HTTP') | awk '{print $3}' | head -c 1)
+  if [ "$_s" != "" ]; then
+    s=$_s
+  fi
+  if [ "$s" -ge "5" ]; then
+    sleep 10
+  fi
+done
+EOF
+    interpreter = ["bash", "-c"]
+    environment = {
+      CLUSTER_ENTRYPOINT = local.cluster_entrypoint
+    }
+  }
+  depends_on = [
+    module.ingress-nginx,
+    aws_route53_record.cluster
   ]
 }

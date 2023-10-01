@@ -90,7 +90,7 @@ while [ "$${resp}" != "pong" ]; do
 done
 sleep 15
 EOF
-    interpreter = ["sh", "-c"]
+    interpreter = ["bash", "-c"]
     environment = {
       RANCHER_HOSTNAME = var.rancher_hostname
       KUBECONFIG       = var.kubeconfig

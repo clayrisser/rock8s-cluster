@@ -47,6 +47,6 @@ variable "security_group" {
   default = ""
 }
 
-variable "cluster_entrypoint" {
-  type = string
+variable "load_balancer" {
+  default = true
 }

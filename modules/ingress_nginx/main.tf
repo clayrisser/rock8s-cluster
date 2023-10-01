@@ -31,9 +31,10 @@ resource "helm_release" "this" {
 tcp: {}
 udp: {}
 controller:
+  kind: DaemonSet
   watchIngressWithoutClass: true
   hostPort:
-    enabled: false
+    enabled: true
     ports: ${jsonencode({ for port in var.ingress_ports : port == "80" ? "http" : port == "443" ? "https" : port => port })}
   admissionWebhooks:
     enabled: false
@@ -55,10 +56,17 @@ controller:
           app.kubernetes.io/instance: ingress-nginx-external
 EOF
     ,
-    var.replicas > 0 && var.security_group != "" ? <<EOF
+    var.load_balancer ? <<EOF
 controller:
-  replicaCount: 2
-  minAvailable: 2
+  kind: DaemonSet
+  service:
+    enabled: true
+    type: LoadBalancer
+    ports: ${jsonencode({ for port in var.ingress_ports : port == "80" ? "http" : port == "443" ? "https" : port => port })}
+EOF
+    : "",
+    var.security_group != "" ? <<EOF
+controller:
   service:
     annotations:
       service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
@@ -66,41 +74,15 @@ controller:
       service.beta.kubernetes.io/aws-load-balancer-security-groups: ${var.security_group}
       service.beta.kubernetes.io/aws-load-balancer-manage-backend-security-group-rules: true
     loadBalancerClass: service.k8s.aws/nlb
-    enabled: true
-    type: LoadBalancer
-    ports: ${jsonencode({ for port in var.ingress_ports : port == "80" ? "http" : port == "443" ? "https" : port => port })}
 EOF
-    : <<EOF
+    : "",
+    var.replicas > 0 ? <<EOF
 controller:
-  kind: DaemonSet
+  replicaCount: ${var.replicas}
+  minAvailable: ${var.replicas}
 EOF
-    ,
+    : "",
     var.values
-  ]
-}
-
-resource "null_resource" "wait-for-ingress-nginx" {
-  count = var.enabled ? 1 : 0
-  provisioner "local-exec" {
-    command     = <<EOF
-s=5
-while [ "$s" -ge "5" ]; do
-  _s=$(echo $(curl -v $CLUSTER_ENTRYPOINT 2>&1 | grep -E '^< HTTP') | awk '{print $3}' | head -c 1)
-  if [ "$_s" != "" ]; then
-    s=$_s
-  fi
-  if [ "$s" -ge "5" ]; then
-    sleep 10
-  fi
-done
-EOF
-    interpreter = ["sh", "-c"]
-    environment = {
-      CLUSTER_ENTRYPOINT = var.cluster_entrypoint
-    }
-  }
-  depends_on = [
-    helm_release.this
   ]
 }
 

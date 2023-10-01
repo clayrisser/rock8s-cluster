@@ -31,6 +31,6 @@ module "cluster-issuer" {
     }
   }
   depends_on = [
-    module.ingress-nginx
+    null_resource.wait-for-ingress-nginx
   ]
 }
