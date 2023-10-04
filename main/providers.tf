@@ -56,7 +56,8 @@ provider "kubectl" {
 }
 
 provider "kops" {
-  state_store = local.kops_state_store
+  state_store   = local.kops_state_store
+  feature_flags = ["Karpenter"]
   aws {
     region = var.region
   }

@@ -19,32 +19,32 @@
  * limitations under the License.
  */
 
-resource "helm_release" "karpenter" {
-  count            = var.karpenter ? 1 : 0
-  name             = "karpenter"
-  version          = "v0.30.0"
-  repository       = "oci://public.ecr.aws/karpenter"
-  chart            = "karpenter"
-  namespace        = "karpenter"
-  create_namespace = true
-  values = [<<EOF
-EOF
-  ]
-  depends_on = [
-    null_resource.wait-for-cluster
-  ]
-}
+# resource "helm_release" "karpenter" {
+#   count            = var.karpenter ? 1 : 0
+#   name             = "karpenter"
+#   version          = "v0.30.0"
+#   repository       = "oci://public.ecr.aws/karpenter"
+#   chart            = "karpenter"
+#   namespace        = "karpenter"
+#   create_namespace = true
+#   values = [<<EOF
+# EOF
+#   ]
+#   depends_on = [
+#     null_resource.wait-for-cluster
+#   ]
+# }
 
-resource "time_sleep" "karpenter" {
-  count           = var.karpenter ? 1 : 0
-  create_duration = "30s"
-  depends_on = [
-    helm_release.karpenter
-  ]
-  lifecycle {
-    prevent_destroy = false
-  }
-}
+# resource "time_sleep" "karpenter" {
+#   count           = var.karpenter ? 1 : 0
+#   create_duration = "30s"
+#   depends_on = [
+#     helm_release.karpenter
+#   ]
+#   lifecycle {
+#     prevent_destroy = false
+#   }
+# }
 
 # resource "kubectl_manifest" "karpenter-node-template" {
 #   yaml_body = <<EOF

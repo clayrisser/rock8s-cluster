@@ -58,8 +58,10 @@ terraform {
       version = "3.0.2"
     }
     kops = {
-      source  = "eddycharly/kops"
-      version = "1.25.3"
+      source  = "clayrisser/kops"
+      version = "1.28.0"
+      # source  = "eddycharly/kops"
+      # version = "1.25.3"
     }
     tls = {
       source  = "hashicorp/tls"

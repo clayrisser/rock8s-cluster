@@ -3,7 +3,7 @@ aws_iam_policy:
       Cluster: <CLUSTER_NAME>
 aws_iam_role:
   - tags:
-      Cluster: <CLUSTER_NAME>
+      KubernetesCluster: <CLUSTER_NAME>
 aws_instance:
   - tags:
       Cluster: <CLUSTER_NAME>

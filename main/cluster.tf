@@ -68,9 +68,24 @@ resource "kops_cluster" "this" {
   ssh_key_name       = aws_key_pair.node.key_name
   kubernetes_version = "v1.26.2"
   dns_zone           = var.dns_zone
-  network_id         = module.vpc.vpc_id
   cloud_provider {
-    aws {}
+    aws {
+      load_balancer_controller {
+        enabled = true
+      }
+      ebs_csi_driver {
+        enabled = true
+      }
+      pod_identity_webhook {
+        enabled = true
+      }
+      node_termination_handler {
+        enabled                           = true
+        enable_spot_interruption_draining = true
+        enable_sqs_termination_draining   = true
+        managed_asg_tag                   = "aws-node-termination-handler/managed"
+      }
+    }
   }
   authentication {
     aws {
@@ -89,7 +104,7 @@ resource "kops_cluster" "this" {
   iam {
     legacy                                   = false
     allow_container_registry                 = true
-    use_service_account_external_permissions = false
+    use_service_account_external_permissions = true
     dynamic "service_account_external_permissions" {
       for_each = [for namespace in local.elevated_namespaces : { ns = namespace, policies = local.elevated_policies }]
       content {
@@ -102,28 +117,58 @@ resource "kops_cluster" "this" {
     }
   }
   external_policies {
-    key   = "master"
+    key   = "control-plane"
     value = local.external_policies
   }
   external_policies {
     key   = "node"
     value = local.external_policies
   }
+  config_store {
+    base = "s3://${aws_s3_bucket.main.bucket}/kops/${local.cluster_name}"
+  }
   service_account_issuer_discovery {
     enable_aws_oidc_provider = true
     discovery_store          = "s3://${aws_s3_bucket.oidc.bucket}"
   }
   networking {
+    network_id = module.vpc.vpc_id
     calico {}
-  }
-  topology {
-    masters = "public"
-    nodes   = "public"
-    dns {
-      type = "Public"
+    topology {
+      # control_plane = "public"
+      # nodes = "public"
+      dns = "Public"
+    }
+    dynamic "subnet" {
+      for_each = data.aws_subnet.private
+      content {
+        type = "Private"
+        id   = subnet.value.id
+        name = subnet.value.id
+        zone = subnet.value.availability_zone
+      }
+    }
+    dynamic "subnet" {
+      for_each = data.aws_subnet.utility
+      content {
+        type = "Utility"
+        id   = subnet.value.id
+        name = subnet.value.id
+        zone = subnet.value.availability_zone
+      }
+    }
+    dynamic "subnet" {
+      for_each = data.aws_subnet.public
+      content {
+        type = "Public"
+        id   = subnet.value.id
+        name = subnet.value.id
+        zone = subnet.value.availability_zone
+      }
     }
   }
   api {
+    public_name = "api.${local.cluster_name}"
     dynamic "dns" {
       for_each = contains(["DNS"], var.api_strategy) ? [1] : []
       content {}
@@ -139,40 +184,27 @@ resource "kops_cluster" "this" {
   }
   etcd_cluster {
     name = "main"
+    manager {
+      backup_retention_days = 90
+      listen_metrics_ur_ls  = []
+      log_level             = 0
+    }
     member {
-      name           = "master-0"
-      instance_group = "master-0"
+      name           = "control-plane-0"
+      instance_group = "control-plane-0"
     }
   }
   etcd_cluster {
     name = "events"
+    manager {
+      backup_retention_days = 90
+      listen_metrics_ur_ls  = []
+      log_level             = 0
+    }
     member {
-      name           = "master-0"
-      instance_group = "master-0"
+      name           = "control-plane-0"
+      instance_group = "control-plane-0"
     }
-  }
-  dynamic "subnet" {
-    for_each = data.aws_subnet.private
-    content {
-      type        = "Private"
-      name        = subnet.value.id
-      cidr        = subnet.value.cidr_block
-      provider_id = subnet.value.id
-      zone        = subnet.value.availability_zone
-    }
-  }
-  dynamic "subnet" {
-    for_each = data.aws_subnet.public
-    content {
-      type        = "Public"
-      name        = subnet.value.id
-      cidr        = subnet.value.cidr_block
-      provider_id = subnet.value.id
-      zone        = subnet.value.availability_zone
-    }
-  }
-  aws_load_balancer_controller {
-    enabled = true
   }
   cluster_autoscaler {
     enabled                          = var.autoscaler
@@ -200,25 +232,18 @@ resource "kops_cluster" "this" {
       forward_to_kube_dns = true
     }
   }
-  node_termination_handler {
-    enabled                           = true
-    enable_spot_interruption_draining = true
-    enable_sqs_termination_draining   = true
-    managed_asg_tag                   = "aws-node-termination-handler/managed"
-  }
   node_problem_detector {
-    enabled = true
-  }
-  pod_identity_webhook {
     enabled = true
   }
   snapshot_controller {
     enabled = true
   }
+  karpenter {
+    enabled = true
+  }
   cloud_config {
-    manage_storage_classes = true
-    aws_ebs_csi_driver {
-      enabled = true
+    manage_storage_classes {
+      value = true
     }
   }
   secrets {
@@ -235,32 +260,99 @@ resource "kops_cluster" "this" {
   }
 }
 
-resource "kops_instance_group" "master-0" {
+resource "kops_instance_group" "control-plane-0" {
   cluster_name               = kops_cluster.this.id
-  name                       = "master-0"
-  role                       = "Master"
+  name                       = "control-plane-0"
+  role                       = "ControlPlane"
   min_size                   = 1
   max_size                   = 1
   machine_type               = "c5.xlarge"
   subnets                    = [data.aws_subnet.public[0].id]
   additional_security_groups = [aws_security_group.api.id]
-  root_volume_size           = 32
+  root_volume {
+    size = 32
+  }
   lifecycle {
     prevent_destroy = false
   }
 }
 
-resource "kops_instance_group" "core-0" {
-  cluster_name               = kops_cluster.this.id
-  name                       = "core-0"
-  autoscale                  = true
-  role                       = "Node"
-  min_size                   = 3
-  max_size                   = 3
-  machine_type               = "t3.medium"
+# resource "kops_instance_group" "core-0" {
+#   cluster_name       = kops_cluster.this.id
+#   name               = "core-0"
+#   autoscale          = true
+#   role               = "Node"
+#   min_size           = 1
+#   max_size           = 1
+#   machine_type       = "t3.medium"
+#   capacity_rebalance = true
+#   mixed_instances_policy {
+#     # instances                     = ["t3.medium"]
+#     on_demand_allocation_strategy = "lowest-price" # lowest-price prioritized
+#     spot_allocation_strategy      = "lowest-price" # price-capacity-optimized lowest-price capacity-optimized diversified
+#     spot_instance_pools           = 2
+#     on_demand_above_base { value = 0 }
+#     on_demand_base { value = 0 }
+#     instance_requirements {
+#       cpu {
+#         min = "2"
+#         # max = "16"
+#       }
+#       memory {
+#         min = "2G"
+#         # max = "16G"
+#       }
+#     }
+#   }
+#   subnets                    = [data.aws_subnet.public[0].id]
+#   additional_security_groups = [aws_security_group.nodes.id]
+#   root_volume {
+#     size = 32
+#   }
+#   dynamic "additional_user_data" {
+#     for_each = local.node_additional_user_data
+#     content {
+#       name    = additional_user_data.value["name"]
+#       type    = additional_user_data.value["type"]
+#       content = additional_user_data.value["content"]
+#     }
+#   }
+#   lifecycle {
+#     prevent_destroy = false
+#   }
+# }
+
+resource "kops_instance_group" "karpenter-0" {
+  cluster_name = kops_cluster.this.id
+  name         = "karpenter-0"
+  manager      = "Karpenter"
+  # autoscale                  = true
+  role               = "Node"
+  min_size           = 1
+  max_size           = 6
+  machine_type       = "t3.medium"
+  capacity_rebalance = true
+  mixed_instances_policy {
+    # instances                     = ["t3.medium"]
+    on_demand_allocation_strategy = "lowest-price" # lowest-price prioritized
+    spot_allocation_strategy      = "lowest-price" # price-capacity-optimized lowest-price capacity-optimized diversified
+    spot_instance_pools           = 2
+    on_demand_above_base { value = 0 }
+    on_demand_base { value = 0 }
+    instance_requirements {
+      cpu {
+        min = "2"
+        # max = "16"
+      }
+      memory {
+        min = "2G"
+        # max = "16G"
+      }
+    }
+  }
   subnets                    = [data.aws_subnet.public[0].id]
   additional_security_groups = [aws_security_group.nodes.id]
-  root_volume_size           = 32
+  # root_volume_size           = 32
   dynamic "additional_user_data" {
     for_each = local.node_additional_user_data
     content {
@@ -277,9 +369,10 @@ resource "kops_instance_group" "core-0" {
 resource "kops_cluster_updater" "updater" {
   cluster_name = kops_cluster.this.id
   keepers = {
-    cluster  = kops_cluster.this.revision
-    master-0 = kops_instance_group.master-0.revision
-    core-0   = kops_instance_group.core-0.revision
+    cluster         = kops_cluster.this.revision
+    control-plane-0 = kops_instance_group.control-plane-0.revision
+    # core-0      = kops_instance_group.core-0.revision
+    karpenter-0 = kops_instance_group.karpenter-0.revision
   }
   rolling_update {
     skip                = false

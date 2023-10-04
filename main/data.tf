@@ -19,19 +19,19 @@
  * limitations under the License.
  */
 
-data "aws_iam_role" "nodes" {
-  name = "nodes.${local.cluster_name}"
-  depends_on = [
-    kops_cluster_updater.updater
-  ]
-}
+# data "aws_iam_role" "nodes" {
+#   name = "nodes.${local.cluster_name}"
+#   depends_on = [
+#     kops_cluster_updater.updater
+#   ]
+# }
 
-data "aws_iam_role" "masters" {
-  name = "masters.${local.cluster_name}"
-  depends_on = [
-    kops_cluster_updater.updater
-  ]
-}
+# data "aws_iam_role" "master" {
+#   name = "master.${local.cluster_name}"
+#   depends_on = [
+#     kops_cluster_updater.updater
+#   ]
+# }
 
 data "aws_caller_identity" "this" {}
 

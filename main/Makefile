@@ -50,7 +50,7 @@ terraform:
 ACTIONS += init ## initialize terraform
 INIT_TARGETS := $(ARTIFACTS)
 $(ACTION)/init: versions.tf backend.tf
-	@$(TERRAFORM) init $(TERRAFORM_INPUT_FLAG) -reconfigure $(INIT_ARGS)
+	@$(TERRAFORM) init $(TERRAFORM_INPUT_FLAG) -reconfigure -upgrade $(INIT_ARGS)
 	@$(call done,$@)
 
 ACTIONS += format~init ## format terraform files
@@ -104,11 +104,10 @@ $(ACTION)/destroy: $(call git_deps,\.((tf))$$)
 ifneq ($(TERRAFORM_AUTO_APPROVE_FLAG),-auto-approve)
 	@printf "Are you sure you want to destroy? [y/N] " && read ans && [ $${ans:-N} = y ]
 endif
-	-@$(KUBECTL) --context $(KUBE_CONTEXT) delete ns karpenter 2>/dev/null &
 	@RM_RECORDS=$$($(TERRAFORM) state list | \
 		$(GREP) '^\($(shell $(ECHO) $(IGNORE_DESTROY) | sed "s/ /\\\|/g")\)' $(NOFAIL)) && \
 		[ "$$RM_RECORDS" = "" ] && $(TRUE) || $(TERRAFORM) state rm $$RM_RECORDS && \
-		$(TERRAFORM) destroy $(TERRAFORM_INPUT_FLAG) -auto-approve $(ARGS)
+		$(TERRAFORM) destroy $(TERRAFORM_INPUT_FLAG) -auto-approve $(ARGS) || $(TRUE)
 	@export AWSWEEPER_FILE=$$(mktemp) && \
 		cat $(PROJECT_ROOT)/awsweeper.yml | sed 's|<CLUSTER_NAME>|$(CLUSTER_NAME)|g' > $$AWSWEEPER_FILE && \
 		$(AWSWEEPER) --force $$AWSWEEPER_FILE && \
