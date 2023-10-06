@@ -79,3 +79,105 @@ resource "aws_s3_bucket_acl" "oidc" {
     prevent_destroy = false
   }
 }
+
+resource "aws_s3_bucket" "tempo" {
+  count         = local.tempo ? 1 : 0
+  bucket        = var.tempo_bucket == "" ? replace("tempo-${local.cluster_name}", ".", "-") : var.tempo_bucket
+  force_destroy = true
+  lifecycle {
+    prevent_destroy = false
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "tempo" {
+  count  = local.tempo ? 1 : 0
+  bucket = aws_s3_bucket.tempo[0].id
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "tempo" {
+  count  = local.tempo ? 1 : 0
+  bucket = aws_s3_bucket.tempo[0].id
+  rule {
+    id     = "retention"
+    status = "Enabled"
+    filter {
+      prefix = "single-tenant/"
+    }
+    expiration {
+      days = ceil(var.retention_hours / 24)
+    }
+  }
+  lifecycle {
+    prevent_destroy = false
+  }
+}
+
+# resource "aws_s3_bucket" "thanos" {
+#   bucket        = var.thanos_bucket == "" ? replace("thanos-${local.cluster_name}", ".", "-") : var.thanos_bucket
+#   force_destroy = true
+#   lifecycle {
+#     prevent_destroy = false
+#   }
+# }
+
+# resource "aws_s3_bucket_server_side_encryption_configuration" "thanos" {
+#   bucket = aws_s3_bucket.thanos.id
+#   rule {
+#     apply_server_side_encryption_by_default {
+#       sse_algorithm = "AES256"
+#     }
+#   }
+# }
+
+# resource "aws_s3_bucket_lifecycle_configuration" "thanos" {
+#   bucket = aws_s3_bucket.thanos.id
+#   rule {
+#     id     = "retention"
+#     status = "Enabled"
+#     expiration {
+#       days = ceil(var.retention_hours / 24)
+#     }
+#   }
+#   lifecycle {
+#     prevent_destroy = false
+#   }
+# }
+
+resource "aws_s3_bucket" "loki" {
+  count         = local.rancher_logging ? 1 : 0
+  bucket        = var.loki_bucket == "" ? replace("loki-${local.cluster_name}", ".", "-") : var.loki_bucket
+  force_destroy = true
+  lifecycle {
+    prevent_destroy = false
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "loki" {
+  count  = local.rancher_logging ? 1 : 0
+  bucket = aws_s3_bucket.loki[0].id
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "loki" {
+  count  = local.rancher_logging ? 1 : 0
+  bucket = aws_s3_bucket.loki[0].id
+  rule {
+    id     = "retention"
+    status = "Enabled"
+    expiration {
+      days = ceil(var.retention_hours / 24)
+    }
+  }
+  lifecycle {
+    prevent_destroy = false
+  }
+}

@@ -277,13 +277,58 @@ resource "kops_instance_group" "control-plane-0" {
   }
 }
 
-# resource "kops_instance_group" "core-0" {
+resource "kops_instance_group" "karpenter-0" {
+  cluster_name       = kops_cluster.this.id
+  name               = "karpenter-0"
+  manager            = "Karpenter"
+  role               = "Node"
+  min_size           = 1
+  max_size           = 6
+  machine_type       = "t3.medium"
+  capacity_rebalance = true
+  mixed_instances_policy {
+    # instances                     = ["t3.medium"]
+    on_demand_allocation_strategy = "lowest-price"             # lowest-price prioritized
+    spot_allocation_strategy      = "price-capacity-optimized" # price-capacity-optimized lowest-price capacity-optimized diversified
+    spot_instance_pools           = 2
+    on_demand_above_base { value = 0 }
+    on_demand_base { value = 0 }
+    instance_requirements {
+      cpu {
+        min = "4"
+        # max = "16"
+      }
+      memory {
+        min = "4G"
+        # max = "16G"
+      }
+    }
+  }
+  subnets                    = [data.aws_subnet.public[0].id]
+  additional_security_groups = [aws_security_group.nodes.id]
+  root_volume {
+    size = 32
+  }
+  dynamic "additional_user_data" {
+    for_each = local.node_additional_user_data
+    content {
+      name    = additional_user_data.value["name"]
+      type    = additional_user_data.value["type"]
+      content = additional_user_data.value["content"]
+    }
+  }
+  lifecycle {
+    prevent_destroy = false
+  }
+}
+
+# resource "kops_instance_group" "karpenter-1" {
 #   cluster_name       = kops_cluster.this.id
-#   name               = "core-0"
-#   autoscale          = true
+#   name               = "karpenter-1"
+#   manager            = "Karpenter"
 #   role               = "Node"
 #   min_size           = 1
-#   max_size           = 1
+#   max_size           = 6
 #   machine_type       = "t3.medium"
 #   capacity_rebalance = true
 #   mixed_instances_policy {
@@ -304,7 +349,7 @@ resource "kops_instance_group" "control-plane-0" {
 #       }
 #     }
 #   }
-#   subnets                    = [data.aws_subnet.public[0].id]
+#   subnets                    = [data.aws_subnet.public[1].id]
 #   additional_security_groups = [aws_security_group.nodes.id]
 #   root_volume {
 #     size = 32
@@ -322,57 +367,59 @@ resource "kops_instance_group" "control-plane-0" {
 #   }
 # }
 
-resource "kops_instance_group" "karpenter-0" {
-  cluster_name = kops_cluster.this.id
-  name         = "karpenter-0"
-  manager      = "Karpenter"
-  # autoscale                  = true
-  role               = "Node"
-  min_size           = 1
-  max_size           = 6
-  machine_type       = "t3.medium"
-  capacity_rebalance = true
-  mixed_instances_policy {
-    # instances                     = ["t3.medium"]
-    on_demand_allocation_strategy = "lowest-price" # lowest-price prioritized
-    spot_allocation_strategy      = "lowest-price" # price-capacity-optimized lowest-price capacity-optimized diversified
-    spot_instance_pools           = 2
-    on_demand_above_base { value = 0 }
-    on_demand_base { value = 0 }
-    instance_requirements {
-      cpu {
-        min = "2"
-        # max = "16"
-      }
-      memory {
-        min = "2G"
-        # max = "16G"
-      }
-    }
-  }
-  subnets                    = [data.aws_subnet.public[0].id]
-  additional_security_groups = [aws_security_group.nodes.id]
-  # root_volume_size           = 32
-  dynamic "additional_user_data" {
-    for_each = local.node_additional_user_data
-    content {
-      name    = additional_user_data.value["name"]
-      type    = additional_user_data.value["type"]
-      content = additional_user_data.value["content"]
-    }
-  }
-  lifecycle {
-    prevent_destroy = false
-  }
-}
+# resource "kops_instance_group" "karpenter-2" {
+#   cluster_name       = kops_cluster.this.id
+#   name               = "karpenter-2"
+#   manager            = "Karpenter"
+#   role               = "Node"
+#   min_size           = 1
+#   max_size           = 6
+#   machine_type       = "t3.medium"
+#   capacity_rebalance = true
+#   mixed_instances_policy {
+#     # instances                     = ["t3.medium"]
+#     on_demand_allocation_strategy = "lowest-price" # lowest-price prioritized
+#     spot_allocation_strategy      = "lowest-price" # price-capacity-optimized lowest-price capacity-optimized diversified
+#     spot_instance_pools           = 2
+#     on_demand_above_base { value = 0 }
+#     on_demand_base { value = 0 }
+#     instance_requirements {
+#       cpu {
+#         min = "2"
+#         # max = "16"
+#       }
+#       memory {
+#         min = "2G"
+#         # max = "16G"
+#       }
+#     }
+#   }
+#   subnets                    = [data.aws_subnet.public[2].id]
+#   additional_security_groups = [aws_security_group.nodes.id]
+#   root_volume {
+#     size = 32
+#   }
+#   dynamic "additional_user_data" {
+#     for_each = local.node_additional_user_data
+#     content {
+#       name    = additional_user_data.value["name"]
+#       type    = additional_user_data.value["type"]
+#       content = additional_user_data.value["content"]
+#     }
+#   }
+#   lifecycle {
+#     prevent_destroy = false
+#   }
+# }
 
 resource "kops_cluster_updater" "updater" {
   cluster_name = kops_cluster.this.id
   keepers = {
     cluster         = kops_cluster.this.revision
     control-plane-0 = kops_instance_group.control-plane-0.revision
-    # core-0      = kops_instance_group.core-0.revision
-    karpenter-0 = kops_instance_group.karpenter-0.revision
+    karpenter-0     = kops_instance_group.karpenter-0.revision
+    # karpenter-1     = kops_instance_group.karpenter-1.revision
+    # karpenter-2     = kops_instance_group.karpenter-2.revision
   }
   rolling_update {
     skip                = false

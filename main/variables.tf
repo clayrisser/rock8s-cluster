@@ -84,102 +84,90 @@ variable "aws_secret_access_key" {
 }
 
 variable "rancher" {
-  type    = bool
   default = true
 }
 
 variable "cleanup_operator" {
-  type    = bool
   default = true
 }
 
 variable "cluster_issuer" {
-  type    = bool
   default = true
 }
 
 variable "external_dns" {
-  type    = bool
   default = true
 }
 
 variable "flux" {
-  type    = bool
   default = true
 }
 
 variable "argo" {
-  type    = bool
   default = true
 }
 
 variable "kanister" {
-  type    = bool
   default = true
 }
 
 variable "kubed" {
-  type    = bool
-  default = true
+  default = false
 }
 
-variable "logging" {
-  type    = bool
-  default = true
+variable "rancher_logging" {
+  default = false
 }
 
 variable "ingress_nginx" {
-  type    = bool
   default = true
 }
 
 variable "olm" {
-  type    = bool
-  default = true
+  default = false
 }
 
 variable "rancher_istio" {
-  type    = bool
-  default = true
+  default = false
 }
 
 variable "rancher_monitoring" {
-  type    = bool
-  default = true
+  default = false
 }
 
 variable "tempo" {
-  type    = bool
   default = true
 }
 
 variable "efs_csi" {
-  type    = bool
   default = true
 }
 
 variable "longhorn" {
-  type    = bool
   default = false
 }
 
 variable "autoscaler" {
-  type    = bool
   default = true
 }
 
 variable "reloader" {
-  type    = bool
   default = true
+}
+
+variable "argocd" {
+  default = false
 }
 
 variable "karpenter" {
-  type    = bool
   default = true
 }
 
+variable "kyverno" {
+  default = false
+}
+
 variable "retention_hours" {
-  type    = number
   default = 168
 }
 

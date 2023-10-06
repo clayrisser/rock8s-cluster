@@ -1,7 +1,7 @@
 /**
- * File: /variables.tf
- * Project: rancher_monitoring
- * File Created: 27-09-2023 05:26:35
+ * File: /flux.tf
+ * Project: main
+ * File Created: 04-10-2023 16:03:52
  * Author: Clay Risser
  * -----
  * BitSpur (c) Copyright 2021 - 2023
@@ -19,46 +19,10 @@
  * limitations under the License.
  */
 
-variable "enabled" {
-  default = true
-}
-
-variable "namespace" {
-  default = "cattle-monitoring-system"
-}
-
-variable "chart_version" {
-  default = "102.0.0+up40.1.2"
-}
-
-variable "endpoint" {
-  default = "us-east-1"
-}
-
-variable "retention_hours" {
-  default = "168"
-}
-
-variable "access_key" {
-  default = ""
-}
-
-variable "secret_key" {
-  default = ""
-}
-
-variable "bucket" {
-  default = ""
-}
-
-variable "create_namespace" {
-  default = true
-}
-
-variable "rancher_cluster_id" {
-  type = string
-}
-
-variable "rancher_project_id" {
-  type = string
+module "flux" {
+  source  = "../modules/flux"
+  enabled = var.flux
+  depends_on = [
+    null_resource.wait-for-cluster
+  ]
 }

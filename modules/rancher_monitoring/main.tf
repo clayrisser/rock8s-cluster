@@ -19,8 +19,12 @@
  * limitations under the License.
  */
 
+ locals {
+   namespace = (var.enabled && var.create_namespace) ? rancher2_namespace.this[0].name : var.namespace
+ }
+
 resource "rancher2_namespace" "this" {
-  count      = var.enabled ? 1 : 0
+  count      = (var.enabled && var.create_namespace  ) ? 1 : 0
   name       = var.namespace
   project_id = var.rancher_project_id
 }
@@ -33,14 +37,14 @@ resource "rancher2_app_v2" "this" {
   chart_version = var.chart_version
   cluster_id    = var.rancher_cluster_id
   name          = "rancher-monitoring"
-  namespace     = rancher2_namespace.this[0].name
+  namespace     = local.namespace
   repo_name     = "rancher-charts"
   wait          = true
   values        = <<EOF
 grafana:
   sidecar:
     dashboards:
-      searchNamespace: cattle-dashboards
+      searchNamespace: ALL
   persistence:
     size: 1Gi
     storageClassName: gp2
@@ -72,41 +76,24 @@ prometheus:
                   operator: In
                   values:
                     - amd64
+    disableCompaction: ${var.bucket != "" ? "true" : ""}
+    ${var.bucket != "" ? "thanos: \"{\"objectStorageConfig\":{\"name\":\"bucket-config\",\"key\":\"objstore.yml\"}}\"" : ""}
+  serviceAccount:
+    create: true
   thanosService:
-    enabled: true
+    enabled: ${var.bucket != "" ? "true" : "false"}
   extraSecret:
     name: bucket-config
     data:
       objstore.yml: |
         type: S3
         config:
-          bucket:
-          endpoint:
-          access_key:
-          secret_key:
-          insecure: true
-  prometheusSpec:
-    disableCompaction: true
-    thanos:
-      objectStorageConfig:
-        name: bucket-config
-        key: objstore.yml
-  # thanos:
-  #   enabled: ${var.bucket != "" ? "true" : "false"}
-  #   additionalArgs:
-  #     - '--retention.resolution-1h=${tostring(var.retention_hours)}h'
-  #     - '--retention.resolution-5m=${tostring(var.retention_hours * 0.6)}h'
-  #     - '--retention.resolution-raw=${tostring(var.retention_hours * 0.2)}h'
-  #   objectConfig:
-  #     type: S3
-  #     config:
-  #       access_key: '${var.aws_access_key_id}'
-  #       bucket: ${var.bucket}
-  #       endpoint: 's3.${var.region}.amazonaws.com'
-  #       insecure: false
-  #       region: '${var.region}'
-  #       secret_key: '${var.aws_secret_access_key}'
-  #       signature_version2: false
+          bucket: ${var.bucket}
+          endpoint: ${var.endpoint}
+          access_key: ${var.access_key}
+          secret_key: ${var.secret_key}
+          aws_sdk_auth: ${(var.bucket != "" && (var.access_key == "" || var.secret_key == "")) ? "true" : ""}
+          insecure: false
 prometheusOperator:
   affinity:
     nodeAffinity:

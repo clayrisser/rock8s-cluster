@@ -1,5 +1,5 @@
 /**
- * File: /variables.tf
+ * File: /versions.tf
  * Project: rancher_monitoring
  * File Created: 27-09-2023 05:26:35
  * Author: Clay Risser
@@ -19,46 +19,16 @@
  * limitations under the License.
  */
 
-variable "enabled" {
-  default = true
-}
-
-variable "namespace" {
-  default = "cattle-monitoring-system"
-}
-
-variable "chart_version" {
-  default = "102.0.0+up40.1.2"
-}
-
-variable "endpoint" {
-  default = "us-east-1"
-}
-
-variable "retention_hours" {
-  default = "168"
-}
-
-variable "access_key" {
-  default = ""
-}
-
-variable "secret_key" {
-  default = ""
-}
-
-variable "bucket" {
-  default = ""
-}
-
-variable "create_namespace" {
-  default = true
-}
-
-variable "rancher_cluster_id" {
-  type = string
-}
-
-variable "rancher_project_id" {
-  type = string
+terraform {
+  required_version = ">= 1.0"
+  required_providers {
+    kubectl = {
+      source  = "alekc/kubectl"
+      version = ">= 2.0.2"
+    }
+    rancher2 = {
+      source  = "rancher/rancher2"
+      version = ">= 3.0.2"
+    }
+  }
 }

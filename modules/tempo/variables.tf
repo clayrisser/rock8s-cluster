@@ -24,19 +24,19 @@ variable "enabled" {
 }
 
 variable "namespace" {
-  default = "cattle-monitoring-system"
+  default = "tempo"
 }
 
 variable "chart_version" {
-  default = "102.0.0+up40.1.2"
-}
-
-variable "endpoint" {
-  default = "us-east-1"
+  default = "1.6.2"
 }
 
 variable "retention_hours" {
   default = "168"
+}
+
+variable "endpoint" {
+  type = string
 }
 
 variable "access_key" {
@@ -47,12 +47,12 @@ variable "secret_key" {
   default = ""
 }
 
-variable "bucket" {
-  default = ""
+variable "grafana_repo" {
+  type = string
 }
 
-variable "create_namespace" {
-  default = true
+variable "bucket" {
+  type = string
 }
 
 variable "rancher_cluster_id" {
