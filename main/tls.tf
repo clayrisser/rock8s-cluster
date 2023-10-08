@@ -30,7 +30,7 @@ resource "tls_self_signed_cert" "ca" {
   subject {
     common_name = "ca.${local.cluster_name}"
   }
-  validity_period_hours = 43800
+  validity_period_hours = 867240 # 99 years
   allowed_uses = [
     "client_auth",
     "digital_signature",

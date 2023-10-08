@@ -19,6 +19,43 @@
  * limitations under the License.
  */
 
+resource "aws_s3_bucket" "tempo" {
+  count         = local.tempo ? 1 : 0
+  bucket        = var.tempo_bucket == "" ? replace("tempo-${local.cluster_name}", ".", "-") : var.tempo_bucket
+  force_destroy = true
+  lifecycle {
+    prevent_destroy = false
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "tempo" {
+  count  = local.tempo ? 1 : 0
+  bucket = aws_s3_bucket.tempo[0].id
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "tempo" {
+  count  = local.tempo ? 1 : 0
+  bucket = aws_s3_bucket.tempo[0].id
+  rule {
+    id     = "retention"
+    status = "Enabled"
+    filter {
+      prefix = "single-tenant/"
+    }
+    expiration {
+      days = ceil(var.retention_hours / 24)
+    }
+  }
+  lifecycle {
+    prevent_destroy = false
+  }
+}
+
 module "tempo" {
   source             = "../modules/tempo"
   enabled            = local.tempo
@@ -29,6 +66,7 @@ module "tempo" {
   access_key         = var.aws_access_key_id
   secret_key         = var.aws_secret_access_key
   grafana_repo       = rancher2_catalog_v2.grafana[0].name
+  retention          = "720h"
   depends_on = [
     rancher2_namespace.rancher-monitoring
   ]

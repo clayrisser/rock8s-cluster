@@ -31,8 +31,8 @@ variable "chart_version" {
   default = "102.0.0+up3.17.10"
 }
 
-variable "retention_hours" {
-  default = "168"
+variable "retention" {
+  default = "168h" # 7 days
 }
 
 variable "region" {

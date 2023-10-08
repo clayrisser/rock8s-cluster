@@ -31,8 +31,8 @@ variable "chart_version" {
   default = "1.6.2"
 }
 
-variable "retention_hours" {
-  default = "168"
+variable "retention" {
+  default = "168h" # 7 days
 }
 
 variable "endpoint" {

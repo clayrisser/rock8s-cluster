@@ -19,17 +19,80 @@
  * limitations under the License.
  */
 
- locals {
-   namespace = (var.enabled && var.create_namespace) ? rancher2_namespace.this[0].name : var.namespace
- }
+locals {
+  namespace = (var.enabled && var.create_namespace) ? rancher2_namespace.this[0].name : var.namespace
+  thanos    = var.enabled && var.thanos && var.bucket != ""
+}
 
 resource "rancher2_namespace" "this" {
-  count      = (var.enabled && var.create_namespace  ) ? 1 : 0
+  count      = (var.enabled && var.create_namespace) ? 1 : 0
   name       = var.namespace
   project_id = var.rancher_project_id
 }
 
-# https://blog.csdn.net/u010533742/article/details/124944538
+resource "helm_release" "thanos" {
+  count      = local.thanos ? 1 : 0
+  name       = "thanos"
+  version    = "12.13.7"
+  repository = "https://charts.bitnami.com/bitnami"
+  chart      = "thanos"
+  namespace  = local.namespace
+  values = [<<EOF
+objstoreConfig: |
+  type: s3
+  config:
+    bucket: ${var.bucket}
+    endpoint: ${var.endpoint}
+    access_key: ${var.access_key}
+    secret_key: ${var.secret_key}
+    aws_sdk_auth: ${(var.bucket != "" && (var.access_key == "" || var.secret_key == "")) ? "true" : ""}
+querier:
+  stores:
+    - rancher-monitoring-thanos-discovery.cattle-monitoring-system.svc.cluster.local:10901
+bucketweb:
+  enabled: true
+compactor:
+  enabled: true
+  retentionResolutionRaw: ${var.retention}
+  retentionResolution5m: ${var.retention_resolution_5m}
+  retentionResolution1h: ${var.retention_resolution_1h}
+storegateway:
+  enabled: true
+EOF
+  ]
+  depends_on = [
+    rancher2_namespace.this
+  ]
+}
+
+resource "kubectl_manifest" "thanos-datasource" {
+  count     = local.thanos ? 1 : 0
+  yaml_body = <<EOF
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: thanos-datasource
+  namespace: ${local.namespace}
+  labels:
+    grafana_datasource: '1'
+data:
+  thanos-datasource.yaml: |-
+    apiVersion: 1
+    datasources:
+      - name: Thanos
+        uid: thanos
+        type: prometheus
+        url: http://thanos-query.cattle-monitoring-system:9090
+        access: proxy
+        version: 1
+EOF
+  lifecycle {
+    prevent_destroy = false
+  }
+  depends_on = [
+    helm_release.thanos
+  ]
+}
 
 resource "rancher2_app_v2" "this" {
   count         = var.enabled ? 1 : 0
@@ -40,7 +103,7 @@ resource "rancher2_app_v2" "this" {
   namespace     = local.namespace
   repo_name     = "rancher-charts"
   wait          = true
-  values        = <<EOF
+  values = <<EOF
 grafana:
   sidecar:
     dashboards:
@@ -55,8 +118,9 @@ prometheus:
   prometheusSpec:
     scrapeInterval: 2m
     evaluationInterval: 2m
-    retention: ${var.retention_hours}h
-    retentionSize: 1GiB
+    retention: ${var.retention}
+    retentionSize: ${var.retention_size}
+    disableCompaction: ${local.thanos ? "true" : ""}
     storageSpec:
       volumeClaimTemplate:
         spec:
@@ -76,12 +140,20 @@ prometheus:
                   operator: In
                   values:
                     - amd64
-    disableCompaction: ${var.bucket != "" ? "true" : ""}
-    ${var.bucket != "" ? "thanos: \"{\"objectStorageConfig\":{\"name\":\"bucket-config\",\"key\":\"objstore.yml\"}}\"" : ""}
+${local.thanos != "" ? <<EOF
+    thanos:
+      objectStorageConfig:
+        name: bucket-config
+        key: objstore.yml
+EOF
+  : ""}
   serviceAccount:
     create: true
+  thanosRuler:
+    enabled: ${local.thanos != "" ? "true" : "false"}
   thanosService:
-    enabled: ${var.bucket != "" ? "true" : "false"}
+    enabled: ${local.thanos != "" ? "true" : "false"}
+${local.thanos != "" ? <<EOF
   extraSecret:
     name: bucket-config
     data:
@@ -94,6 +166,8 @@ prometheus:
           secret_key: ${var.secret_key}
           aws_sdk_auth: ${(var.bucket != "" && (var.access_key == "" || var.secret_key == "")) ? "true" : ""}
           insecure: false
+EOF
+: ""}
 prometheusOperator:
   affinity:
     nodeAffinity:
@@ -135,6 +209,9 @@ prometheus-node-exporter:
                 values:
                   - fargate
 EOF
+depends_on = [
+  kubectl_manifest.thanos-datasource
+]
 }
 
 resource "time_sleep" "this" {

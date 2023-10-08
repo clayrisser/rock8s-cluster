@@ -135,6 +135,10 @@ variable "rancher_monitoring" {
   default = false
 }
 
+variable "thanos" {
+  default = false
+}
+
 variable "tempo" {
   default = true
 }

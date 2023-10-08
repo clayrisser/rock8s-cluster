@@ -19,39 +19,39 @@
  * limitations under the License.
  */
 
-# resource "aws_s3_bucket" "thanos" {
-#   count         = local.rancher_monitoring ? 1 : 0
-#   bucket        = var.thanos_bucket == "" ? replace("thanos-${local.cluster_name}", ".", "-") : var.thanos_bucket
-#   force_destroy = true
-#   lifecycle {
-#     prevent_destroy = false
-#   }
-# }
+resource "aws_s3_bucket" "thanos" {
+  count         = local.thanos ? 1 : 0
+  bucket        = var.thanos_bucket == "" ? replace("thanos-${local.cluster_name}", ".", "-") : var.thanos_bucket
+  force_destroy = true
+  lifecycle {
+    prevent_destroy = false
+  }
+}
 
-# resource "aws_s3_bucket_server_side_encryption_configuration" "thanos" {
-#   count  = local.rancher_monitoring ? 1 : 0
-#   bucket = aws_s3_bucket.thanos[0].id
-#   rule {
-#     apply_server_side_encryption_by_default {
-#       sse_algorithm = "AES256"
-#     }
-#   }
-# }
+resource "aws_s3_bucket_server_side_encryption_configuration" "thanos" {
+  count  = local.thanos ? 1 : 0
+  bucket = aws_s3_bucket.thanos[0].id
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
 
-# resource "aws_s3_bucket_lifecycle_configuration" "thanos" {
-#   count  = local.rancher_monitoring ? 1 : 0
-#   bucket = aws_s3_bucket.thanos[0].id
-#   rule {
-#     id     = "retention"
-#     status = "Enabled"
-#     expiration {
-#       days = ceil(var.retention_hours / 24)
-#     }
-#   }
-#   lifecycle {
-#     prevent_destroy = false
-#   }
-# }
+resource "aws_s3_bucket_lifecycle_configuration" "thanos" {
+  count  = local.thanos ? 1 : 0
+  bucket = aws_s3_bucket.thanos[0].id
+  rule {
+    id     = "retention"
+    status = "Enabled"
+    expiration {
+      days = ceil(var.retention_hours / 24)
+    }
+  }
+  lifecycle {
+    prevent_destroy = false
+  }
+}
 
 resource "rancher2_namespace" "rancher-monitoring" {
   count      = local.rancher_monitoring ? 1 : 0
@@ -60,16 +60,21 @@ resource "rancher2_namespace" "rancher-monitoring" {
 }
 
 module "rancher-monitoring" {
-  source             = "../modules/rancher_monitoring"
-  enabled            = local.rancher_monitoring
-  create_namespace   = false
-  namespace          = local.rancher_monitoring ? rancher2_namespace.rancher-monitoring[0].name : ""
-  rancher_cluster_id = local.rancher_cluster_id
-  rancher_project_id = local.rancher_project_id
-  # bucket             = aws_s3_bucket.thanos[0].bucket
-  endpoint   = "s3.${var.region}.amazonaws.com"
-  access_key = var.aws_access_key_id
-  secret_key = var.aws_secret_access_key
+  source                  = "../modules/rancher_monitoring"
+  enabled                 = local.rancher_monitoring
+  create_namespace        = false
+  namespace               = local.rancher_monitoring ? rancher2_namespace.rancher-monitoring[0].name : ""
+  rancher_cluster_id      = local.rancher_cluster_id
+  rancher_project_id      = local.rancher_project_id
+  bucket                  = try(aws_s3_bucket.thanos[0].bucket, "")
+  endpoint                = "s3.${var.region}.amazonaws.com"
+  access_key              = var.aws_access_key_id
+  secret_key              = var.aws_secret_access_key
+  retention               = "168h"  # 7 days
+  retention_resolution_1h = "720h"  # 30 days
+  retention_resolution_5m = "8766h" # 1 year
+  retention_size          = "1GiB"
+  thanos                  = local.thanos
   depends_on = [
     module.rancher,
     module.rancher-logging,

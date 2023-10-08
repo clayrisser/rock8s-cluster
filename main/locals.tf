@@ -80,6 +80,6 @@ locals {
   rancher_istio      = var.rancher_istio && local.rancher_monitoring
   rancher_monitoring = var.rancher_monitoring && local.rancher
   rancher_logging    = var.rancher_logging && local.rancher_monitoring
-  tempo              = var.tempo && local.rancher_monitoring
+  tempo              = var.tempo && local.rancher_logging
+  thanos             = local.rancher_monitoring && var.thanos
 }
-

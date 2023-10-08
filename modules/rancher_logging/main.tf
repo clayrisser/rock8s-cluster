@@ -82,7 +82,7 @@ write:
 loki:
   auth_enabled: false
   limits_config:
-    retention_period: ${tostring(var.retention_hours)}h
+    retention_period: ${var.retention}
   compactor:
     retention_delete_delay: 2h
     retention_delete_worker_count: 150

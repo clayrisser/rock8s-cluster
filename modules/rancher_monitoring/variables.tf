@@ -35,8 +35,20 @@ variable "endpoint" {
   default = "us-east-1"
 }
 
-variable "retention_hours" {
-  default = "168"
+variable "retention" {
+  default = "168h" # 7 days
+}
+
+variable "retention_size" {
+  default = "1GiB"
+}
+
+variable "retention_resolution_5m" {
+  default = "720h" # 30 days
+}
+
+variable "retention_resolution_1h" {
+  default = "8766h" # 1 year
 }
 
 variable "access_key" {
@@ -49,6 +61,10 @@ variable "secret_key" {
 
 variable "bucket" {
   default = ""
+}
+
+variable "thanos" {
+  default = false
 }
 
 variable "create_namespace" {

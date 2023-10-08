@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-resource "kubectl_manifest" "selfsigned" {
+resource "kubectl_manifest" "selfsigned-issuer" {
   count     = (lookup(var.issuers, "selfsigned", null) != null && var.enabled) ? 1 : 0
   yaml_body = <<EOF
 apiVersion: cert-manager.io/v1
@@ -30,4 +30,46 @@ spec:
   ca:
     secretName: selfsigned-ca
 EOF
+}
+
+resource "tls_private_key" "selfsigned-ca" {
+  count     = (lookup(var.issuers, "selfsigned", null) != null && var.enabled) ? 1 : 0
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "tls_self_signed_cert" "selfsigned-ca" {
+  count                 = (lookup(var.issuers, "selfsigned", null) != null && var.enabled) ? 1 : 0
+  private_key_pem       = tls_private_key.selfsigned-ca[0].private_key_pem
+  is_ca_certificate     = true
+  validity_period_hours = 867240 # 99 years
+  subject {
+    common_name = "selfsigned-ca"
+  }
+  allowed_uses = [
+    "client_auth",
+    "digital_signature",
+    "key_encipherment",
+    "server_auth"
+  ]
+}
+
+resource "kubectl_manifest" "selfsigned-secret" {
+  count     = (lookup(var.issuers, "selfsigned", null) != null && var.enabled) ? 1 : 0
+  yaml_body = <<EOF
+apiVersion: v1
+kind: Secret
+metadata:
+  name: selfsigned-ca
+  namespace: kube-system
+type: kubernetes.io/tls
+data:
+  tls.crt: ${base64encode(tls_self_signed_cert.selfsigned-ca[0].cert_pem)}
+  tls.key: ${base64encode(tls_private_key.selfsigned-ca[0].private_key_pem)}
+EOF
+  lifecycle {
+    ignore_changes = [
+      yaml_body
+    ]
+  }
 }

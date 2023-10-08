@@ -37,7 +37,7 @@ resource "rancher2_app_v2" "this" {
   values        = <<EOF
 replicas: 1
 tempo:
-  retention: ${tostring(var.retention_hours)}h
+  retention: ${var.retention}
   repository: grafana/tempo
   tag: 2.1.1
   resources:

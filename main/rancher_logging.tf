@@ -19,6 +19,40 @@
  * limitations under the License.
  */
 
+resource "aws_s3_bucket" "loki" {
+  count         = local.rancher_logging ? 1 : 0
+  bucket        = var.loki_bucket == "" ? replace("loki-${local.cluster_name}", ".", "-") : var.loki_bucket
+  force_destroy = true
+  lifecycle {
+    prevent_destroy = false
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "loki" {
+  count  = local.rancher_logging ? 1 : 0
+  bucket = aws_s3_bucket.loki[0].id
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "loki" {
+  count  = local.rancher_logging ? 1 : 0
+  bucket = aws_s3_bucket.loki[0].id
+  rule {
+    id     = "retention"
+    status = "Enabled"
+    expiration {
+      days = ceil(var.retention_hours / 24)
+    }
+  }
+  lifecycle {
+    prevent_destroy = false
+  }
+}
+
 module "rancher-logging" {
   source             = "../modules/rancher_logging"
   enabled            = local.rancher_logging
@@ -30,7 +64,9 @@ module "rancher-logging" {
   access_key         = var.aws_access_key_id
   secret_key         = var.aws_secret_access_key
   grafana_repo       = rancher2_catalog_v2.grafana[0].name
+  retention          = "720h"
   depends_on = [
     rancher2_namespace.rancher-monitoring
   ]
 }
+
