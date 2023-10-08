@@ -171,6 +171,10 @@ variable "kyverno" {
   default = false
 }
 
+variable "crossplane" {
+  default = false
+}
+
 variable "retention_hours" {
   default = 168
 }

@@ -1,7 +1,7 @@
 /**
- * File: /dns.tf
- * Project: main
- * File Created: 27-09-2023 05:26:35
+ * File: /versions.tf
+ * Project: crossplane
+ * File Created: 08-10-2023 16:31:55
  * Author: Clay Risser
  * -----
  * BitSpur (c) Copyright 2021 - 2023
@@ -19,17 +19,20 @@
  * limitations under the License.
  */
 
-resource "aws_route53_record" "cluster" {
-  count   = var.ingress_nginx ? 1 : 0
-  zone_id = data.aws_route53_zone.this.zone_id
-  name    = local.cluster_entrypoint
-  type    = "CNAME"
-  ttl     = "200"
-  records = [module.ingress-nginx.hostname]
-  depends_on = [
-    module.kyverno
-  ]
-  lifecycle {
-    prevent_destroy = false
+terraform {
+  required_version = ">= 1.0"
+  required_providers {
+    helm = {
+      source  = "hashicorp/helm"
+      version = ">= 2.10.1"
+    }
+    kubectl = {
+      source  = "alekc/kubectl"
+      version = ">= 2.0.2"
+    }
+    null = {
+      source  = "hashicorp/null"
+      version = ">= 3.2.1"
+    }
   }
 }

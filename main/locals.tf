@@ -76,10 +76,10 @@ locals {
   }
   kanister           = var.kanister && var.flux
   longhorn           = var.longhorn && local.rancher
-  rancher            = var.rancher && var.ingress_nginx
+  rancher            = var.rancher && var.ingress_nginx && var.kyverno
   rancher_istio      = var.rancher_istio && local.rancher_monitoring
-  rancher_monitoring = var.rancher_monitoring && local.rancher
   rancher_logging    = var.rancher_logging && local.rancher_monitoring
+  rancher_monitoring = var.rancher_monitoring && local.rancher
   tempo              = var.tempo && local.rancher_logging
   thanos             = local.rancher_monitoring && var.thanos
 }

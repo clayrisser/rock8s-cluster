@@ -1,7 +1,7 @@
 /**
- * File: /dns.tf
- * Project: main
- * File Created: 27-09-2023 05:26:35
+ * File: /variables.tf
+ * Project: crossplane
+ * File Created: 08-10-2023 16:31:55
  * Author: Clay Risser
  * -----
  * BitSpur (c) Copyright 2021 - 2023
@@ -19,17 +19,30 @@
  * limitations under the License.
  */
 
-resource "aws_route53_record" "cluster" {
-  count   = var.ingress_nginx ? 1 : 0
-  zone_id = data.aws_route53_zone.this.zone_id
-  name    = local.cluster_entrypoint
-  type    = "CNAME"
-  ttl     = "200"
-  records = [module.ingress-nginx.hostname]
-  depends_on = [
-    module.kyverno
-  ]
-  lifecycle {
-    prevent_destroy = false
-  }
+variable "enabled" {
+  default = true
+}
+
+variable "namespace" {
+  default = "crossplane-system"
+}
+
+variable "chart_version" {
+  default = "1.13.2"
+}
+
+variable "values" {
+  default = ""
+}
+
+variable "region" {
+  default = "us-east-1"
+}
+
+variable "access_key" {
+  default = ""
+}
+
+variable "secret_key" {
+  default = ""
 }

@@ -30,14 +30,60 @@ provider "rancher2" {
   api_url   = "https://${var.rancher_hostname}"
 }
 
+resource "kubectl_manifest" "namespace" {
+  count     = var.enabled ? 1 : 0
+  yaml_body = <<EOF
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ${var.namespace}
+EOF
+}
+
+resource "kubectl_manifest" "deployment-toleration-policy" {
+  count     = var.enabled ? 1 : 0
+  yaml_body = <<EOF
+apiVersion: kyverno.io/v1
+kind: Policy
+metadata:
+  name: deployment-toleration
+  namespace: ${kubectl_manifest.namespace[0].name}
+spec:
+  validationFailureAction: enforce
+  rules:
+    - name: deployment-toleration
+      match:
+        resources:
+          kinds:
+            - Deployment
+      mutate:
+        patchStrategicMerge:
+          spec:
+            template:
+              spec:
+                tolerations:
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: Exists
+                    effect: NoSchedule
+                affinity:
+                  nodeAffinity:
+                    requiredDuringSchedulingIgnoredDuringExecution:
+                      nodeSelectorTerms:
+                        - matchExpressions:
+                            - key: node-role.kubernetes.io/control-plane
+                              operator: In
+                              values:
+                                - ""
+EOF
+}
+
 resource "helm_release" "this" {
-  count            = var.enabled ? 1 : 0
-  name             = "rancher"
-  repository       = "https://releases.rancher.com/server-charts/latest"
-  chart            = "rancher"
-  version          = var.chart_version
-  namespace        = var.namespace
-  create_namespace = true
+  count      = var.enabled ? 1 : 0
+  name       = "rancher"
+  repository = "https://releases.rancher.com/server-charts/latest"
+  chart      = "rancher"
+  version    = var.chart_version
+  namespace  = kubectl_manifest.namespace[0].name
   values = [<<EOF
 replicas: 1
 bootstrapPassword: ${local.rancher_bootstrap_password}
@@ -66,6 +112,9 @@ global:
 EOF
     ,
     var.values
+  ]
+  depends_on = [
+    kubectl_manifest.deployment-toleration-policy
   ]
 }
 
@@ -149,11 +198,11 @@ kind: ClusterRole
 metadata:
   name: cluster-admin
 rules:
-- apiGroups: ["*"]
-  resources: ["*"]
-  verbs: ["*"]
-- nonResourceURLs: ["*"]
-  verbs: ["*"]
+  - apiGroups: ["*"]
+    resources: ["*"]
+    verbs: ["*"]
+  - nonResourceURLs: ["*"]
+    verbs: ["*"]
 EOF
   depends_on = [
     null_resource.wait-for-rancher
@@ -168,9 +217,9 @@ kind: ClusterRoleBinding
 metadata:
   name: rancher-cluster-admin
 subjects:
-- kind: ServiceAccount
-  name: rancher
-  namespace: cattle-system
+  - kind: ServiceAccount
+    name: rancher
+    namespace: cattle-system
 roleRef:
   kind: ClusterRole
   name: cluster-admin
