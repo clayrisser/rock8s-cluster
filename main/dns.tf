@@ -27,6 +27,7 @@ resource "aws_route53_record" "cluster" {
   ttl     = "200"
   records = [module.ingress-nginx.hostname]
   depends_on = [
+    null_resource.wait-for-cluster,
     module.kyverno
   ]
   lifecycle {

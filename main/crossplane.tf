@@ -19,13 +19,50 @@
  * limitations under the License.
  */
 
-
 module "crossplane" {
-  source     = "../modules/crossplane"
-  enabled    = var.crossplane
-  access_key = var.aws_access_key_id
-  secret_key = var.aws_secret_access_key
+  source  = "../modules/crossplane"
+  enabled = var.crossplane
   depends_on = [
     null_resource.wait-for-cluster
+  ]
+}
+
+module "crossplane-on-eks" {
+  source         = "github.com/clayrisser/crossplane-on-eks//bootstrap/terraform"
+  aws_account_id = data.aws_caller_identity.this.account_id
+  oidc_provider  = local.oidc_provider
+  vpc_id         = module.vpc.vpc_id
+  audience       = "amazonaws.com"
+  tags           = local.tags
+  families = [
+    "dynamodb",
+    "elasticache",
+    "iam",
+    "kms",
+    "lambda",
+    "rds",
+    "s3",
+    "sns",
+    "sqs",
+    "vpc"
+  ]
+  depends_on = [
+    module.crossplane
+  ]
+}
+
+resource "helm_release" "crossplane-on-eks" {
+  count      = var.crossplane ? 1 : 0
+  name       = "crossplane-on-eks"
+  version    = "0.1.0"
+  repository = "https://charts.rock8s.com"
+  chart      = "crossplane-on-eks"
+  namespace  = module.crossplane.namespace
+  values = [<<EOF
+audience: amazonaws.com
+EOF
+  ]
+  depends_on = [
+    module.crossplane-on-eks
   ]
 }
