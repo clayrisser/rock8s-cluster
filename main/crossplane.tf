@@ -51,6 +51,21 @@ module "crossplane-on-eks" {
   ]
 }
 
+resource "helm_release" "resource-binding-operator" {
+  count      = var.crossplane ? 1 : 0
+  name       = "resource-binding-operator"
+  version    = "0.1.0"
+  repository = "https://charts.rock8s.com"
+  chart      = "resource-binding-operator"
+  namespace  = module.crossplane.namespace
+  values = [<<EOF
+EOF
+  ]
+  depends_on = [
+    module.crossplane-on-eks
+  ]
+}
+
 resource "helm_release" "crossplane-on-eks" {
   count      = var.crossplane ? 1 : 0
   name       = "crossplane-on-eks"
