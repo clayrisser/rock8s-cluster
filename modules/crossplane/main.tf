@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-resource "helm_release" "crossplane" {
+resource "helm_release" "this" {
   count            = var.enabled ? 1 : 0
   name             = "crossplane"
   version          = var.chart_version

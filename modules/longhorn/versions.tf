@@ -1,6 +1,6 @@
 /**
- * File: /variables.tf
- * Project: argocd
+ * File: /versions.tf
+ * Project: rancher_monitoring
  * File Created: 27-09-2023 05:26:35
  * Author: Clay Risser
  * -----
@@ -19,18 +19,12 @@
  * limitations under the License.
  */
 
-variable "enabled" {
-  default = true
-}
-
-variable "namespace" {
-  default = "argocd"
-}
-
-variable "chart_version" {
-  default = "5.46.7"
-}
-
-variable "values" {
-  default = ""
+terraform {
+  required_version = ">= 1.0"
+  required_providers {
+    rancher2 = {
+      source  = "rancher/rancher2"
+      version = ">= 3.0.2"
+    }
+  }
 }

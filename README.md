@@ -2,6 +2,17 @@
 
 > terraform deployment for the rock8s staging cluster
 
+## Dependencies
+
+- [AWS CLI](https://aws.amazon.com/cli)
+- [AWS IAM Authenticator](https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html)
+- [Bash](https://www.gnu.org/software/bash)
+- [GNU Make](https://www.gnu.org/software/make)
+- [JQ](https://jqlang.github.io/jq)
+- [Kops](https://kops.sigs.k8s.io/getting_started/install)
+- [Kubectl](https://kubernetes.io/docs/tasks/tools)
+- [Terraform](https://www.terraform.io)
+
 ## Usage
 
 The terraform will be applied using a GitHub action when it is

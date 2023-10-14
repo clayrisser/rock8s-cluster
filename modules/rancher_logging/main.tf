@@ -47,7 +47,7 @@ EOF
 resource "rancher2_app_v2" "loki" {
   count         = var.enabled ? 1 : 0
   chart_name    = "loki"
-  chart_version = "5.26.0"
+  chart_version = "5.30.0"
   cluster_id    = var.rancher_cluster_id
   name          = "loki"
   namespace     = rancher2_namespace.loki[0].name

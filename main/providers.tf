@@ -69,3 +69,7 @@ provider "kustomization" {
   context        = "terraform"
   kubeconfig_raw = local.kubeconfig
 }
+
+provider "gitlab" {
+  token = var.gitlab_token
+}

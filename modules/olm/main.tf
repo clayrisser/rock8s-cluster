@@ -116,3 +116,18 @@ EOF
     kubectl_manifest.olm
   ]
 }
+
+resource "helm_release" "easy-olm-operator" {
+  count      = var.enabled ? 1 : 0
+  name       = "easy-olm-operator"
+  version    = "0.0.1"
+  repository = "https://charts.rock8s.com"
+  chart      = "easy-olm-operator"
+  namespace  = "kube-system"
+  values = [<<EOF
+EOF
+  ]
+  depends_on = [
+    kubectl_manifest.olm
+  ]
+}

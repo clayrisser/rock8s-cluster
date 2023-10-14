@@ -1,7 +1,7 @@
 /**
- * File: /variables.tf
- * Project: argocd
- * File Created: 27-09-2023 05:26:35
+ * File: /main.tf
+ * Project: crossplane
+ * File Created: 08-10-2023 16:31:55
  * Author: Clay Risser
  * -----
  * BitSpur (c) Copyright 2021 - 2023
@@ -19,18 +19,17 @@
  * limitations under the License.
  */
 
-variable "enabled" {
-  default = true
-}
-
-variable "namespace" {
-  default = "argocd"
-}
-
-variable "chart_version" {
-  default = "5.46.7"
-}
-
-variable "values" {
-  default = ""
+resource "helm_release" "this" {
+  count            = var.enabled ? 1 : 0
+  name             = "reloader"
+  version          = var.chart_version
+  repository       = "https://stakater.github.io/stakater-charts"
+  chart            = "reloader"
+  namespace        = var.namespace
+  create_namespace = true
+  values = [<<EOF
+EOF
+    ,
+    var.values
+  ]
 }

@@ -15,6 +15,7 @@ gnumake
 gnused
 istio
 istioctl
+kops
 kubeconfig
 kustomization
 kustomize

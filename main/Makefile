@@ -28,17 +28,19 @@ include $(PROJECT_ROOT)/aws.mk
 include $(PROJECT_ROOT)/terraform.mk
 
 export TF_STATE_NAME ?= $(CLUSTER_PREFIX)-$(ITERATION)
-export CLUSTER_NAME ?= $(CLUSTER_PREFIX)-$(ITERATION).$(DNS_ZONE)
 
 include $(PROJECT_ROOT)/terraform.mk
 include $(PROJECT_ROOT)/shared.mk
 
-export CLUSTER_ENDPOINT := \
-	$(shell $(AWS) eks describe-cluster --region $(AWS_REGION) --name $(CLUSTER_NAME) --query cluster.endpoint --output text 2>/dev/null)
+export CLUSTER_NAME ?= $(CLUSTER_PREFIX)-$(ITERATION).$(DNS_ZONE)
+export CLUSTER_ENDPOINT ?= https://api.$(CLUSTER_NAME)
+export AWS_IAM_ROLE_ADMIN_ARN ?= arn:aws:iam::$(AWS_ACCOUNT_ID):role/$(CLUSTER_NAME)
+
 export KUBECONFIG_JSON := $(CURDIR)/artifacts/kubeconfig.json
 _ := $(shell mkdir -p $(CURDIR)/artifacts && \
 [ "$(CLUSTER_ENDPOINT)" != "" ] && cat $(CURDIR)/kubeconfig.json | \
 sed 's|<CLUSTER_NAME>|$(CLUSTER_NAME)|g' | \
+sed 's|<AWS_IAM_ROLE_ADMIN_ARN>|$(AWS_IAM_ROLE_ADMIN_ARN)|g' | \
 sed 's|<CLUSTER_ENDPOINT>|$(CLUSTER_ENDPOINT)|g' > $(KUBECONFIG_JSON))
 
 include modules.mk

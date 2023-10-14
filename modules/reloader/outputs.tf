@@ -1,7 +1,7 @@
 /**
- * File: /variables.tf
- * Project: argocd
- * File Created: 27-09-2023 05:26:35
+ * File: /outputs.tf
+ * Project: crossplane
+ * File Created: 08-10-2023 16:31:55
  * Author: Clay Risser
  * -----
  * BitSpur (c) Copyright 2021 - 2023
@@ -19,18 +19,6 @@
  * limitations under the License.
  */
 
-variable "enabled" {
-  default = true
-}
-
-variable "namespace" {
-  default = "argocd"
-}
-
-variable "chart_version" {
-  default = "5.46.7"
-}
-
-variable "values" {
-  default = ""
+output "namespace" {
+  value = var.namespace
 }

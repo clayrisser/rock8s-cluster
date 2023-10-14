@@ -73,7 +73,7 @@ spec:
                             - key: node-role.kubernetes.io/control-plane
                               operator: In
                               values:
-                                - ""
+                                - ''
 EOF
 }
 

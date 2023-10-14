@@ -1,7 +1,7 @@
 /**
- * File: /variables.tf
- * Project: argocd
- * File Created: 27-09-2023 05:26:35
+ * File: /main.tf
+ * Project: rancher_logging
+ * File Created: 04-10-2023 19:15:49
  * Author: Clay Risser
  * -----
  * BitSpur (c) Copyright 2021 - 2023
@@ -19,18 +19,21 @@
  * limitations under the License.
  */
 
-variable "enabled" {
-  default = true
+resource "rancher2_namespace" "this" {
+  count      = var.enabled ? 1 : 0
+  name       = var.namespace
+  project_id = var.rancher_project_id
 }
 
-variable "namespace" {
-  default = "argocd"
-}
-
-variable "chart_version" {
-  default = "5.46.7"
-}
-
-variable "values" {
-  default = ""
+resource "rancher2_app_v2" "this" {
+  count         = var.enabled ? 1 : 0
+  chart_name    = "longhorn"
+  chart_version = var.chart_version
+  cluster_id    = var.rancher_cluster_id
+  name          = "longhorn"
+  namespace     = rancher2_namespace.this[0].name
+  repo_name     = "rancher-charts"
+  wait          = true
+  values        = <<EOF
+EOF
 }

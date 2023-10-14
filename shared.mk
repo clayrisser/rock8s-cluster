@@ -29,36 +29,30 @@ SSH_KEYGEN ?= ssh-keygen
 TERRAFORM ?= terraform
 DOWNLOAD := $(shell $(WHICH) curl $(NOOUT) && echo curl -L || echo wget -O-)
 
-define git_deps
-$(shell ($(GIT) ls-files && ($(GIT) lfs ls-files | $(CUT) -d' ' -f3)) | $(SORT) | $(UNIQ) -u | $(GREP) -E "$1" $(NOFAIL))
-endef
-
 define ternary
 $(shell $1 $(NOOUT) && $(ECHO) $2|| $(ECHO) $3)
 endef
 
-define prevent_destroy
-for f in $$($(GIT) ls-files | $(GREP) "\.tf$$"); do \
-	$(SED) -i 's|\(prevent_destroy\s\+=\s\+\)\w\+|\1$1|g' $$f; \
-done
-endef
-
 KUBECTL ?= $(call ternary,kubectl -h,kubectl,true)
 KUBECTX ?= $(call ternary,kubectx -h,kubectx,$(call ternary,kubectl ctx -h,kubectl ctx,true))
+
+MODULES := $(PROJECT_ROOT)/modules
+
+export AWS_ACCOUNT_ID ?= $(shell aws sts get-caller-identity --query 'Account' --output text)
 
 ifneq (,$(CI))
 	TERRAFORM_INPUT_FLAG := -input=false
 	TERRAFORM_AUTO_APPROVE_FLAG := -auto-approve
 endif
 
-define JQ_PLAN
-( \
-    [.resource_changes[]?.change.actions?] | flatten \
-) | { \
-    "create":(map(select(.=="create")) | length), \
-    "update":(map(select(.=="update")) | length), \
-    "delete":(map(select(.=="delete")) | length) \
-}
+define git_deps
+$(shell ($(GIT) ls-files && ($(GIT) lfs ls-files | $(CUT) -d' ' -f3)) | $(SORT) | $(UNIQ) -u | $(GREP) -E "$1" $(NOFAIL))
+endef
+
+define prevent_destroy
+for f in $$($(GIT) ls-files | $(GREP) "\.tf$$"); do \
+	$(SED) -i 's|\(prevent_destroy\s\+=\s\+\)\w\+|\1$1|g' $$f; \
+done
 endef
 
 define set_kube_context
@@ -70,4 +64,12 @@ true || \
 	echo KUBE_CONTEXT=$$KUBE_CONTEXT >> $1)
 endef
 
-MODULES := $(PROJECT_ROOT)/modules
+define JQ_PLAN
+( \
+    [.resource_changes[]?.change.actions?] | flatten \
+) | { \
+    "create":(map(select(.=="create")) | length), \
+    "update":(map(select(.=="update")) | length), \
+    "delete":(map(select(.=="delete")) | length) \
+}
+endef

@@ -1,0 +1,293 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kubeflow
+  labels:
+    app.kubernetes.io/name: kubeflow-app-of-apps
+    app.kubernetes.io/part-of: kubeflow
+spec:
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+  source:
+    repoURL: https://github.com/deployKF/deployKF.git
+    targetRevision: v0.1.1
+    path: .
+    plugin:
+      name: deploykf
+      parameters:
+        - name: source_version
+          string: 0.1.1
+        - name: values
+          string: |
+            argocd:
+              appNamePrefix: ""
+              namespace: argocd
+              project: default
+              source:
+                repo:
+                  url: ""
+                  revision: ""
+                  path: ""
+              destination:
+                server: https://kubernetes.default.svc
+                name: ""
+
+            deploykf_dependencies:
+              cert_manager:
+                enabled: false
+                namespace: cert-manager
+                clusterIssuer:
+                  enabled: false
+                  issuerName: route53-prod
+              istio:
+                enabled: false
+              kyverno:
+                enabled: false
+
+            deploykf_core:
+              deploykf_auth:
+                namespace: deploykf-auth
+                dex:
+                  staticPasswords:
+                    - email: "admin@example.com"
+                      password:
+                        value: "admin"
+                    - email: "user1@example.com"
+                      password:
+                        value: "user1"
+                    - email: "user2@example.com"
+                      password:
+                        value: "user2"
+                  connectors: []
+                  clients:
+                    oauth2Proxy:
+                      clientId: "oauth2-proxy"
+                      clientSecret:
+                        existingSecret: "generated--dex-oauth2-proxy-client"
+                        existingSecretKey: "client_secret"
+                        generateSecret: true
+                    minioConsole:
+                      clientId: "minio-console"
+                      clientSecret:
+                        existingSecret: "generated--dex-minio-console-client"
+                        existingSecretKey: "client_secret"
+                        generateSecret: true
+                    argoServer:
+                      clientId: "argo-server"
+                      clientSecret:
+                        existingSecret: "generated--dex-argo-server-client"
+                        existingSecretKey: "client_secret"
+                        generateSecret: true
+                oauth2Proxy:
+                  cookie:
+                    secret:
+                      existingSecret: "generated--oauth2-proxy-cookie-secret"
+                      existingSecretKey: "cookie_secret"
+                      generateSecret: true
+
+              deploykf_dashboard:
+                namespace: deploykf-dashboard
+
+              deploykf_istio_gateway:
+                namespace: deploykf-istio-gateway
+                gateway:
+                  hostname: deploykf0.k8s.dermatic.health
+                  ports:
+                    http: 8080
+                    https: 8443
+                  selectorLabels:
+                    app: deploykf-gateway
+                    istio: deploykf-gateway
+                gatewayDeployment:
+                  serviceAccount:
+                    name: deploykf-gateway
+                    annotations: {}
+                gatewayService:
+                  name: "deploykf-gateway"
+                  type: "NodePort"
+                  annotations: {}
+                extraManifests:
+                  - |
+                    apiVersion: networking.k8s.io/v1
+                    kind: Ingress
+                    metadata:
+                      name: deploykf-gateway
+                      annotations:
+                        cert-manager.io/cluster-issuer: route53-prod
+                        kubernetes.io/tls-acme: 'true'
+                        nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+                        nginx.ingress.kubernetes.io/use-regex: 'true'
+                        # nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+                        # nginx.ingress.kubernetes.io/backend-protocol: 'HTTPS'
+                        # nginx.ingress.kubernetes.io/ssl-passthrough: 'true'
+                    spec:
+                      ingressClassName: nginx
+                      rules:
+                        - host: deploykf0.k8s.dermatic.health
+                          http:
+                            paths:
+                              - path: "/.*"
+                                pathType: Prefix
+                                backend:
+                                  service:
+                                    name: "deploykf-gateway"
+                                    port:
+                                      name: https
+                        - host: "*.deploykf0.k8s.dermatic.health"
+                          http:
+                            paths:
+                              - path: "/.*"
+                                pathType: Prefix
+                                backend:
+                                  service:
+                                    name: "deploykf-gateway"
+                                    port:
+                                      name: https
+                      tls:
+                        - hosts:
+                            - deploykf0.k8s.dermatic.health
+                          secretName: deploykf-istio-gateway-cert
+                        - hosts:
+                            - "*.deploykf0.k8s.dermatic.health"
+                          secretName: deploykf-istio-gateway-cert
+
+              deploykf_profiles_generator:
+                profileDefaults:
+                  profileNamePrefix: ""
+                  ownerEmail: "admin@example.com"
+                  memberAccess:
+                    role: view
+                    notebooksAccess: false
+                  plugins: []
+                  tools:
+                    kubeflowPipelines:
+                      objectStoreAuth:
+                        existingSecret: "kubeflow-pipelines--profile-object-store-auth--{profile_name}"
+                        existingSecretNamespace: ""
+                        existingSecretAccessKeyKey: "access_key"
+                        existingSecretSecretKeyKey: "secret_key"
+                users:
+                  - id: user-1
+                    email: "user1@example.com"
+                  - id: user-2
+                    email: "user2@example.com"
+                groups:
+                  - id: team-1
+                    users:
+                      - user-1
+                      - user-2
+                profiles:
+                  - name: team-1
+                    members:
+                      - group: team-1
+                        access:
+                          role: edit
+                          notebooksAccess: true
+
+                  - name: team-1-prod
+                    members:
+                      - group: team-1
+                        access:
+                          role: view
+                          notebooksAccess: false
+
+            deploykf_opt:
+              deploykf_minio:
+                enabled: true
+                namespace: deploykf-minio
+                rootUser:
+                  existingSecret: "generated--deploykf-minio-root-user"
+                  existingSecretUsernameKey: "username"
+                  existingSecretPasswordKey: "password"
+                  generateSecret: true
+                  serviceAccounts: []
+                buckets: []
+                policies: []
+
+              deploykf_mysql:
+                enabled: true
+                namespace: deploykf-mysql
+                rootUser:
+                  existingSecret: "generated--deploykf-mysql-root-user"
+                  existingSecretPasswordKey: "password"
+                  generateSecret: true
+                kubeflowUser:
+                  existingSecret: "generated--deploykf-mysql-kubeflow-user"
+                  existingSecretUsernameKey: "username"
+                  existingSecretPasswordKey: "password"
+                  generateSecret: true
+
+            kubeflow_dependencies:
+              kubeflow_argo_workflows:
+                enabled: true
+                namespace: kubeflow-argo-workflows
+
+            kubeflow_tools:
+              katib:
+                enabled: true
+                mysql:
+                  useExternal: false
+                  host: "mysql.example.com"
+                  port: 3306
+                  auth:
+                    username: kubeflow
+                    password: password
+                    existingSecret: ""
+                    existingSecretUsernameKey: "username"
+                    existingSecretPasswordKey: "password"
+                mysqlDatabase: katib
+
+              notebooks:
+                enabled: true
+                spawnerFormDefaults: {}
+
+              pipelines:
+                enabled: true
+                bucket:
+                  name: kubeflow-pipelines
+                  region: ""
+                objectStore:
+                  useExternal: false
+                  host: s3.amazonaws.com
+                  port: ""
+                  useSSL: true
+                  auth:
+                    fromEnv: false
+                    accessKey: my-access-key
+                    secretKey: my-secret-key
+                    existingSecret: ""
+                    existingSecretAccessKeyKey: "AWS_ACCESS_KEY_ID"
+                    existingSecretSecretKeyKey: "AWS_SECRET_ACCESS_KEY"
+                mysql:
+                  useExternal: false
+                  host: "mysql.example.com"
+                  port: 3306
+                  auth:
+                    username: kubeflow
+                    password: password
+                    existingSecret: ""
+                    existingSecretUsernameKey: "username"
+                    existingSecretPasswordKey: "password"
+                mysqlDatabases:
+                  cacheDatabase: kfp_cache
+                  metadataDatabase: kfp_metadata
+                  pipelinesDatabase: kfp_pipelines
+                kfpV2:
+                  defaultPipelineRoot: "minio://{bucket_name}/v2/artifacts/{profile_name}"
+                  minioFix: true
+                  launcherImage: ""
+                profileResourceGeneration:
+                  kfpApiTokenPodDefault: false
+              poddefaults_webhook:
+                enabled: true
+              tensorboards:
+                enabled: true
+              training_operator:
+                enabled: true
+              volumes:
+                enabled: true

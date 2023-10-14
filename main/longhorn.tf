@@ -1,7 +1,7 @@
 /**
- * File: /variables.tf
- * Project: argocd
- * File Created: 27-09-2023 05:26:35
+ * File: /longhorn.tf
+ * Project: main
+ * File Created: 05-10-2023 09:25:30
  * Author: Clay Risser
  * -----
  * BitSpur (c) Copyright 2021 - 2023
@@ -19,18 +19,12 @@
  * limitations under the License.
  */
 
-variable "enabled" {
-  default = true
-}
-
-variable "namespace" {
-  default = "argocd"
-}
-
-variable "chart_version" {
-  default = "5.46.7"
-}
-
-variable "values" {
-  default = ""
+module "longhorn" {
+  source             = "../modules/longhorn"
+  enabled            = local.longhorn
+  rancher_cluster_id = local.rancher_cluster_id
+  rancher_project_id = local.rancher_project_id
+  depends_on = [
+    module.rancher
+  ]
 }

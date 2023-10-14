@@ -30,7 +30,7 @@ locals {
   public_api_ports     = [for port in split(",", var.public_api_ports) : port]
   public_nodes_ports   = [for port in split(",", var.public_nodes_ports) : port]
   ingress_ports        = [for port in split(",", var.ingress_ports) : port]
-  cluster_endpoint     = "https://api.${var.cluster_prefix}-${tostring(var.iteration)}.${var.dns_zone}"
+  cluster_endpoint     = "https://api.${local.cluster_name}"
   oidc_provider        = "${aws_s3_bucket.oidc.bucket}.s3.${var.region}.amazonaws.com"
   user_exec = {
     api_version = "client.authentication.k8s.io/v1beta1"

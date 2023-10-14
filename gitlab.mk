@@ -3,8 +3,8 @@
 # File Created: 26-06-2023 07:11:51
 # Author: Clay Risser
 # -----
-# Last Modified: 10-07-2023 15:07:32
-# Modified By: Clay Risser
+#Last Modified: Sa-10-2023 08:41:18
+#Modified By: clayrisser
 # -----
 # BitSpur (c) Copyright 2022
 
@@ -28,9 +28,9 @@ ifneq (,$(CI_JOB_TOKEN))
 	TF_USERNAME := gitlab-ci-token
 	TF_PASSWORD := $(CI_JOB_TOKEN)
 else
-ifneq (,$(GITLAB_REGISTRY_TOKEN))
-	TF_USERNAME ?= $(GITLAB_REGISTRY_USERNAME)
-	TF_PASSWORD ?= $(GITLAB_REGISTRY_TOKEN)
+ifneq (,$(GITLAB_TOKEN))
+	TF_USERNAME ?= $(GITLAB_USERNAME)
+	TF_PASSWORD ?= $(GITLAB_TOKEN)
 else
 	TF_USERNAME ?= $(call gitlab_username)
 	TF_PASSWORD ?= $(call gitlab_token)

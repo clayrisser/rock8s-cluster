@@ -12,6 +12,8 @@ nixpkgs.stdenv.mkDerivation rec {
     nixpkgs.gnused
     nixpkgs.istioctl
     nixpkgs.jq
+    nixpkgs.kops
+    nixpkgs.kubectl
     nixpkgs.terraform
   ];
 }

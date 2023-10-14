@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: apps
+spec:
+  project: default
+  destination:
+    namespace: supabase
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+  source:
+    path: apps/supabase
+    repoURL: https://gitlab.com/bitspur/rock8s/rock8s-cluster.git
+    targetRevision: main
+    directory:
+      recurse: true

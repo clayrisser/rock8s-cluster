@@ -28,7 +28,7 @@ variable "namespace" {
 }
 
 variable "chart_version" {
-  default = "102.0.0+up3.17.10"
+  default = "102.0.1+up3.17.10"
 }
 
 variable "retention" {

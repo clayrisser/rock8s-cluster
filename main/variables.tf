@@ -87,31 +87,19 @@ variable "rancher" {
   default = true
 }
 
-variable "cleanup_operator" {
-  default = true
-}
-
 variable "cluster_issuer" {
   default = true
 }
 
 variable "external_dns" {
-  default = true
+  default = false
 }
 
 variable "flux" {
-  default = true
-}
-
-variable "argo" {
-  default = true
+  default = false
 }
 
 variable "kanister" {
-  default = true
-}
-
-variable "kubed" {
   default = false
 }
 
@@ -140,11 +128,7 @@ variable "thanos" {
 }
 
 variable "tempo" {
-  default = true
-}
-
-variable "efs_csi" {
-  default = true
+  default = false
 }
 
 variable "longhorn" {
@@ -164,7 +148,7 @@ variable "argocd" {
 }
 
 variable "karpenter" {
-  default = true
+  default = false
 }
 
 variable "kyverno" {
@@ -175,12 +159,12 @@ variable "crossplane" {
   default = false
 }
 
-variable "retention_hours" {
-  default = 168
+variable "integration_operator" {
+  default = false
 }
 
-variable "ack_services" {
-  default = "s3,iam,rds"
+variable "retention_hours" {
+  default = 168
 }
 
 variable "ingress_ports" {
@@ -192,5 +176,17 @@ variable "cloudflare_api_key" {
 }
 
 variable "cloudflare_email" {
+  type = string
+}
+
+variable "gitlab_username" {
+  type = string
+}
+
+variable "gitlab_token" {
+  type = string
+}
+
+variable "gitlab_project_id" {
   type = string
 }

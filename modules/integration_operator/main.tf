@@ -1,6 +1,6 @@
 /**
- * File: /variables.tf
- * Project: argocd
+ * File: /main.tf
+ * Project: olm
  * File Created: 27-09-2023 05:26:35
  * Author: Clay Risser
  * -----
@@ -19,18 +19,16 @@
  * limitations under the License.
  */
 
-variable "enabled" {
-  default = true
-}
-
-variable "namespace" {
-  default = "argocd"
-}
-
-variable "chart_version" {
-  default = "5.46.7"
-}
-
-variable "values" {
-  default = ""
+resource "helm_release" "this" {
+  count      = var.enabled ? 1 : 0
+  name       = "integration-operator"
+  version    = var.chart_version
+  repository = "https://charts.rock8s.com"
+  chart      = "integration-operator"
+  namespace  = var.namespace
+  values = [<<EOF
+EOF
+    ,
+    var.values
+  ]
 }

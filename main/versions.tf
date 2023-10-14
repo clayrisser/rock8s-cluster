@@ -71,5 +71,13 @@ terraform {
       source  = "kbst/kustomization"
       version = "0.9.4"
     }
+    argocd = {
+      source  = "oboukili/argocd"
+      version = "6.0.3"
+    }
+    gitlab = {
+      source  = "gitlabhq/gitlab"
+      version = "16.4.1"
+    }
   }
 }

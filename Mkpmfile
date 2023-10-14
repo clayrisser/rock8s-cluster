@@ -64,6 +64,10 @@ prepare-aws:
 	@$(AWS) iam add-user-to-group --user-name $(USER_NAME) --group-name $(GROUP_NAME)
 	@$(AWS) iam create-access-key --user-name $(USER_NAME)
 
+.PHONY: count
+count:
+	@$(CLOC) $(shell ($(GIT) ls-files && ($(GIT) lfs ls-files | $(CUT) -d' ' -f3)) | $(SORT) | $(UNIQ) -u)
+
 .PHONY: main/%
 main/%:
 	@$(MAKE) -sC main $*

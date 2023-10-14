@@ -1,6 +1,6 @@
 /**
  * File: /variables.tf
- * Project: rancher_monitoring
+ * Project: olm
  * File Created: 27-09-2023 05:26:35
  * Author: Clay Risser
  * -----
@@ -24,57 +24,13 @@ variable "enabled" {
 }
 
 variable "namespace" {
-  default = "cattle-monitoring-system"
+  default = "kube-system"
 }
 
 variable "chart_version" {
-  default = "102.0.2+up40.1.2"
+  default = "0.2.0"
 }
 
-variable "endpoint" {
-  default = "us-east-1"
-}
-
-variable "retention" {
-  default = "168h" # 7 days
-}
-
-variable "retention_size" {
-  default = "1GiB"
-}
-
-variable "retention_resolution_5m" {
-  default = "720h" # 30 days
-}
-
-variable "retention_resolution_1h" {
-  default = "8766h" # 1 year
-}
-
-variable "access_key" {
+variable "values" {
   default = ""
-}
-
-variable "secret_key" {
-  default = ""
-}
-
-variable "bucket" {
-  default = ""
-}
-
-variable "thanos" {
-  default = false
-}
-
-variable "create_namespace" {
-  default = true
-}
-
-variable "rancher_cluster_id" {
-  type = string
-}
-
-variable "rancher_project_id" {
-  type = string
 }
