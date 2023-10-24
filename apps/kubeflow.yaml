@@ -96,7 +96,7 @@ spec:
               deploykf_istio_gateway:
                 namespace: deploykf-istio-gateway
                 gateway:
-                  hostname: deploykf0.k8s.dermatic.health
+                  hostname: deploykf0.k8s.example.com
                   ports:
                     http: 8080
                     https: 8443
@@ -128,7 +128,7 @@ spec:
                     spec:
                       ingressClassName: nginx
                       rules:
-                        - host: deploykf0.k8s.dermatic.health
+                        - host: deploykf0.k8s.example.com
                           http:
                             paths:
                               - path: "/.*"
@@ -138,7 +138,7 @@ spec:
                                     name: "deploykf-gateway"
                                     port:
                                       name: https
-                        - host: "*.deploykf0.k8s.dermatic.health"
+                        - host: "*.deploykf0.k8s.example.com"
                           http:
                             paths:
                               - path: "/.*"
@@ -150,10 +150,10 @@ spec:
                                       name: https
                       tls:
                         - hosts:
-                            - deploykf0.k8s.dermatic.health
+                            - deploykf0.k8s.example.com
                           secretName: deploykf-istio-gateway-cert
                         - hosts:
-                            - "*.deploykf0.k8s.dermatic.health"
+                            - "*.deploykf0.k8s.example.com"
                           secretName: deploykf-istio-gateway-cert
 
               deploykf_profiles_generator:

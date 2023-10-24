@@ -35,22 +35,23 @@ EOF
 resource "tls_private_key" "selfsigned-ca" {
   count     = (lookup(var.issuers, "selfsigned", null) != null && var.enabled) ? 1 : 0
   algorithm = "RSA"
-  rsa_bits  = 4096
+  rsa_bits  = 2048
 }
 
 resource "tls_self_signed_cert" "selfsigned-ca" {
   count                 = (lookup(var.issuers, "selfsigned", null) != null && var.enabled) ? 1 : 0
   private_key_pem       = tls_private_key.selfsigned-ca[0].private_key_pem
   is_ca_certificate     = true
-  validity_period_hours = 867240 # 99 years
+  validity_period_hours = 24 * 356
   subject {
     common_name = "selfsigned-ca"
   }
   allowed_uses = [
-    "client_auth",
     "digital_signature",
     "key_encipherment",
-    "server_auth"
+    "cert_signing",
+    "server_auth",
+    "client_auth"
   ]
 }
 

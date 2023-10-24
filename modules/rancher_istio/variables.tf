@@ -28,7 +28,7 @@ variable "namespace" {
 }
 
 variable "chart_version" {
-  default = "102.2.0+up1.17.2"
+  default = "102.3.0+up1.18.2"
 }
 
 variable "rancher_cluster_id" {

@@ -49,13 +49,14 @@ metadata:
   name: deployment-toleration
   namespace: ${kubectl_manifest.namespace[0].name}
 spec:
+  background: true
   validationFailureAction: enforce
   rules:
     - name: deployment-toleration
       match:
         resources:
           kinds:
-            - Deployment
+            - apps/*/Deployment
       mutate:
         patchStrategicMerge:
           spec:
