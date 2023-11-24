@@ -292,7 +292,7 @@ resource "kops_instance_group" "karpenter-0" {
     spot_allocation_strategy      = "price-capacity-optimized" # price-capacity-optimized lowest-price capacity-optimized diversified
     spot_instance_pools           = 2
     on_demand_above_base { value = 0 }
-    on_demand_base { value = 0 }
+    on_demand_base { value = 6 }
     instance_requirements {
       cpu {
         min = "4"
