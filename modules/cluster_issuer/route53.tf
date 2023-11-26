@@ -19,11 +19,6 @@
  * limitations under the License.
  */
 
-data "aws_route53_zone" "this" {
-  count = (lookup(var.issuers, "route53", null) != null && var.enabled) ? 1 : 0
-  name  = (lookup(var.issuers, "route53", null) != null && var.enabled) ? var.issuers.route53.zone : null
-}
-
 resource "kubectl_manifest" "route53-prod" {
   count = (lookup(var.issuers, "route53", null) != null && var.enabled) ? 1 : 0
   yaml_body = <<EOF
@@ -38,16 +33,12 @@ spec:
     privateKeySecretRef:
       name: route53-prod-account-key
     solvers:
-      - selector:
-          dnsZones:
-          - '${(lookup(var.issuers, "route53", null) != null && var.enabled) ?
-  data.aws_route53_zone.this[0].name : ""}'
-        dns01:
+      - dns01:
           route53:
-            hostedZoneID: '${(lookup(var.issuers, "route53", null) != null && var.enabled) ?
-  data.aws_route53_zone.this[0].zone_id : ""}'
-            region: ${(lookup(var.issuers, "route53", null) != null && var.enabled) ?
-lookup(var.issuers.route53, "region", "us-east-1") : ""}
+            region: ${lookup(var.issuers, "route53", null) != null ?
+  var.issuers.route53.region : ""}
+            role: '${lookup(var.issuers, "route53", null) != null ?
+var.issuers.route53.roleArn : ""}'
 EOF
 }
 
@@ -65,15 +56,11 @@ spec:
     privateKeySecretRef:
       name: route53-staging-account-key
     solvers:
-      - selector:
-          dnsZones:
-          - '${(lookup(var.issuers, "route53", null) != null && var.enabled) ?
-  data.aws_route53_zone.this[0].name : ""}'
-        dns01:
+      - dns01:
           route53:
-            hostedZoneID: '${(lookup(var.issuers, "route53", null) != null && var.enabled) ?
-  data.aws_route53_zone.this[0].zone_id : ""}'
-            region: ${(lookup(var.issuers, "route53", null) != null && var.enabled) ?
-lookup(var.issuers.route53, "region", "us-east-1") : ""}
+            region: ${lookup(var.issuers, "route53", null) != null ?
+  var.issuers.route53.region : ""}
+            role: '${lookup(var.issuers, "route53", null) != null ?
+var.issuers.route53.roleArn : ""}'
 EOF
 }

@@ -49,6 +49,9 @@ resource "aws_iam_role" "admin" {
       },
     ]
   })
+  tags = {
+    Cluster = local.cluster_name
+  }
   lifecycle {
     prevent_destroy = false
   }

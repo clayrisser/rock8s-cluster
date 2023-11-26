@@ -36,8 +36,40 @@ cleanupController:
   replicas: 1
 reportsController:
   replicas: 1
+backgroundController:
+  rbac:
+    clusterRole:
+      extraResources:
+        - apiGroups:
+            - ''
+          resources:
+            - serviceaccounts
+          verbs:
+            - create
+            - update
+            - patch
+            - delete
 EOF
     ,
     var.values
   ]
+}
+
+resource "kubectl_manifest" "this" {
+  count      = var.enabled ? 1 : 0
+  yaml_body  = <<EOF
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kyverno:background-controller:additional
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kyverno:background-controller:additional
+subjects:
+  - kind: ServiceAccount
+    name: kyverno-background-controller
+    namespace: kyverno
+EOF
+  depends_on = [helm_release.this]
 }

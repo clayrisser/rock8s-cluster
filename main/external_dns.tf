@@ -19,11 +19,50 @@
  * limitations under the License.
  */
 
+resource "aws_iam_role" "external-dns" {
+  name = "external-dns.${local.cluster_name}"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Federated = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:oidc-provider/${aws_s3_bucket.oidc.bucket}"
+        },
+        Action = "sts:AssumeRoleWithWebIdentity",
+        Condition = {
+          StringEquals = {
+            "${aws_s3_bucket.oidc.bucket}.s3.${var.region}.amazonaws.com:sub" : "system:serviceaccount:external-dns:external-dns-release"
+          }
+        }
+      }
+    ]
+  })
+  tags = {
+    Cluster = local.cluster_name
+  }
+  lifecycle {
+    prevent_destroy = false
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "external-dns" {
+  role       = aws_iam_role.external-dns.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonRoute53FullAccess"
+  lifecycle {
+    prevent_destroy = false
+  }
+}
+
 module "external-dns" {
-  source             = "../modules/external_dns"
-  enabled            = var.external_dns
-  cloudflare_api_key = var.cloudflare_api_key
-  cloudflare_email   = var.cloudflare_email
+  source  = "../modules/external_dns"
+  enabled = var.external_dns
+  dns_providers = {
+    route53 = {
+      region  = var.region
+      roleArn = aws_iam_role.external-dns.arn
+    }
+  }
   depends_on = [
     null_resource.wait-for-cluster
   ]

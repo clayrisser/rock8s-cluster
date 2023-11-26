@@ -29,11 +29,10 @@ metadata:
   namespace: kube-system
 type: Opaque
 stringData:
-  cloudflare_api_key: '${(lookup(var.issuers, "cloudflare", null) != null && var.enabled) ?
+  cloudflare_api_key: '${lookup(var.issuers, "cloudflare", null) != null ?
 lookup(var.issuers.cloudflare, "api_key", "") : ""}'
 EOF
 }
-
 
 resource "kubectl_manifest" "cloudflare-prod" {
   count = (lookup(var.issuers, "cloudflare", null) != null && var.enabled) ? 1 : 0
@@ -51,8 +50,9 @@ spec:
     solvers:
       - dns01:
           cloudflare:
-            email: ${(lookup(var.issuers, "cloudflare", null) != null && var.enabled) ?
-(lookup(var.issuers.cloudflare, "email", null) != null ? var.issuers.cloudflare.email : var.letsencrypt_email) : ""}
+            email: ${lookup(var.issuers, "cloudflare", null) != null ?
+  (lookup(var.issuers.cloudflare, "email", null) != null ?
+var.issuers.cloudflare.email : var.letsencrypt_email) : ""}
             apiKeySecretRef:
               name: cloudflare
               key: cloudflare_api_key
@@ -78,8 +78,9 @@ spec:
     solvers:
       - dns01:
           cloudflare:
-            email: ${(lookup(var.issuers, "cloudflare", null) != null && var.enabled) ?
-(lookup(var.issuers.cloudflare, "email", null) != null ? var.issuers.cloudflare.email : var.letsencrypt_email) : ""}
+            email: ${lookup(var.issuers, "cloudflare", null) != null ?
+  (lookup(var.issuers.cloudflare, "email", null) != null ?
+var.issuers.cloudflare.email : var.letsencrypt_email) : ""}
             apiKeySecretRef:
               name: cloudflare
               key: cloudflare_api_key

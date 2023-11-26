@@ -23,7 +23,7 @@ module "rancher" {
   source                 = "../modules/rancher"
   enabled                = local.rancher
   kubeconfig             = local.kubeconfig
-  letsencrypt_email      = var.cloudflare_email
+  letsencrypt_email      = var.email
   rancher_admin_password = var.rancher_admin_password
   rancher_cluster_id     = local.rancher_cluster_id
   rancher_hostname       = try(aws_route53_record.cluster[0].name, "")

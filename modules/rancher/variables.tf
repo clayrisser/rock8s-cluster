@@ -32,7 +32,7 @@ variable "rancher_admin_password" {
 }
 
 variable "chart_version" {
-  default = "v2.7.8"
+  default = "v2.7.9"
 }
 
 variable "namespace" {

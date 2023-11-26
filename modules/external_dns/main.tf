@@ -28,15 +28,30 @@ resource "helm_release" "this" {
   namespace        = var.namespace
   create_namespace = true
   values = [<<EOF
-provider: cloudflare
+provider: ${lookup(var.dns_providers, "route53", null) != null ? "aws" : "cloudflare"}
+aws:
+  region: ${lookup(var.dns_providers, "route53", null) != null ?
+    var.dns_providers.route53.region : ""}
+  roleArn: ${lookup(var.dns_providers, "route53", null) != null ?
+    (lookup(var.dns_providers.route53, "roleArn", null) != null ?
+    var.dns_providers.route53.roleArn : "") : ""}
+  credentials:
+    secretKey: ${lookup(var.dns_providers, "route53", null) != null ?
+    (lookup(var.dns_providers.route53, "secretKey", null) != null ?
+    var.dns_providers.route53.secretKey : "") : ""}
+    accessKey: ${lookup(var.dns_providers, "route53", null) != null ?
+    (lookup(var.dns_providers.route53, "accessKey", null) != null ?
+    var.dns_providers.route53.accessKey : "") : ""}
 cloudflare:
-  apiKey: ${var.cloudflare_api_key}
-  email: ${var.cloudflare_email}
+  apiKey: ${lookup(var.dns_providers, "cloudflare", null) != null ?
+    var.dns_providers.cloudflare.apiKey : ""}
+  email: ${lookup(var.dns_providers, "cloudflare", null) != null ?
+  var.dns_providers.cloudflare.email : ""}
   proxied: false
-  sources:
-    - ingress
+sources:
+  - ingress
 EOF
-    ,
-    var.values
-  ]
+  ,
+  var.values
+]
 }

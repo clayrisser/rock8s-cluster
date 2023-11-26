@@ -171,14 +171,6 @@ variable "ingress_ports" {
   default = "80,443"
 }
 
-variable "cloudflare_api_key" {
-  type = string
-}
-
-variable "cloudflare_email" {
-  type = string
-}
-
 variable "gitlab_username" {
   type = string
 }
@@ -188,5 +180,9 @@ variable "gitlab_token" {
 }
 
 variable "gitlab_project_id" {
+  type = string
+}
+
+variable "email" {
   type = string
 }

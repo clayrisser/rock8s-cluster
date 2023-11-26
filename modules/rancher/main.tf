@@ -50,14 +50,20 @@ metadata:
   namespace: ${kubectl_manifest.namespace[0].name}
 spec:
   background: true
-  validationFailureAction: enforce
+  mutateExistingOnPolicyUpdate: true
   rules:
     - name: deployment-toleration
       match:
         resources:
           kinds:
             - apps/*/Deployment
+          names:
+            - rancher
       mutate:
+        targets:
+          - apiVersion: apps/v1
+            kind: Deployment
+            name: rancher
         patchStrategicMerge:
           spec:
             template:

@@ -19,15 +19,51 @@
  * limitations under the License.
  */
 
+resource "aws_iam_role" "cluster-issuer" {
+  name = "cluster-issuer.${local.cluster_name}"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Federated = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:oidc-provider/${aws_s3_bucket.oidc.bucket}"
+        },
+        Action = "sts:AssumeRoleWithWebIdentity",
+        Condition = {
+          StringEquals = {
+            "${aws_s3_bucket.oidc.bucket}.s3.${var.region}.amazonaws.com:sub" : "system:serviceaccount:cert-manager:cert-manager"
+          }
+        }
+      }
+    ]
+  })
+  tags = {
+    Cluster = local.cluster_name
+  }
+  lifecycle {
+    prevent_destroy = false
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "cluster-issuer" {
+  role       = aws_iam_role.cluster-issuer.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonRoute53FullAccess"
+  lifecycle {
+    prevent_destroy = false
+  }
+}
+
 module "cluster-issuer" {
   source            = "../modules/cluster_issuer"
   enabled           = var.cluster_issuer
-  letsencrypt_email = var.cloudflare_email
+  letsencrypt_email = var.email
   issuers = {
     letsencrypt = true
     selfsigned  = true
-    cloudflare = {
-      api_key = var.cloudflare_api_key
+    route53 = {
+      region  = var.region
+      roleArn = aws_iam_role.cluster-issuer.arn
     }
   }
   depends_on = [
