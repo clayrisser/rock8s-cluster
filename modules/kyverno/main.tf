@@ -41,14 +41,20 @@ backgroundController:
     clusterRole:
       extraResources:
         - apiGroups:
-            - ''
+            - apps
           resources:
-            - serviceaccounts
+            - daemonsets
+            - deployments
+            - replicasets
+            - statefulsets
           verbs:
             - create
-            - update
-            - patch
             - delete
+            - get
+            - list
+            - patch
+            - update
+            - watch
 EOF
     ,
     var.values

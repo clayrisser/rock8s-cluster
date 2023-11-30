@@ -18,6 +18,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+locals {
+  route53_role_arn = (lookup(var.dns_providers, "route53", null) != null ?
+    (lookup(var.dns_providers.route53, "roleArn", null) != null ?
+  var.dns_providers.route53.roleArn : "") : "")
+}
 
 resource "helm_release" "this" {
   count            = var.enabled ? 1 : 0
@@ -27,31 +32,37 @@ resource "helm_release" "this" {
   chart            = "external-dns"
   namespace        = var.namespace
   create_namespace = true
-  values = [<<EOF
+  values = concat(
+    (local.route53_role_arn != "" ? [
+      <<EOF
+serviceAccount:
+  annotations:
+    eks.amazonaws.com/role-arn: ${local.route53_role_arn}
+EOF
+    ] : []),
+    [
+      <<EOF
 provider: ${lookup(var.dns_providers, "route53", null) != null ? "aws" : "cloudflare"}
 aws:
   region: ${lookup(var.dns_providers, "route53", null) != null ?
-    var.dns_providers.route53.region : ""}
-  roleArn: ${lookup(var.dns_providers, "route53", null) != null ?
-    (lookup(var.dns_providers.route53, "roleArn", null) != null ?
-    var.dns_providers.route53.roleArn : "") : ""}
+      var.dns_providers.route53.region : ""}
   credentials:
     secretKey: ${lookup(var.dns_providers, "route53", null) != null ?
-    (lookup(var.dns_providers.route53, "secretKey", null) != null ?
-    var.dns_providers.route53.secretKey : "") : ""}
+      (lookup(var.dns_providers.route53, "secretKey", null) != null ?
+      var.dns_providers.route53.secretKey : "") : ""}
     accessKey: ${lookup(var.dns_providers, "route53", null) != null ?
-    (lookup(var.dns_providers.route53, "accessKey", null) != null ?
-    var.dns_providers.route53.accessKey : "") : ""}
+      (lookup(var.dns_providers.route53, "accessKey", null) != null ?
+      var.dns_providers.route53.accessKey : "") : ""}
 cloudflare:
   apiKey: ${lookup(var.dns_providers, "cloudflare", null) != null ?
-    var.dns_providers.cloudflare.apiKey : ""}
+      var.dns_providers.cloudflare.apiKey : ""}
   email: ${lookup(var.dns_providers, "cloudflare", null) != null ?
-  var.dns_providers.cloudflare.email : ""}
+    var.dns_providers.cloudflare.email : ""}
   proxied: false
 sources:
   - ingress
 EOF
-  ,
-  var.values
-]
+    ,
+    var.values
+])
 }
