@@ -32,7 +32,7 @@ resource "aws_iam_role" "external-dns" {
         Action = "sts:AssumeRoleWithWebIdentity",
         Condition = {
           StringEquals = {
-            "${aws_s3_bucket.oidc.bucket}.s3.${var.region}.amazonaws.com:sub" : "system:serviceaccount:external-dns:external-dns-release"
+            "${aws_s3_bucket.oidc.bucket}.s3.${var.region}.amazonaws.com:sub" : "system:serviceaccount:external-dns:external-dns"
           }
         }
       }
