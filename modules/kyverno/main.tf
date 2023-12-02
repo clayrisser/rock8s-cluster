@@ -36,22 +36,6 @@ cleanupController:
   replicas: 1
 reportsController:
   replicas: 1
-backgroundController:
-  rbac:
-    clusterRole:
-      extraResources:
-        - apiGroups:
-            - ''
-          resources:
-            - serviceaccounts
-          verbs:
-            - create
-            - delete
-            - get
-            - list
-            - patch
-            - update
-            - watch
 EOF
     ,
     var.values

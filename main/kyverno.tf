@@ -22,6 +22,24 @@
 module "kyverno" {
   source  = "../modules/kyverno"
   enabled = var.kyverno
+  values  = <<EOF
+backgroundController:
+  rbac:
+    clusterRole:
+      extraResources:
+        - apiGroups:
+            - ''
+          resources:
+            - serviceaccounts
+          verbs:
+            - '*'
+        - apiGroups:
+            - cr.kanister.io
+          resources:
+            - blueprints
+          verbs:
+            - '*'
+EOF
   depends_on = [
     null_resource.wait-for-cluster
   ]
