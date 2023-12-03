@@ -63,6 +63,10 @@ variable "loki_bucket" {
   default = ""
 }
 
+variable "kanister_bucket" {
+  default = ""
+}
+
 variable "api_strategy" {
   default = "LB"
   validation {

@@ -44,7 +44,6 @@ resource "rancher2_catalog_v2" "grafana" {
   ]
 }
 
-
 resource "rancher2_catalog_v2" "rock8s" {
   count      = local.rancher ? 1 : 0
   cluster_id = local.rancher_cluster_id

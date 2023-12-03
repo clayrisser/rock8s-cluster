@@ -34,7 +34,3 @@ variable "chart_version" {
 variable "values" {
   default = ""
 }
-
-variable "cleanup" {
-  default = true
-}

@@ -1,7 +1,7 @@
 /**
- * File: /versions.tf
- * Project: kyverno
- * File Created: 27-09-2023 05:26:35
+ * File: /variables.tf
+ * Project: kanister
+ * File Created: 03-12-2023 03:42:26
  * Author: Clay Risser
  * -----
  * BitSpur (c) Copyright 2021 - 2023
@@ -19,12 +19,50 @@
  * limitations under the License.
  */
 
-terraform {
-  required_version = ">= 1.0"
-  required_providers {
-    helm = {
-      source  = "hashicorp/helm"
-      version = ">= 2.10.1"
-    }
-  }
+variable "enabled" {
+  default = true
+}
+
+variable "namespace" {
+  default = "kanister"
+}
+
+variable "chart_version" {
+  default = "0.93.0"
+}
+
+variable "rancher_cluster_id" {
+  type = string
+}
+
+variable "rancher_project_id" {
+  type = string
+}
+
+variable "region" {
+  type = string
+}
+
+variable "prefix" {
+  default = ""
+}
+
+variable "bucket" {
+  type = string
+}
+
+variable "rock8s_repo" {
+  type = string
+}
+
+variable "access_key" {
+  type = string
+}
+
+variable "secret_key" {
+  type = string
+}
+
+variable "endpoint" {
+  type = string
 }
