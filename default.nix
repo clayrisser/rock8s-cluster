@@ -5,6 +5,7 @@ nixpkgs.stdenv.mkDerivation rec {
   LANG = "en_US.UTF-8";
   buildInputs = [
     nixpkgs.aws-iam-authenticator
+    nixpkgs.awscli2
     nixpkgs.awsweeper
     nixpkgs.cloc
     nixpkgs.coreutils
