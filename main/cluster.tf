@@ -49,27 +49,19 @@ resource "aws_iam_role" "admin" {
       },
     ]
   })
-  tags = {
-    Cluster = local.cluster_name
-  }
-  lifecycle {
-    prevent_destroy = false
-  }
+  tags = local.tags
 }
 
 resource "aws_key_pair" "node" {
   key_name   = "nodes.${local.cluster_name}"
   public_key = tls_private_key.node.public_key_openssh
-  lifecycle {
-    prevent_destroy = false
-  }
 }
 
 resource "kops_cluster" "this" {
   name               = local.cluster_name
   admin_ssh_key      = tls_private_key.admin.public_key_openssh
   ssh_key_name       = aws_key_pair.node.key_name
-  kubernetes_version = "v1.26.2"
+  kubernetes_version = "v1.27.2"
   dns_zone           = var.dns_zone
   cloud_provider {
     aws {
@@ -272,9 +264,6 @@ resource "kops_instance_group" "control-plane-0" {
   root_volume {
     size = 32
   }
-  lifecycle {
-    prevent_destroy = false
-  }
 }
 
 resource "kops_instance_group" "karpenter-0" {
@@ -316,9 +305,6 @@ resource "kops_instance_group" "karpenter-0" {
       type    = additional_user_data.value["type"]
       content = additional_user_data.value["content"]
     }
-  }
-  lifecycle {
-    prevent_destroy = false
   }
 }
 
@@ -429,9 +415,6 @@ resource "kops_cluster_updater" "updater" {
   }
   validate {
     skip = false
-  }
-  lifecycle {
-    prevent_destroy = false
   }
 }
 

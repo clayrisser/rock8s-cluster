@@ -22,10 +22,13 @@
 resource "aws_s3_bucket" "kanister" {
   count         = var.kanister ? 1 : 0
   bucket        = var.kanister_bucket == "" ? "kanister.${local.cluster_name}" : var.kanister_bucket
-  force_destroy = true
-  lifecycle {
-    prevent_destroy = false
-  }
+  force_destroy = false
+  tags = merge(
+    local.tags,
+    {
+      "Preserve" = "1"
+    }
+  )
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "kanister" {
@@ -41,6 +44,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "kanister" {
 resource "aws_iam_user" "kanister" {
   count = var.kanister ? 1 : 0
   name  = "kanister.${local.cluster_name}"
+  tags  = local.tags
 }
 
 resource "aws_iam_access_key" "kanister" {

@@ -30,7 +30,4 @@ resource "aws_route53_record" "cluster" {
     null_resource.wait-for-cluster,
     module.kyverno
   ]
-  lifecycle {
-    prevent_destroy = false
-  }
 }

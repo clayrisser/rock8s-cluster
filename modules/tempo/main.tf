@@ -128,7 +128,4 @@ data:
             type: 'Tag'
             tag: 'http.path'
 EOF
-  lifecycle {
-    prevent_destroy = false
-  }
 }

@@ -23,9 +23,7 @@ resource "aws_s3_bucket" "thanos" {
   count         = local.thanos ? 1 : 0
   bucket        = var.thanos_bucket == "" ? replace("thanos-${local.cluster_name}", ".", "-") : var.thanos_bucket
   force_destroy = true
-  lifecycle {
-    prevent_destroy = false
-  }
+  tags          = local.tags
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "thanos" {
@@ -41,6 +39,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "thanos" {
 resource "aws_iam_user" "thanos" {
   count = local.thanos ? 1 : 0
   name  = "thanos.${local.cluster_name}"
+  tags  = local.tags
 }
 
 resource "aws_iam_access_key" "thanos" {
@@ -78,9 +77,6 @@ resource "aws_s3_bucket_lifecycle_configuration" "thanos" {
     expiration {
       days = ceil(var.retention_hours / 24)
     }
-  }
-  lifecycle {
-    prevent_destroy = false
   }
 }
 

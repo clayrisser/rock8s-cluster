@@ -38,20 +38,12 @@ resource "aws_iam_role" "external-dns" {
       }
     ]
   })
-  tags = {
-    Cluster = local.cluster_name
-  }
-  lifecycle {
-    prevent_destroy = false
-  }
+  tags = local.tags
 }
 
 resource "aws_iam_role_policy_attachment" "external-dns" {
   role       = aws_iam_role.external-dns.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonRoute53FullAccess"
-  lifecycle {
-    prevent_destroy = false
-  }
 }
 
 module "external-dns" {

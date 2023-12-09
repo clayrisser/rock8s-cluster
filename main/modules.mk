@@ -17,5 +17,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+ifeq (1,$(LOAD_MODULES))
 include $(MODULES)/argocd/module.mk
 include $(MODULES)/olm/module.mk
+endif

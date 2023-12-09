@@ -49,12 +49,6 @@ define git_deps
 $(shell ($(GIT) ls-files && ($(GIT) lfs ls-files | $(CUT) -d' ' -f3)) | $(SORT) | $(UNIQ) -u | $(GREP) -E "$1" $(NOFAIL))
 endef
 
-define prevent_destroy
-for f in $$($(GIT) ls-files | $(GREP) "\.tf$$"); do \
-	$(SED) -i 's|\(prevent_destroy\s\+=\s\+\)\w\+|\1$1|g' $$f; \
-done
-endef
-
 define set_kube_context
 [ "$$(cat $1 | grep -E '^KUBE_CONTEXT=[^ ]+')" = "KUBE_CONTEXT=$$KUBE_CONTEXT" ] && \
 true || \

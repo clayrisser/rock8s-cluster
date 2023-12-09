@@ -43,6 +43,7 @@ sed 's|<CLUSTER_NAME>|$(CLUSTER_NAME)|g' | \
 sed 's|<AWS_IAM_ROLE_ADMIN_ARN>|$(AWS_IAM_ROLE_ADMIN_ARN)|g' | \
 sed 's|<CLUSTER_ENDPOINT>|$(CLUSTER_ENDPOINT)|g' > $(KUBECONFIG_JSON))
 
+LOAD_MODULES ?= 1
 include modules.mk
 
 .PHONY: terraform
@@ -95,9 +96,10 @@ IGNORE_DESTROY := \
 	module\\..*\\.kubernetes_ \
 	module\\..*\\.kustomization_ \
 	module\\..*\\.rancher2_ \
-	module\\.csi-drivers\\.module\\..* \
-	module\\.eks-blueprints-addons\\.module\\..* \
-	module\\.karpenter\\.module\\..* \
+	module\\.csi-drivers\\..* \
+	module\\.eks-blueprints-addons\\..* \
+	module\\.karpenter\\..* \
+	module\\.vpc\\..* \
 	null_resource\\. \
 	rancher2_ \
 	time_sleep\\.

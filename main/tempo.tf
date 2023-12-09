@@ -23,9 +23,7 @@ resource "aws_s3_bucket" "tempo" {
   count         = local.tempo ? 1 : 0
   bucket        = var.tempo_bucket == "" ? replace("tempo-${local.cluster_name}", ".", "-") : var.tempo_bucket
   force_destroy = true
-  lifecycle {
-    prevent_destroy = false
-  }
+  tags          = local.tags
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "tempo" {
@@ -41,6 +39,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "tempo" {
 resource "aws_iam_user" "tempo" {
   count = local.tempo ? 1 : 0
   name  = "tempo.${local.cluster_name}"
+  tags  = local.tags
 }
 
 resource "aws_iam_access_key" "tempo" {
@@ -81,9 +80,6 @@ resource "aws_s3_bucket_lifecycle_configuration" "tempo" {
     expiration {
       days = ceil(var.retention_hours / 24)
     }
-  }
-  lifecycle {
-    prevent_destroy = false
   }
 }
 

@@ -1,33 +1,40 @@
 aws_iam_policy:
   - tags:
-      Cluster: <CLUSTER_NAME>
+      KubernetesCluster: <CLUSTER_NAME>
+      NOT(Preserve): .*
 aws_iam_role:
   - tags:
       KubernetesCluster: <CLUSTER_NAME>
+      NOT(Preserve): .*
 aws_instance:
   - tags:
-      Cluster: <CLUSTER_NAME>
+      KubernetesCluster: <CLUSTER_NAME>
+      NOT(Preserve): .*
 aws_s3_bucket:
   - tags:
-      Cluster: <CLUSTER_NAME>
+      KubernetesCluster: <CLUSTER_NAME>
+      NOT(Preserve): .*
 aws_elb:
   - tags:
-      Cluster: <CLUSTER_NAME>
+      KubernetesCluster: <CLUSTER_NAME>
+      NOT(Preserve): .*
 aws_lb:
   - tags:
-      Cluster: <CLUSTER_NAME>
-aws_lb_target_group:
-  - tags:
-      Cluster: <CLUSTER_NAME>
+      KubernetesCluster: <CLUSTER_NAME>
+      NOT(Preserve): .*
 aws_autoscaling_group:
   - tags:
-      Cluster: <CLUSTER_NAME>
+      KubernetesCluster: <CLUSTER_NAME>
+      NOT(Preserve): .*
 aws_launch_configuration:
   - tags:
-      Cluster: <CLUSTER_NAME>
+      KubernetesCluster: <CLUSTER_NAME>
+      NOT(Preserve): .*
 aws_ebs_volume:
   - tags:
-      Cluster: <CLUSTER_NAME>
+      KubernetesCluster: <CLUSTER_NAME>
+      NOT(Preserve): .*
 aws_vpc:
   - tags:
-      Cluster: <CLUSTER_NAME>
+      KubernetesCluster: <CLUSTER_NAME>
+      NOT(Preserve): .*

@@ -86,9 +86,6 @@ data:
         access: proxy
         version: 1
 EOF
-  lifecycle {
-    prevent_destroy = false
-  }
   depends_on = [
     helm_release.thanos
   ]

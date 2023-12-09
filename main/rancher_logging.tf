@@ -23,9 +23,7 @@ resource "aws_s3_bucket" "loki" {
   count         = local.rancher_logging ? 1 : 0
   bucket        = var.loki_bucket == "" ? replace("loki-${local.cluster_name}", ".", "-") : var.loki_bucket
   force_destroy = true
-  lifecycle {
-    prevent_destroy = false
-  }
+  tags          = local.tags
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "loki" {
@@ -41,6 +39,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "loki" {
 resource "aws_iam_user" "loki" {
   count = local.rancher_logging ? 1 : 0
   name  = "loki.${local.cluster_name}"
+  tags  = local.tags
 }
 
 resource "aws_iam_access_key" "loki" {
@@ -78,9 +77,6 @@ resource "aws_s3_bucket_lifecycle_configuration" "loki" {
     expiration {
       days = ceil(var.retention_hours / 24)
     }
-  }
-  lifecycle {
-    prevent_destroy = false
   }
 }
 

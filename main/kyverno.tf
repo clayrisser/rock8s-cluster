@@ -34,6 +34,12 @@ backgroundController:
           verbs:
             - '*'
         - apiGroups:
+            - apps
+          resources:
+            - deployments
+          verbs:
+            - '*'
+        - apiGroups:
             - cr.kanister.io
           resources:
             - blueprints

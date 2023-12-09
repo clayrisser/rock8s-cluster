@@ -47,7 +47,7 @@ EOF
 resource "rancher2_app_v2" "loki" {
   count         = var.enabled ? 1 : 0
   chart_name    = "loki"
-  chart_version = "5.30.0"
+  chart_version = "5.40.1"
   cluster_id    = var.rancher_cluster_id
   name          = "loki"
   namespace     = rancher2_namespace.loki[0].name
@@ -122,9 +122,6 @@ EOF
   depends_on = [
     rancher2_app_v2.rancher-logging
   ]
-  lifecycle {
-    prevent_destroy = false
-  }
 }
 
 resource "kubectl_manifest" "cluster-flow" {
@@ -144,9 +141,6 @@ EOF
   depends_on = [
     rancher2_app_v2.rancher-logging
   ]
-  lifecycle {
-    prevent_destroy = false
-  }
 }
 
 resource "kubectl_manifest" "loki-datasource" {
@@ -170,9 +164,6 @@ data:
         access: proxy
         version: 1
 EOF
-  lifecycle {
-    prevent_destroy = false
-  }
 }
 
 resource "kubectl_manifest" "logs-dashboard" {
@@ -490,7 +481,4 @@ EOF
   depends_on = [
     rancher2_app_v2.rancher-logging
   ]
-  lifecycle {
-    prevent_destroy = false
-  }
 }
