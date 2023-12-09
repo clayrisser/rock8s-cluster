@@ -38,6 +38,37 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "thanos" {
   }
 }
 
+resource "aws_iam_user" "thanos" {
+  count = local.thanos ? 1 : 0
+  name  = "thanos.${local.cluster_name}"
+}
+
+resource "aws_iam_access_key" "thanos" {
+  count = local.thanos ? 1 : 0
+  user  = aws_iam_user.thanos[0].name
+}
+
+resource "aws_iam_user_policy" "thanos" {
+  count  = local.thanos ? 1 : 0
+  name   = "thanos.${local.cluster_name}"
+  user   = aws_iam_user.thanos[0].name
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "s3:*",
+      "Resource": [
+        "${aws_s3_bucket.thanos[0].arn}",
+        "${aws_s3_bucket.thanos[0].arn}/*"
+      ]
+    }
+  ]
+}
+EOF
+}
+
 resource "aws_s3_bucket_lifecycle_configuration" "thanos" {
   count  = local.thanos ? 1 : 0
   bucket = aws_s3_bucket.thanos[0].id
@@ -68,8 +99,8 @@ module "rancher-monitoring" {
   rancher_project_id      = local.rancher_project_id
   bucket                  = try(aws_s3_bucket.thanos[0].bucket, "")
   endpoint                = "s3.${var.region}.amazonaws.com"
-  access_key              = var.aws_access_key_id
-  secret_key              = var.aws_secret_access_key
+  access_key              = try(aws_iam_access_key.thanos[0].id, "")
+  secret_key              = try(aws_iam_access_key.thanos[0].secret, "")
   retention               = "168h"  # 7 days
   retention_resolution_1h = "720h"  # 30 days
   retention_resolution_5m = "8766h" # 1 year

@@ -36,9 +36,7 @@ spec:
       - dns01:
           route53:
             region: ${lookup(var.issuers, "route53", null) != null ?
-  var.issuers.route53.region : ""}
-            role: '${lookup(var.issuers, "route53", null) != null ?
-var.issuers.route53.roleArn : ""}'
+var.issuers.route53.region : ""}
 EOF
 }
 
@@ -59,8 +57,6 @@ spec:
       - dns01:
           route53:
             region: ${lookup(var.issuers, "route53", null) != null ?
-  var.issuers.route53.region : ""}
-            role: '${lookup(var.issuers, "route53", null) != null ?
-var.issuers.route53.roleArn : ""}'
+var.issuers.route53.region : ""}
 EOF
 }

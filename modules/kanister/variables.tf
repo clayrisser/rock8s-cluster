@@ -60,7 +60,8 @@ variable "access_key" {
 }
 
 variable "secret_key" {
-  type = string
+  type      = string
+  sensitive = true
 }
 
 variable "endpoint" {

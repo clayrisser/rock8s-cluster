@@ -108,24 +108,21 @@ resource "kops_cluster" "this" {
     legacy                                   = false
     allow_container_registry                 = true
     use_service_account_external_permissions = true
-    dynamic "service_account_external_permissions" {
-      for_each = [for namespace in local.elevated_namespaces : { ns = namespace, policies = local.elevated_policies }]
-      content {
-        name      = element(split(":", service_account_external_permissions.value.ns), 1)
-        namespace = element(split(":", service_account_external_permissions.value.ns), 0)
-        aws {
-          policy_ar_ns = service_account_external_permissions.value.policies
-        }
-      }
-    }
   }
   external_policies {
-    key   = "control-plane"
-    value = local.external_policies
+    key = "control-plane"
+    value = [
+      "arn:aws:iam::aws:policy/AmazonElasticFileSystemFullAccess",
+      "arn:aws:iam::aws:policy/AmazonRoute53FullAccess",
+      "arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess"
+    ]
   }
   external_policies {
-    key   = "node"
-    value = local.external_policies
+    key = "node"
+    value = [
+      "arn:aws:iam::aws:policy/AmazonElasticFileSystemFullAccess",
+      "arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess"
+    ]
   }
   config_store {
     base = "s3://${aws_s3_bucket.main.bucket}/kops/${local.cluster_name}"

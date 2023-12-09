@@ -38,6 +38,37 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "tempo" {
   }
 }
 
+resource "aws_iam_user" "tempo" {
+  count = local.tempo ? 1 : 0
+  name  = "tempo.${local.cluster_name}"
+}
+
+resource "aws_iam_access_key" "tempo" {
+  count = local.tempo ? 1 : 0
+  user  = aws_iam_user.tempo[0].name
+}
+
+resource "aws_iam_user_policy" "tempo" {
+  count  = local.tempo ? 1 : 0
+  name   = "tempo.${local.cluster_name}"
+  user   = aws_iam_user.tempo[0].name
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "s3:*",
+      "Resource": [
+        "${aws_s3_bucket.tempo[0].arn}",
+        "${aws_s3_bucket.tempo[0].arn}/*"
+      ]
+    }
+  ]
+}
+EOF
+}
+
 resource "aws_s3_bucket_lifecycle_configuration" "tempo" {
   count  = local.tempo ? 1 : 0
   bucket = aws_s3_bucket.tempo[0].id
@@ -63,8 +94,8 @@ module "tempo" {
   rancher_project_id = local.rancher_project_id
   bucket             = aws_s3_bucket.tempo[0].bucket
   endpoint           = "s3.${var.region}.amazonaws.com"
-  access_key         = var.aws_access_key_id
-  secret_key         = var.aws_secret_access_key
+  access_key         = aws_iam_access_key.tempo[0].id
+  secret_key         = aws_iam_access_key.tempo[0].secret
   grafana_repo       = rancher2_catalog_v2.grafana[0].name
   retention          = "720h"
   depends_on = [

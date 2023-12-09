@@ -56,7 +56,8 @@ variable "access_key" {
 }
 
 variable "secret_key" {
-  default = ""
+  default   = ""
+  sensitive = true
 }
 
 variable "bucket" {

@@ -52,7 +52,7 @@ resource "rancher2_app_v2" "loki" {
   name          = "loki"
   namespace     = rancher2_namespace.loki[0].name
   repo_name     = var.grafana_repo
-  wait          = true
+  wait          = false
   values        = <<EOF
 gateway:
   basicAuth:

@@ -38,6 +38,37 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "loki" {
   }
 }
 
+resource "aws_iam_user" "loki" {
+  count = local.rancher_logging ? 1 : 0
+  name  = "loki.${local.cluster_name}"
+}
+
+resource "aws_iam_access_key" "loki" {
+  count = local.rancher_logging ? 1 : 0
+  user  = aws_iam_user.loki[0].name
+}
+
+resource "aws_iam_user_policy" "loki" {
+  count  = local.rancher_logging ? 1 : 0
+  name   = "loki.${local.cluster_name}"
+  user   = aws_iam_user.loki[0].name
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "s3:*",
+      "Resource": [
+        "${aws_s3_bucket.loki[0].arn}",
+        "${aws_s3_bucket.loki[0].arn}/*"
+      ]
+    }
+  ]
+}
+EOF
+}
+
 resource "aws_s3_bucket_lifecycle_configuration" "loki" {
   count  = local.rancher_logging ? 1 : 0
   bucket = aws_s3_bucket.loki[0].id
@@ -61,12 +92,11 @@ module "rancher-logging" {
   bucket             = aws_s3_bucket.loki[0].bucket
   endpoint           = "s3.${var.region}.amazonaws.com"
   region             = var.region
-  access_key         = var.aws_access_key_id
-  secret_key         = var.aws_secret_access_key
+  access_key         = aws_iam_access_key.loki[0].id
+  secret_key         = aws_iam_access_key.loki[0].secret
   grafana_repo       = rancher2_catalog_v2.grafana[0].name
   retention          = "720h"
   depends_on = [
     rancher2_namespace.rancher-monitoring
   ]
 }
-
