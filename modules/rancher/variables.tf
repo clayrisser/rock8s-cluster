@@ -43,6 +43,10 @@ variable "values" {
   default = ""
 }
 
+variable "rancher_token" {
+  default = ""
+}
+
 variable "letsencrypt_email" {
   type = string
 }

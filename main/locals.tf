@@ -75,7 +75,7 @@ locals {
   tags = {
     Cluster = local.cluster_name
   }
-  kanister           = var.kanister && var.flux
+  kanister           = var.kanister && var.flux && var.olm
   longhorn           = var.longhorn && local.rancher
   rancher            = var.rancher && var.ingress_nginx && var.kyverno
   rancher_istio      = var.rancher_istio && local.rancher_monitoring

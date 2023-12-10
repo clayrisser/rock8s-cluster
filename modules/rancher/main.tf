@@ -162,7 +162,8 @@ resource "rancher2_bootstrap" "admin" {
   provider         = rancher2.bootstrap
   initial_password = local.rancher_bootstrap_password
   password         = var.rancher_admin_password
-  telemetry        = true
+  telemetry        = false
+  token_update     = false
   depends_on = [
     null_resource.wait-for-rancher
   ]
@@ -171,13 +172,15 @@ resource "rancher2_bootstrap" "admin" {
 provider "rancher2" {
   alias     = "admin"
   api_url   = "https://${var.rancher_hostname}"
-  token_key = length(rancher2_bootstrap.admin) > 0 ? rancher2_bootstrap.admin[0].token : ""
+  token_key = var.rancher_token != "" ? var.rancher_token : try(rancher2_bootstrap.admin[0].token, "")
 }
 
 resource "rancher2_token" "this" {
-  count       = var.enabled ? 1 : 0
+  count       = (var.enabled && var.rancher_token == "") ? 1 : 0
   provider    = rancher2.admin
   description = "terraform"
+  renew       = true
+  ttl         = 0
   depends_on = [
     null_resource.wait-for-rancher
   ]
@@ -185,7 +188,7 @@ resource "rancher2_token" "this" {
 
 provider "rancher2" {
   api_url   = "https://${var.rancher_hostname}"
-  token_key = length(rancher2_token.this) > 0 ? rancher2_token.this[0].token : ""
+  token_key = var.rancher_token != "" ? var.rancher_token : try(rancher2_token.this[0].token, "")
 }
 
 data "rancher2_project" "system" {

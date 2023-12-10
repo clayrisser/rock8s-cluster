@@ -16,11 +16,11 @@ aws_s3_bucket:
       NOT(Preserve): .*
 aws_elb:
   - tags:
-      Cluster: <CLUSTER_NAME>
+      KubernetesCluster: <CLUSTER_NAME>
       NOT(Preserve): .*
 aws_lb:
   - tags:
-      Cluster: <CLUSTER_NAME>
+      KubernetesCluster: <CLUSTER_NAME>
       NOT(Preserve): .*
 aws_autoscaling_group:
   - tags:
@@ -39,6 +39,10 @@ aws_security_group:
       Cluster: <CLUSTER_NAME>
       NOT(Preserve): .*
 aws_vpc:
+  - tags:
+      Cluster: <CLUSTER_NAME>
+      NOT(Preserve): .*
+aws_iam_user:
   - tags:
       Cluster: <CLUSTER_NAME>
       NOT(Preserve): .*

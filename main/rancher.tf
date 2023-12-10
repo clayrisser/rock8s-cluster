@@ -27,11 +27,12 @@ module "rancher" {
   rancher_admin_password = var.rancher_admin_password
   rancher_cluster_id     = local.rancher_cluster_id
   rancher_hostname       = try(aws_route53_record.cluster[0].name, "")
+  rancher_token          = var.rancher_token
 }
 
 provider "rancher2" {
   api_url   = module.rancher.api_url
-  token_key = module.rancher.token_key != "" ? module.rancher.token_key : ""
+  token_key = var.rancher_token != "" ? var.rancher_token : try(module.rancher.token, "")
 }
 
 resource "rancher2_catalog_v2" "grafana" {

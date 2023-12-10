@@ -182,3 +182,7 @@ variable "gitlab_project_id" {
 variable "email" {
   type = string
 }
+
+variable "rancher_token" {
+  type = string
+}

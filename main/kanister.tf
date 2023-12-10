@@ -20,7 +20,7 @@
  */
 
 resource "aws_s3_bucket" "kanister" {
-  count         = var.kanister ? 1 : 0
+  count         = local.kanister ? 1 : 0
   bucket        = var.kanister_bucket == "" ? "kanister.${local.cluster_name}" : var.kanister_bucket
   force_destroy = false
   tags = merge(
@@ -32,7 +32,7 @@ resource "aws_s3_bucket" "kanister" {
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "kanister" {
-  count  = var.kanister ? 1 : 0
+  count  = local.kanister ? 1 : 0
   bucket = aws_s3_bucket.kanister[0].id
   rule {
     apply_server_side_encryption_by_default {
@@ -42,18 +42,18 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "kanister" {
 }
 
 resource "aws_iam_user" "kanister" {
-  count = var.kanister ? 1 : 0
+  count = local.kanister ? 1 : 0
   name  = "kanister.${local.cluster_name}"
   tags  = local.tags
 }
 
 resource "aws_iam_access_key" "kanister" {
-  count = var.kanister ? 1 : 0
+  count = local.kanister ? 1 : 0
   user  = aws_iam_user.kanister[0].name
 }
 
 resource "aws_iam_user_policy" "kanister" {
-  count  = var.kanister ? 1 : 0
+  count  = local.kanister ? 1 : 0
   name   = "kanister.${local.cluster_name}"
   user   = aws_iam_user.kanister[0].name
   policy = <<EOF
@@ -75,7 +75,7 @@ EOF
 
 module "kanister" {
   source             = "../modules/kanister"
-  enabled            = var.kanister
+  enabled            = local.kanister
   rancher_cluster_id = local.rancher_cluster_id
   rancher_project_id = local.rancher_project_id
   rock8s_repo        = rancher2_catalog_v2.rock8s[0].name
@@ -85,6 +85,7 @@ module "kanister" {
   region             = var.region
   secret_key         = aws_iam_access_key.kanister[0].secret
   depends_on = [
-    module.kyverno
+    module.kyverno,
+    module.olm
   ]
 }
