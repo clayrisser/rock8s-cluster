@@ -61,7 +61,7 @@ resource "kops_cluster" "this" {
   name               = local.cluster_name
   admin_ssh_key      = tls_private_key.admin.public_key_openssh
   ssh_key_name       = aws_key_pair.node.key_name
-  kubernetes_version = "v1.27.2"
+  kubernetes_version = "v1.26.11"
   dns_zone           = var.dns_zone
   cloud_provider {
     aws {

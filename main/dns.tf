@@ -19,6 +19,10 @@
  * limitations under the License.
  */
 
+data "aws_route53_zone" "this" {
+  name = var.dns_zone
+}
+
 resource "aws_route53_record" "cluster" {
   count   = var.ingress_nginx ? 1 : 0
   zone_id = data.aws_route53_zone.this.zone_id

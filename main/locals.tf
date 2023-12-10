@@ -73,7 +73,7 @@ locals {
     }]
   })
   tags = {
-    KubernetesCluster = local.cluster_name
+    Cluster = local.cluster_name
   }
   kanister           = var.kanister && var.flux
   longhorn           = var.longhorn && local.rancher

@@ -46,10 +46,6 @@ data "kubernetes_service" "ingress-nginx-controller" {
   ]
 }
 
-data "aws_route53_zone" "this" {
-  name = var.dns_zone
-}
-
 data "aws_security_group" "nodes" {
   tags = {
     Name = "nodes.${local.cluster_name}"
