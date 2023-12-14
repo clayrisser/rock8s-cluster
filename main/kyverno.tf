@@ -30,6 +30,8 @@ backgroundController:
         - apiGroups:
             - ''
           resources:
+            - configmaps
+            - secrets
             - serviceaccounts
           verbs:
             - '*'
@@ -37,12 +39,22 @@ backgroundController:
             - apps
           resources:
             - deployments
+            - daemonsets
+            - replicasets
+            - statefulsets
           verbs:
             - '*'
         - apiGroups:
             - cr.kanister.io
           resources:
             - blueprints
+          verbs:
+            - '*'
+        - apiGroups:
+            - k8s.keycloak.org
+          resources:
+            - keycloaks
+            - keycloakrealmimports
           verbs:
             - '*'
 EOF
